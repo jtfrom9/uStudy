@@ -19,14 +19,69 @@ public class TPSController : MonoBehaviour
     float cameraWatchDistance = 3;
 
     [SerializeField]
-    Joystick joystick;
+    Joystick moveJoystick;
+    
+    [SerializeField]
+    Joystick camJoystick;
 
-    void Start()
-    {
-    }
+    [SerializeField]
+    float angleElevation = -10;
+
+    [SerializeField]
+    float angleDepression = 0;
+
+    [SerializeField, Range(0.1f, 3)]
+    float cameraHorizontalSensitivity = 0.1f;
+
+    [SerializeField, Range(0.1f, 3)]
+    float cameraVerticalSensitivity = 0.1f;
 
     public float zdiff = 0.1f;
     public float rdiff = 1.2f;
+
+    // void Start() {
+    //     camera.localPosition = player.position + player.forward * (-cameraDistance) + Vector3.up;
+    // }
+
+    void WalkPlayerByJoystick()
+    {
+        var forward = camera.forward;
+        forward.y = 0;
+        var right = camera.right;
+        right.y = 0;
+
+        var diff = forward * moveJoystick.Vertical * zdiff + right * moveJoystick.Horizontal * zdiff;
+        // player.Translate(diff);
+        player.position += diff;
+        Debug.Log($"diff: {diff}, pos: {player.position}");
+
+        if (Mathf.Abs(moveJoystick.Vertical) >= 0.4 || Mathf.Abs(moveJoystick.Horizontal) > 0.4)
+        {
+            player.LookAt(player.position + camera.forward);
+            camera.localRotation = Quaternion.Euler(Vector3.forward);
+        }
+    }
+
+    void CameraManipurate()
+    {
+
+        var orig = camera.localRotation.eulerAngles;
+        var after = new Vector3(orig.x - camJoystick.Vertical, orig.y + camJoystick.Horizontal * 3, 0);
+        camera.localRotation = Quaternion.Euler(after);
+    }
+
+    void FixedUpdate()
+    {
+        WalkPlayerByJoystick();
+
+        // camera.localPosition = player.position + player.forward * (-cameraDistance) + Vector3.up;
+        Debug.Log($"forward: {player.forward}");
+        // camera.localPosition = player.forward * (-cameraDistance) + Vector3.up;
+        camera.localPosition = Vector3.forward * (-cameraDistance) + Vector3.up;
+        Debug.Log($"campos: local: {camera.localPosition}, global: {camera.position}");
+
+        CameraManipurate();
+    }
 
     void WalkPlayerByArrawKey()
     {
@@ -62,25 +117,12 @@ public class TPSController : MonoBehaviour
         }
     }
 
-    void WalkPlayerByJoystick(){
-        Debug.Log($"{joystick.Vertical}, {joystick.Horizontal}");
-        player.Translate(Vector3.forward * joystick.Vertical * zdiff + Vector3.right * joystick.Horizontal * zdiff);
-    }
-
-
     void Update()
     {
-        // camera chase player
-        camera.position = player.position + (player.forward * -1 * cameraDistance) + Vector3.up;
-
-        var lookpoint = player.position + player.forward * cameraWatchDistance;
-        camera.LookAt(new Vector3(lookpoint.x, 0, lookpoint.z));
+        Debug.DrawLine(player.position, player.position + player.forward * 100, Color.red);
+        Debug.DrawLine(camera.position, camera.position + camera.forward * 100, Color.green);
+        Debug.DrawLine(player.position, player.position + camera.forward * 100, Color.yellow);
 
         WalkPlayerByArrawKey();
-    }
-
-    void FixedUpdate()
-    {
-        WalkPlayerByJoystick();
     }
 }
