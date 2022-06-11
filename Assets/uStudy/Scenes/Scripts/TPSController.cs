@@ -4,6 +4,22 @@ using UnityEngine;
 using UniRx;
 using InputObservable;
 
+public static class Vector3Extension {
+    public static Vector3 X(this Vector3 vec, float v) {
+        return new Vector3(v, vec.y, vec.z);
+    }
+
+    public static Vector3 Y(this Vector3 vec, float v)
+    {
+        return new Vector3(vec.x, v, vec.z);
+    }
+
+    public static Vector3 Z(this Vector3 vec, float v)
+    {
+        return new Vector3(vec.x, vec.y, v);
+    }
+}
+
 public class TPSController : MonoBehaviour
 {
     [SerializeField]
@@ -59,6 +75,7 @@ public class TPSController : MonoBehaviour
 
         var angleY = camJoystick.Horizontal * 3;
         camera.RotateAround(player.position, Vector3.up, angleY);
+        camera.Rotate(-camJoystick.Vertical, 0, 0);
     }
 
     void CameraChasePlayer()
@@ -70,14 +87,16 @@ public class TPSController : MonoBehaviour
 
         // camera.position = player.position + camera.forward * (-3) + Vector3.up * offset.y;
         // camera.position = player.position + camera.forward * offset.z + Vector3.up * offset.y;
-        camera.position = player.position + camera.forward * (-cameraOffset.z) + Vector3.up * cameraOffset.y;
+
+        var forward = camera.forward.Y(0);
+        camera.position = player.position + forward * (-cameraOffset.z) + Vector3.up * cameraOffset.y;
     }
 
     void SyncPlayerDirection()
     {
         if (Mathf.Abs(moveJoystick.Vertical) >= 0.4 || Mathf.Abs(moveJoystick.Horizontal) > 0.4)
         {
-            player.LookAt(player.position + camera.forward);
+            player.LookAt(player.position + camera.forward.Y(0));
         }
     }
 
