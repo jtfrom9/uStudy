@@ -63,8 +63,8 @@ public class TPSController : MonoBehaviour
         right.y = 0;
 
         var diff = forward * moveJoystick.Vertical * zdiff + right * moveJoystick.Horizontal * zdiff;
-        player.Translate(diff);
-        // player.position += diff;
+        // player.Translate(diff);
+        player.position += diff;
     }
 
     void CameraManipurate()
