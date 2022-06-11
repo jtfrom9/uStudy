@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UniRx;
 using InputObservable;
 
@@ -32,28 +33,28 @@ public class TPSController : MonoBehaviour
     Vector3 cameraOffset = new Vector3(0, 1, 3);
 
     [SerializeField]
-    float cameraWatchDistance = 3;
-
-    [SerializeField]
     Joystick moveJoystick;
 
     [SerializeField]
-    Joystick camJoystick;
+    float zdiff = 0.1f;
 
     [SerializeField]
-    float angleElevation = -10;
+    float rdiff = 1.2f;
 
-    [SerializeField]
-    float angleDepression = 0;
+    void diffToCameraMove(Vector2 diff, float hratio, float vratio)
+    {
+        var e = diff.ToEulerAngle(hratio, vratio);
+        camera.RotateAround(player.position, Vector3.up, -e.y);
+        camera.Rotate(-e.x, 0, 0);
+    }
 
-    [SerializeField, Range(0.1f, 3)]
-    float cameraHorizontalSensitivity = 0.1f;
-
-    [SerializeField, Range(0.1f, 3)]
-    float cameraVerticalSensitivity = 0.1f;
-
-    public float zdiff = 0.1f;
-    public float rdiff = 1.2f;
+    void Start() {
+        var context = this.DefaultInputContext(EventSystem.current);
+        var hratio = -90.0f / Screen.width;
+        var vratio = -90.0f / Screen.height;
+        context.GetObservable(0).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
+        context.GetObservable(1).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
+    }
 
     void WalkPlayerByJoystick()
     {
@@ -65,17 +66,6 @@ public class TPSController : MonoBehaviour
         var diff = forward * moveJoystick.Vertical * zdiff + right * moveJoystick.Horizontal * zdiff;
         // player.Translate(diff);
         player.position += diff;
-    }
-
-    void CameraManipurate()
-    {
-        // var orig = camera.localRotation.eulerAngles;
-        // var after = new Vector3(orig.x - camJoystick.Vertical, orig.y + camJoystick.Horizontal * 3, 0);
-        // camera.localRotation = Quaternion.Euler(after);
-
-        var angleY = camJoystick.Horizontal * 3;
-        camera.RotateAround(player.position, Vector3.up, angleY);
-        camera.Rotate(-camJoystick.Vertical, 0, 0);
     }
 
     void CameraChasePlayer()
@@ -103,7 +93,6 @@ public class TPSController : MonoBehaviour
     void FixedUpdate()
     {
         WalkPlayerByJoystick();
-        CameraManipurate();
         CameraChasePlayer();
         SyncPlayerDirection();
 
