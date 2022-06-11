@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 using UniRx;
 using InputObservable;
 
@@ -41,11 +42,18 @@ public class TPSController : MonoBehaviour
     [SerializeField]
     float rdiff = 1.2f;
 
+    [SerializeField]
+    Button shotButton;
+
     void diffToCameraMove(Vector2 diff, float hratio, float vratio)
     {
         var e = diff.ToEulerAngle(hratio, vratio);
         camera.RotateAround(player.position, Vector3.up, -e.y);
         camera.Rotate(-e.x, 0, 0);
+    }
+
+    void shot() {
+        Debug.Log("shot");
     }
 
     void Start() {
@@ -54,6 +62,7 @@ public class TPSController : MonoBehaviour
         var vratio = -90.0f / Screen.height;
         context.GetObservable(0).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
         context.GetObservable(1).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
+        shotButton.onClick.AsObservable().Subscribe(_ => shot()).AddTo(this);
     }
 
     void WalkPlayerByJoystick()
