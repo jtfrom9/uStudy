@@ -31,6 +31,9 @@ public class TPSController : MonoBehaviour
     new Transform camera;
 
     [SerializeField]
+    Transform mazzle;
+
+    [SerializeField]
     Vector3 cameraOffset = new Vector3(0, 1, 3);
 
     [SerializeField]
@@ -45,15 +48,38 @@ public class TPSController : MonoBehaviour
     [SerializeField]
     Button shotButton;
 
+    [SerializeField]
+    GameObject bulletPrefab;
+
+    [SerializeField]
+    GameObject partilePrefab;
+
     void diffToCameraMove(Vector2 diff, float hratio, float vratio)
     {
         var e = diff.ToEulerAngle(hratio, vratio);
         camera.RotateAround(player.position, Vector3.up, -e.y);
         camera.Rotate(-e.x, 0, 0);
+
+        mazzle.RotateAround(player.position, Vector3.right, -e.x);
     }
 
     void shot() {
         Debug.Log("shot");
+
+        var go = Instantiate(bulletPrefab);
+        go.transform.position = mazzle.position;
+        var rb = go.GetComponent<Rigidbody>();
+        rb.velocity = camera.forward.normalized * 100;
+        var bullet = go.GetComponent<Bullet>();
+        bullet.subject.Subscribe(point => {
+            var go = Instantiate(partilePrefab);
+            go.transform.position = point;
+            go.transform.LookAt(camera.position);
+            // Debug.Log($"{contact.point}, {contact.normal}");
+            // Debug.Break();
+            var ps = go.GetComponent<ParticleSystem>();
+            ps.Play();
+        }).AddTo(this);
     }
 
     void Start() {
