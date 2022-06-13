@@ -28,6 +28,10 @@ public class TPSController : MonoBehaviour
     Transform player;
 
     [SerializeField]
+    Player playerObject;
+
+
+    [SerializeField]
     new Transform camera;
 
     [SerializeField]
@@ -57,23 +61,32 @@ public class TPSController : MonoBehaviour
     [SerializeField]
     GameObject partilePrefab;
 
+    Vector3 targetPosition = Vector3.zero;
+
     void diffToCameraMove(Vector2 diff, float hratio, float vratio)
     {
         var e = diff.ToEulerAngle(hratio, vratio);
         camera.RotateAround(player.position, Vector3.up, -e.y);
         camera.Rotate(-e.x, 0, 0);
 
-        mazzle.RotateAround(player.position, Vector3.right, -e.x);
+        // mazzle.RotateAround(player.position, Vector3.right, -e.x);
+    }
+
+    void ignoreCollider(GameObject bullet) {
+        var collider = bullet.GetComponent<Collider>();
+        playerObject.IgnoreCollider(collider);
     }
 
     void shot() {
         // 
         LookForward();
+        MazzleDirection();
 
         var go = Instantiate(bulletPrefab);
+        ignoreCollider(go);
         go.transform.position = mazzle.position;
         var rb = go.GetComponent<Rigidbody>();
-        rb.velocity = camera.forward.normalized * bulletSpeed;
+        rb.velocity = mazzle.forward.normalized * bulletSpeed;
         // rb.AddForce(camera.forward * bulletForce, ForceMode.Impulse);
         var bullet = go.GetComponent<Bullet>();
         bullet.subject.Subscribe(point => {
@@ -135,17 +148,34 @@ public class TPSController : MonoBehaviour
         }
     }
 
+    void MazzleDirection()
+    {
+        var ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 100));
+        RaycastHit hit;
+        if(Physics.Raycast(ray, out hit, 100)) {
+            targetPosition = hit.point;
+        } else
+        {
+            targetPosition = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width / 2, Screen.height / 2, 100));
+        }
+        // Camera.main.ScreenToViewportPoint
+        mazzle.LookAt(targetPosition);
+    }
+
     void Update()
     {
         WalkPlayerByJoystick();
         CameraChasePlayer();
         SyncPlayerDirection();
+        MazzleDirection();
 
         WalkPlayerByArrawKey();
 
         Debug.DrawLine(player.position, player.position + player.forward * 100, Color.red);
         Debug.DrawLine(camera.position, camera.position + camera.forward * 100, Color.green);
         Debug.DrawLine(player.position, player.position + camera.forward * 100, Color.yellow);
+        // Debug.DrawLine(mazzle.position, mazzle.position + mazzle.forward * 100, Color.blue);
+        Debug.DrawLine(mazzle.position, targetPosition, Color.blue);
     }
 
     void WalkPlayerByArrawKey()
