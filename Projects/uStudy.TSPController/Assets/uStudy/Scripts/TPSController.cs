@@ -52,6 +52,9 @@ public class TPSController : MonoBehaviour
     GameObject bulletPrefab;
 
     [SerializeField]
+    float bulletSpeed = 50;
+
+    [SerializeField]
     GameObject partilePrefab;
 
     void diffToCameraMove(Vector2 diff, float hratio, float vratio)
@@ -64,12 +67,14 @@ public class TPSController : MonoBehaviour
     }
 
     void shot() {
-        Debug.Log("shot");
+        // 
+        LookForward();
 
         var go = Instantiate(bulletPrefab);
         go.transform.position = mazzle.position;
         var rb = go.GetComponent<Rigidbody>();
-        rb.velocity = camera.forward.normalized * 100;
+        rb.velocity = camera.forward.normalized * bulletSpeed;
+        // rb.AddForce(camera.forward * bulletForce, ForceMode.Impulse);
         var bullet = go.GetComponent<Bullet>();
         bullet.subject.Subscribe(point => {
             var go = Instantiate(partilePrefab);
@@ -117,21 +122,30 @@ public class TPSController : MonoBehaviour
         camera.position = player.position + forward * (-cameraOffset.z) + Vector3.up * cameraOffset.y;
     }
 
+    void LookForward()
+    {
+        player.LookAt(player.position + camera.forward.Y(0));
+    }
+
     void SyncPlayerDirection()
     {
         if (Mathf.Abs(moveJoystick.Vertical) >= 0.4 || Mathf.Abs(moveJoystick.Horizontal) > 0.4)
         {
-            player.LookAt(player.position + camera.forward.Y(0));
+            LookForward();
         }
     }
 
-    void FixedUpdate()
+    void Update()
     {
         WalkPlayerByJoystick();
         CameraChasePlayer();
         SyncPlayerDirection();
 
         WalkPlayerByArrawKey();
+
+        Debug.DrawLine(player.position, player.position + player.forward * 100, Color.red);
+        Debug.DrawLine(camera.position, camera.position + camera.forward * 100, Color.green);
+        Debug.DrawLine(player.position, player.position + camera.forward * 100, Color.yellow);
     }
 
     void WalkPlayerByArrawKey()
@@ -166,12 +180,5 @@ public class TPSController : MonoBehaviour
                 player.Rotate(Vector3.up * -rdiff);
             }
         }
-    }
-
-    void Update()
-    {
-        Debug.DrawLine(player.position, player.position + player.forward * 100, Color.red);
-        Debug.DrawLine(camera.position, camera.position + camera.forward * 100, Color.green);
-        Debug.DrawLine(player.position, player.position + camera.forward * 100, Color.yellow);
     }
 }
