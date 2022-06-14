@@ -13,10 +13,4 @@ public class Player : MonoBehaviour
     public void IgnoreCollider(Collider other) {
         Physics.IgnoreCollision(_collider, other, true);
     }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        Debug.Log(collision.gameObject.name);
-        Debug.Break();
-    }
 }

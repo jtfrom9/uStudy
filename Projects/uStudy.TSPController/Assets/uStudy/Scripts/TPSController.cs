@@ -102,8 +102,8 @@ public class TPSController : MonoBehaviour
 
     void Start() {
         var context = this.DefaultInputContext(EventSystem.current);
-        var hratio = -90.0f / Screen.width;
-        var vratio = -90.0f / Screen.height;
+        var hratio = -180.0f / Screen.width;
+        var vratio = -120.0f / Screen.height;
         context.GetObservable(0).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
         context.GetObservable(1).Difference().Subscribe(diff => diffToCameraMove(diff, hratio, vratio)).AddTo(this);
         shotButton.onClick.AsObservable().Subscribe(_ => shot()).AddTo(this);
@@ -111,14 +111,7 @@ public class TPSController : MonoBehaviour
 
     void WalkPlayerByJoystick()
     {
-        var forward = camera.forward;
-        forward.y = 0;
-        var right = camera.right;
-        right.y = 0;
-
-        var diff = forward * moveJoystick.Vertical * zdiff + right * moveJoystick.Horizontal * zdiff;
-        // player.Translate(diff);
-        player.position += diff;
+        player.Translate(Vector3.forward * moveJoystick.Vertical * zdiff + Vector3.right * moveJoystick.Horizontal * zdiff);
     }
 
     void CameraChasePlayer()
