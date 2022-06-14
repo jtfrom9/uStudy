@@ -68,6 +68,12 @@ public class TPSController : MonoBehaviour
         var e = diff.ToEulerAngle(hratio, vratio);
         camera.RotateAround(player.position, Vector3.up, -e.y);
         camera.Rotate(-e.x, 0, 0);
+        Debug.Log($"rot.x: {camera.rotation.eulerAngles.x}");
+        if (5 < camera.rotation.eulerAngles.x && camera.rotation.eulerAngles.x < 270) {
+            // Debug.Log($"rot.x: {camera.rotation.eulerAngles.x}");
+            var cur = camera.rotation.eulerAngles;
+            camera.rotation = Quaternion.Euler(cur.x > 180 ? 270 : 5, cur.y, cur.z);
+        }
 
         // mazzle.RotateAround(player.position, Vector3.right, -e.x);
     }
