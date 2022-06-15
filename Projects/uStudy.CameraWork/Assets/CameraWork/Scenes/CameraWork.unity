@@ -4501,6 +4501,7 @@ MonoBehaviour:
   dropdown: {fileID: 627429508}
   prevButton: {fileID: 2033973923}
   nextButton: {fileID: 538988667}
+  birdCamToggle: {fileID: 22973830}
   birdCam: 0
 --- !u!4 &953066710
 Transform:
