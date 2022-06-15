@@ -31,5 +31,4 @@ public class DestinationMaker : MonoBehaviour
             destinationSubject.OnNext(pos);
         }
     }
-
 }

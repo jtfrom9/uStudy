@@ -7,6 +7,8 @@ using UniRx;
 
 public class AgentController : MonoBehaviour
 {
+    public string agentName { get; private set; }
+
     NavMeshAgent _agent;
 
     [SerializeField]
@@ -19,6 +21,8 @@ public class AgentController : MonoBehaviour
 
         var mr = GetComponent<MeshRenderer>();
         mr.material.color = Random.ColorHSV();
+
+        this.agentName = $"{gameObject.transform.parent.name} | {gameObject.name}";
     }
 
     void Start()
