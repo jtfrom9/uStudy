@@ -1,0 +1,19 @@
+{
+    "name": "uStudy.EnemyManager.Test",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f51ebe6a0ceec4240a699833d6309b23",
+        "GUID:560b04d1a97f54a4e82edc0cbbb69285",
+        "GUID:4952cb1651a67483db0d6ba9954e2654",
+        "GUID:6ccf075dd46d54e0db58a9a945299a31"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
