@@ -2,16 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using Enemy;
 
 public class Main : MonoBehaviour
 {
     [SerializeField]
-    SimpleEnemyManagerController enemyManagerController;
+    Enemy.SimpleEnemyManagerController enemyManagerController;
+
+    [SerializeField]
+    Effect.EffectFactory effectFactory;
 
     async UniTaskVoid RnadomMoveEnemy()
     {
-        while (true)
+        while (enemyManagerController.Enemies.Count > 0)
         {
             foreach (var enemy in enemyManagerController.Enemies)
             {
@@ -25,7 +27,7 @@ public class Main : MonoBehaviour
 
     async UniTaskVoid RandomAttach()
     {
-        while (true)
+        while (enemyManagerController.Enemies.Count > 0)
         {
             await UniTask.Delay(1000);
             foreach (var enemy in enemyManagerController.Enemies)
@@ -39,5 +41,11 @@ public class Main : MonoBehaviour
     {
         RnadomMoveEnemy().Forget();
         RandomAttach().Forget();
+    }
+
+    void Awake()
+    {
+        var em = enemyManagerController as Enemy.IEnemyManager;
+        em.SetEffectFactory(effectFactory);
     }
 }

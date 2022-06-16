@@ -10,10 +10,17 @@ namespace Effect
         [SerializeField]
         GameObject effectPrefab;
 
+        [SerializeField]
+        Transform gazeTarget;
+
         #region  IEffectFactory
-        public IEffect Create(Vector3 pos, Vector3 lookat) {
-            var effect = Instantiate(effectPrefab).GetComponent<IEffect>();
-            effect.Initialize(pos, lookat);
+        public IDamageEffect CreateDamageEffect(Transform parent, Vector3 pos, int damage)
+        {
+            var effect = Instantiate(effectPrefab).GetComponent<IDamageEffect>();
+            effect.Initialize(parent,
+                pos,
+                gazeTarget != null ? gazeTarget : Camera.main.transform,
+                damage);
             return effect;
         }
         #endregion

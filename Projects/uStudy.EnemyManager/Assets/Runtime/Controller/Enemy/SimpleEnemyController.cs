@@ -7,7 +7,7 @@ using UniRx;
 
 namespace Enemy
 {
-    public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl, IDisposable
+    public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
     {
         NavMeshAgent _agent;
 
@@ -42,7 +42,7 @@ namespace Enemy
             Health -= damage;
             if (Health > 0)
             {
-                onAttcked.OnNext(new DamageEvent(this, damage));
+                onAttcked.OnNext(new DamageEvent(this, damage, transform.position));
             }
             else
             {

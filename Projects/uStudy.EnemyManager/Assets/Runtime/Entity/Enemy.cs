@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
+using Effect;
 
 namespace Enemy
 {
@@ -9,14 +10,17 @@ namespace Enemy
     {
         public IEnemy enemy;
         public int damage;
+        public Vector3 position;
 
-        public DamageEvent(IEnemy enemy, int damage) {
+        public DamageEvent(IEnemy enemy, int damage, Vector3 position)
+        {
             this.enemy = enemy;
             this.damage = damage;
+            this.position = position;
         }
     }
 
-    public interface IEnemy
+    public interface IEnemy: Base.ICharactor, System.IDisposable
     {
         string Name { get; }
         int Health { get; }
@@ -35,5 +39,6 @@ namespace Enemy
     public interface IEnemyManager
     {
         IReadOnlyCollection<IEnemy> Enemies { get; }
+        void SetEffectFactory(IEffectFactory factory);
     }
 }

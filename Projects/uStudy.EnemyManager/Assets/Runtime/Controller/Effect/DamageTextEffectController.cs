@@ -7,11 +7,11 @@ using Cysharp.Threading.Tasks;
 
 namespace Effect
 {
-    public class DamageTextController : MonoBehaviour, IEffect
+    public class DamageTextEffectController : MonoBehaviour, IDamageEffect
     {
         int damage = 0;
+        Transform gazeTarget;
         TextMeshPro tmp;
-
         UniTask t1;
         UniTask t2;
 
@@ -19,28 +19,34 @@ namespace Effect
             tmp = GetComponentInChildren<TextMeshPro>();
         }
 
-        void play()
+        void play(float duration)
         {
             var token = this.GetCancellationTokenOnDestroy();
-            t1 = transform.DOLocalMoveY(1, 0.5f).ToUniTask(cancellationToken: token);
+            transform.DOLocalMoveY(1, duration).OnUpdate(() =>
+            {
+                transform.LookAt(gazeTarget);
+            }).ToUniTask();
+
+            t1 = transform.DOLocalMoveY(1, duration).ToUniTask(cancellationToken: token);
             t2 = DOTween.To(
                 () => 255,
                 (value) =>
                 {
                     tmp.text = $"<alpha=#{(int)value:X02}>{damage}";
                 },
-                0, 0.5f).ToUniTask(cancellationToken: token);
+                0, duration).ToUniTask(cancellationToken: token);
         }
 
-        #region IEffect
-        public void Initialize(Vector3 pos, Vector3 lookat)
+        #region IDamageEffect
+        public void Initialize(Transform parent, Vector3 pos, Transform gazeTarget, int damage)
         {
-            transform.position = pos;
-            transform.LookAt(lookat);
+            this.damage = damage;
+            this.gazeTarget = gazeTarget;
+            transform.SetParent(parent, false);
         }
-        public UniTask Play()
+        public UniTask Play(float duration)
         {
-            play();
+            play(duration);
             return UniTask.WhenAll(t1, t2);
         }
         #endregion

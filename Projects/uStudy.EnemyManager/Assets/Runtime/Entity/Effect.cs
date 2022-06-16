@@ -5,14 +5,26 @@ using Cysharp.Threading.Tasks;
 
 namespace Effect
 {
-    public interface IEffect: System.IDisposable
+    public static class EffectExtension {
+        public static async UniTask PlayAndDispose(this IEffect effect, float duration)
+        {
+            await effect.Play(duration);
+            effect.Dispose();
+        }
+    }
+
+    public interface IEffect : System.IDisposable
     {
-        void Initialize(Vector3 pos, Vector3 lookat);
-        UniTask Play();
+        UniTask Play(float duration);
+    }
+
+    public interface IDamageEffect : IEffect
+    {
+        void Initialize(Transform parent, Vector3 pos, Transform gazeTarget, int damage);
     }
 
     public interface IEffectFactory
     {
-        IEffect Create(Vector3 pos, Vector3 lookat);
+        IDamageEffect CreateDamageEffect(Transform parent, Vector3 pos, int damage);
     }
 }
