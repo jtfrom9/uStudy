@@ -22,14 +22,16 @@ namespace Enemy
             {
                 var effect = effectFactory.CreateDamageEffect(
                     e.enemy.transform,
-                    e.position,
                     e.damage);
-                effect.Play(1).Forget();
+                effect.Play().Forget();
             }
         }
 
-        void OnEnemyDeath(IEnemy enemy) {
+        async void OnEnemyDeath(IEnemy enemy) {
             Debug.Log($"onDeath: {enemy.Name}");
+
+            await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
+
             _enemies.Remove(enemy);
             enemy.Dispose();
         }
@@ -51,13 +53,11 @@ namespace Enemy
             foreach(var enemy in children) {
                 AddEnemy(enemy);
             }
-
-            Debug.Log($"enemies: {_enemies.Select(e => e.Name).Aggregate((a, b) => $"{a},{b}")}");
         }
 
         #region IEnemyManager
 
-        public IReadOnlyCollection<IEnemy> Enemies { get => _enemies; }
+        public IReadOnlyList<IEnemy> Enemies { get => _enemies; }
 
         public void SetEffectFactory(IEffectFactory factory) {
             this.effectFactory = factory;

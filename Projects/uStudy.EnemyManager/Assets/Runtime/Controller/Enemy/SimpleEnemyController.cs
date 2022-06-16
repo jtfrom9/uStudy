@@ -64,6 +64,7 @@ namespace Enemy
         {
             onAttcked.OnCompleted();
             onDeath.OnCompleted();
+            Destroy(gameObject);
         }
         #endregion
 

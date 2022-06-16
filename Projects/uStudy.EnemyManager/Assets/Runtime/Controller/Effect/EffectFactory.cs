@@ -8,19 +8,35 @@ namespace Effect
     public class EffectFactory : MonoBehaviour, IEffectFactory
     {
         [SerializeField]
-        GameObject effectPrefab;
+        GameObject damageEffectPrefab;
+
+        [SerializeField]
+        GameObject hitEffectPrefab;
 
         [SerializeField]
         Transform gazeTarget;
 
+        [SerializeField]
+        DamageEffectParameter damageEffect;
+
         #region  IEffectFactory
-        public IDamageEffect CreateDamageEffect(Transform parent, Vector3 pos, int damage)
+        public IDamageEffect CreateDamageEffect(Transform parent, int damage)
         {
-            var effect = Instantiate(effectPrefab).GetComponent<IDamageEffect>();
+            var effect = Instantiate(damageEffectPrefab).GetComponent<IDamageEffect>();
             effect.Initialize(parent,
-                pos,
                 gazeTarget != null ? gazeTarget : Camera.main.transform,
+                damageEffect,
                 damage);
+            return effect;
+        }
+
+        public IHitEffect CreateHitEffect(Transform parent, Vector3 position, Vector3 normal)
+        {
+            var effect = Instantiate(hitEffectPrefab).GetComponent<IHitEffect>();
+            effect.Initialize(parent,
+                gazeTarget != null ? gazeTarget : Camera.main.transform,
+                position,
+                normal);
             return effect;
         }
         #endregion

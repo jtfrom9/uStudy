@@ -38,7 +38,7 @@ namespace Enemy
 
     public interface IEnemyManager
     {
-        IReadOnlyCollection<IEnemy> Enemies { get; }
+        IReadOnlyList<IEnemy> Enemies { get; }
         void SetEffectFactory(IEffectFactory factory);
     }
 }

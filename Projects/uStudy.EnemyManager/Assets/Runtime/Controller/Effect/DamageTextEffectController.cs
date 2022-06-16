@@ -9,46 +9,44 @@ namespace Effect
 {
     public class DamageTextEffectController : MonoBehaviour, IDamageEffect
     {
-        int damage = 0;
         Transform gazeTarget;
+        float duration;
+        int damage;
         TextMeshPro tmp;
-        UniTask t1;
-        UniTask t2;
 
         void Awake() {
             tmp = GetComponentInChildren<TextMeshPro>();
         }
 
-        void play(float duration)
+        UniTask _play()
         {
             var token = this.GetCancellationTokenOnDestroy();
-            transform.DOLocalMoveY(1, duration).OnUpdate(() =>
+
+            // t1 = transform.DOLocalMoveY(1, duration).ToUniTask(cancellationToken: token);
+            var t1 = transform.DOLocalMoveY(1, duration).OnUpdate(() =>
             {
                 transform.LookAt(gazeTarget);
-            }).ToUniTask();
+            }).ToUniTask(cancellationToken: token);
 
-            t1 = transform.DOLocalMoveY(1, duration).ToUniTask(cancellationToken: token);
-            t2 = DOTween.To(
+            var t2 = DOTween.To(
                 () => 255,
                 (value) =>
                 {
                     tmp.text = $"<alpha=#{(int)value:X02}>{damage}";
                 },
                 0, duration).ToUniTask(cancellationToken: token);
+            return UniTask.WhenAll(t1, t2);
         }
 
         #region IDamageEffect
-        public void Initialize(Transform parent, Vector3 pos, Transform gazeTarget, int damage)
+        public void Initialize(Transform parent, Transform gazeTarget, DamageEffectParameter param, int damage)
         {
-            this.damage = damage;
             this.gazeTarget = gazeTarget;
+            this.duration = param.duration;
+            this.damage = damage;
             transform.SetParent(parent, false);
         }
-        public UniTask Play(float duration)
-        {
-            play(duration);
-            return UniTask.WhenAll(t1, t2);
-        }
+        public UniTask Play() => _play();
         #endregion
 
         #region IDisposable

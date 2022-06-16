@@ -6,25 +6,47 @@ using Cysharp.Threading.Tasks;
 namespace Effect
 {
     public static class EffectExtension {
-        public static async UniTask PlayAndDispose(this IEffect effect, float duration)
+        public static async UniTask PlayAndDispose(this IEffect effect)
         {
-            await effect.Play(duration);
+            await effect.Play();
             effect.Dispose();
+        }
+        public static async UniTask PlayAndDispose(this IEffect[] effects)
+        {
+            await UniTask.WhenAll(effects.Select(async effect =>
+            {
+                await effect.Play();
+                effect.Dispose();
+            }));
         }
     }
 
     public interface IEffect : System.IDisposable
     {
-        UniTask Play(float duration);
+        UniTask Play();
+    }
+
+    [System.Serializable]
+    public struct DamageEffectParameter
+    {
+        [SerializeField]
+        [Range(0.5f, 3.0f)]
+        public float duration;
     }
 
     public interface IDamageEffect : IEffect
     {
-        void Initialize(Transform parent, Vector3 pos, Transform gazeTarget, int damage);
+        void Initialize(Transform parent, Transform gazeTarget, DamageEffectParameter duration, int damage);
+    }
+
+    public interface IHitEffect: IEffect
+    {
+        void Initialize(Transform parent, Transform gazeTarget, Vector3 position, Vector3 normal);
     }
 
     public interface IEffectFactory
     {
-        IDamageEffect CreateDamageEffect(Transform parent, Vector3 pos, int damage);
+        IDamageEffect CreateDamageEffect(Transform parent, int damage);
+        IHitEffect CreateHitEffect(Transform parent, Vector3 position, Vector3 normal);
     }
 }
