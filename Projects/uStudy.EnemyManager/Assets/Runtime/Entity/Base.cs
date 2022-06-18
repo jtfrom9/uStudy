@@ -1,3 +1,5 @@
+#nullable enable
+
 using UnityEngine;
 
 namespace Hedwig.Runtime

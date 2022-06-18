@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -46,7 +48,7 @@ namespace Hedwig.Runtime
 
     public interface IEffectFactory
     {
-        IDamageEffect CreateDamageEffect(Transform parent, int damage);
-        IHitEffect CreateHitEffect(Transform parent, Vector3 position, Vector3 normal);
+        IDamageEffect? CreateDamageEffect(Transform parent, int damage);
+        IHitEffect? CreateHitEffect(Transform parent, Vector3 position, Vector3 normal);
     }
 }

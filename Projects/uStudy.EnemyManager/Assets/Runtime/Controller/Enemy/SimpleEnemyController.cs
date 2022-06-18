@@ -1,3 +1,5 @@
+#nullable enable
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +11,7 @@ namespace Hedwig.Runtime
 {
     public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
     {
-        NavMeshAgent _agent;
+        NavMeshAgent? _agent;
 
         void Awake()
         {
@@ -28,7 +30,7 @@ namespace Hedwig.Runtime
         void IEnemy.SetDestination(Vector3 pos)
         {
             Debug.Log($"{Name}: dest: ${pos}");
-            _agent.SetDestination(pos);
+            _agent?.SetDestination(pos);
         }
 
         Subject<DamageEvent> onAttcked = new Subject<DamageEvent>();

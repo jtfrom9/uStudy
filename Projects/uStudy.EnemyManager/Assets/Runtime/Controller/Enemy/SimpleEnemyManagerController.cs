@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,10 +12,10 @@ namespace Hedwig.Runtime
     public class SimpleEnemyManagerController : MonoBehaviour, IEnemyManager
     {
         [SerializeField]
-        GameObject enemyPrefab;
+        GameObject? enemyPrefab;
 
         List<IEnemy> _enemies = new List<IEnemy>();
-        IEffectFactory effectFactory;
+        IEffectFactory? effectFactory;
 
         void OnEnemyAttacked(DamageEvent e) {
             Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}");
@@ -23,7 +25,7 @@ namespace Hedwig.Runtime
                 //     e.enemy.transform,
                 //     e.damage);
                 // effect.Play().Forget();
-                var effects = new IEffect[] {
+                var effects = new IEffect?[] {
                     effectFactory.CreateDamageEffect(
                         e.enemy.transform,
                         e.damage),

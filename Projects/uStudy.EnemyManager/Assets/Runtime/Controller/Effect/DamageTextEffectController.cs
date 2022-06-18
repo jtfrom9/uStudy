@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,10 +11,10 @@ namespace Hedwig.Runtime
 {
     public class DamageTextEffectController : MonoBehaviour, IDamageEffect
     {
-        Transform gazeTarget;
+        Transform? gazeTarget;
         float duration;
         int damage;
-        TextMeshPro tmp;
+        TextMeshPro? tmp;
 
         void Awake() {
             tmp = GetComponentInChildren<TextMeshPro>();
@@ -32,7 +34,7 @@ namespace Hedwig.Runtime
                 () => 255,
                 (value) =>
                 {
-                    tmp.text = $"<alpha=#{(int)value:X02}>{damage}";
+                    tmp!.text = $"<alpha=#{(int)value:X02}>{damage}";
                 },
                 0, duration).ToUniTask(cancellationToken: token);
             return UniTask.WhenAll(t1, t2);

@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,38 +10,38 @@ namespace Hedwig.Runtime
     public class EffectFactory : MonoBehaviour, IEffectFactory
     {
         [SerializeField, InterfaceType(typeof(IDamageEffect))]
-        Component damageEffectPrefab;
+        Component? damageEffectPrefab;
 
         [SerializeField, InterfaceType(typeof(IHitEffect))]
-        Component hitEffectPrefab;
+        Component? hitEffectPrefab;
 
         [SerializeField]
-        Transform gazeTarget;
+        Transform? gazeTarget;
 
         [SerializeField]
-        DamageEffectParameter damageEffectParameter;
+        DamageEffectParameter? damageEffectParameter;
 
         #region  IEffectFactory
-        public IDamageEffect CreateDamageEffect(Transform parent, int damage)
+        public IDamageEffect? CreateDamageEffect(Transform parent, int damage)
         {
             if(damageEffectParameter==null) {
                 return null;
             }
             var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
-            effect.Initialize(parent,
+            effect?.Initialize(parent,
                 gazeTarget != null ? gazeTarget : Camera.main.transform,
                 damageEffectParameter,
                 damage);
             return effect;
         }
 
-        public IHitEffect CreateHitEffect(Transform parent, Vector3 position, Vector3 normal)
+        public IHitEffect? CreateHitEffect(Transform parent, Vector3 position, Vector3 normal)
         {
             if(hitEffectPrefab==null) {
                 return null;
             }
             var effect = Instantiate(hitEffectPrefab) as IHitEffect;
-            effect.Initialize(parent,
+            effect?.Initialize(parent,
                 gazeTarget != null ? gazeTarget : Camera.main.transform,
                 position,
                 normal);
