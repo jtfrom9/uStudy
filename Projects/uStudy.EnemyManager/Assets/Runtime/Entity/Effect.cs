@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-namespace Effect
+namespace Hedwig.Runtime
 {
     public static class EffectExtension {
         public static async UniTask PlayAndDispose(this IEffect effect)

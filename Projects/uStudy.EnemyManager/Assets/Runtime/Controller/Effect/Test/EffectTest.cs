@@ -6,7 +6,8 @@ using UnityEngine.UI;
 
 using Cysharp.Threading.Tasks;
 using UniRx;
-using Effect;
+
+using Hedwig.Runtime;
 
 public class EffectTest : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class EffectTest : MonoBehaviour
         return new IEffect[] {
             factory.CreateDamageEffect(target, damage),
             factory.CreateHitEffect(target, position, Vector3.zero)
-        };
+        }.Where(e => e != null).ToArray();
     }
 
     Vector3 hitPosition(Transform target) {
@@ -64,7 +65,7 @@ public class EffectTest : MonoBehaviour
                 hitButton.interactable = false;
             }
 
-            var factory = FindObjectOfType<Effect.EffectFactory>();
+            var factory = FindObjectOfType<EffectFactory>();
             var _targets = new Transform[] { null }.Concat(targets.ToArray());
 
             var tasks = new List<UniTask>();

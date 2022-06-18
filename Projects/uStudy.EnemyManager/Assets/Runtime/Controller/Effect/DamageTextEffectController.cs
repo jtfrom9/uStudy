@@ -5,7 +5,7 @@ using TMPro;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 
-namespace Effect
+namespace Hedwig.Runtime
 {
     public class DamageTextEffectController : MonoBehaviour, IDamageEffect
     {

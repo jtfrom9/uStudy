@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using UniRx;
 
-namespace Enemy
+namespace Hedwig.Runtime
 {
     public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
     {

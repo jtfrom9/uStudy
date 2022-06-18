@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
-using Effect;
 
-namespace Enemy
+namespace Hedwig.Runtime
 {
     public class SimpleEnemyManagerController : MonoBehaviour, IEnemyManager
     {

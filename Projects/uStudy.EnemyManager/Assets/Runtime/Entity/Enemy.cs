@@ -2,9 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
-using Effect;
 
-namespace Enemy
+namespace Hedwig.Runtime
 {
     public struct DamageEvent
     {
@@ -20,7 +19,7 @@ namespace Enemy
         }
     }
 
-    public interface IEnemy: Base.ICharactor, System.IDisposable
+    public interface IEnemy: ICharactor, System.IDisposable
     {
         string Name { get; }
         int Health { get; }

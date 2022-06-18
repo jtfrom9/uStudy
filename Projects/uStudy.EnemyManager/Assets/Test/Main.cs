@@ -7,15 +7,16 @@ using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
-using Utility;
+
+using Hedwig.Runtime;
 
 public class Main : MonoBehaviour
 {
     [SerializeField]
-    Enemy.SimpleEnemyManagerController enemyManagerController;
+    SimpleEnemyManagerController enemyManagerController;
 
     [SerializeField]
-    Effect.EffectFactory effectFactory;
+    EffectFactory effectFactory;
 
     [SerializeField]
     Text text;
@@ -56,7 +57,7 @@ public class Main : MonoBehaviour
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Restart);
 
-        var em = enemyManagerController as Enemy.IEnemyManager;
+        var em = enemyManagerController as IEnemyManager;
         this.UpdateAsObservable().Subscribe(_ =>
         {
             text.text = $"# of enemy: {em.Enemies.Count}";
@@ -77,7 +78,7 @@ public class Main : MonoBehaviour
 
     void Awake()
     {
-        var em = enemyManagerController as Enemy.IEnemyManager;
+        var em = enemyManagerController as IEnemyManager;
         em.SetEffectFactory(effectFactory);
     }
 }

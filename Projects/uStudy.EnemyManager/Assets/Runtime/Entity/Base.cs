@@ -1,6 +1,7 @@
 using UnityEngine;
 
-namespace Base {
+namespace Hedwig.Runtime
+{
     public interface ICharactor
     {
         Transform transform { get; }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Utility
+namespace Hedwig.Runtime
 {
     public static class UtilityExtension
     {
