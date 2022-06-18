@@ -27,11 +27,11 @@ namespace Effect
     }
 
     [System.Serializable]
-    public struct DamageEffectParameter
+    public class DamageEffectParameter
     {
         [SerializeField]
         [Range(0.5f, 3.0f)]
-        public float duration;
+        public float duration = 1f;
     }
 
     public interface IDamageEffect : IEffect

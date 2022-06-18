@@ -43,7 +43,8 @@
     "com.unity.modules.xr": "1.0.0",
     "com.cysharp.unitask": "2.3.1",
     "com.demigiant.dotween": "1.2.632",
-    "com.neuecc.unirx": "7.1.0"
+    "com.neuecc.unirx": "7.1.0",
+    "net.wraithavengames.unityinterfacesupport": "1.0.0"
   },
   "scopedRegistries": [
     {
@@ -53,7 +54,8 @@
         "com.cysharp.unitask",
         "com.demigiant.dotween",
         "com.neuecc.unirx",
-        "com.openupm"
+        "com.openupm",
+        "net.wraithavengames.unityinterfacesupport"
       ]
     }
   ]

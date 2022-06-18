@@ -1302,11 +1302,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76f2d9450fd0f420090c4d95ef62ab62, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageEffectPrefab: {fileID: 4371376129200516975, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
-  hitEffectPrefab: {fileID: 8746990141809343181, guid: 01ebaa997f8c64a6481c414da0320441, type: 3}
+  damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
+  hitEffectPrefab: {fileID: 8746990141809343180, guid: 01ebaa997f8c64a6481c414da0320441, type: 3}
   gazeTarget: {fileID: 0}
-  damageEffect:
-    duration: 0.5
+  damageEffectParameter:
+    duration: 1
 --- !u!4 &1798719131
 Transform:
   m_ObjectHideFlags: 0

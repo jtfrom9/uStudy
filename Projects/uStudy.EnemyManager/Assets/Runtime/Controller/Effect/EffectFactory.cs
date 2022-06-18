@@ -7,32 +7,32 @@ namespace Effect
 {
     public class EffectFactory : MonoBehaviour, IEffectFactory
     {
-        [SerializeField]
-        GameObject damageEffectPrefab;
+        [SerializeField, InterfaceType(typeof(IDamageEffect))]
+        Component damageEffectPrefab;
 
-        [SerializeField]
-        GameObject hitEffectPrefab;
+        [SerializeField, InterfaceType(typeof(IHitEffect))]
+        Component hitEffectPrefab;
 
         [SerializeField]
         Transform gazeTarget;
 
         [SerializeField]
-        DamageEffectParameter damageEffect;
+        DamageEffectParameter damageEffectParameter;
 
         #region  IEffectFactory
         public IDamageEffect CreateDamageEffect(Transform parent, int damage)
         {
-            var effect = Instantiate(damageEffectPrefab).GetComponent<IDamageEffect>();
+            var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
             effect.Initialize(parent,
                 gazeTarget != null ? gazeTarget : Camera.main.transform,
-                damageEffect,
+                damageEffectParameter,
                 damage);
             return effect;
         }
 
         public IHitEffect CreateHitEffect(Transform parent, Vector3 position, Vector3 normal)
         {
-            var effect = Instantiate(hitEffectPrefab).GetComponent<IHitEffect>();
+            var effect = Instantiate(hitEffectPrefab) as IHitEffect;
             effect.Initialize(parent,
                 gazeTarget != null ? gazeTarget : Camera.main.transform,
                 position,
