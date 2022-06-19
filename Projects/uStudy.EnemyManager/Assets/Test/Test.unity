@@ -546,7 +546,7 @@ GameObject:
   - component: {fileID: 937874039}
   - component: {fileID: 937874040}
   m_Layer: 0
-  m_Name: EnemyInstaller
+  m_Name: Enemies
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -785,8 +785,8 @@ MonoBehaviour:
   autoInjectGameObjects:
   - {fileID: 937874037}
   - {fileID: 1215610763}
-  enemyPrefabInstaller: {fileID: 0}
-  effectFactory: {fileID: 11400000, guid: 3c2086e9d8c6a4035a710845f7d00997, type: 2}
+  enemyPrefabInstaller: {fileID: 937874040}
+  effectAssets: {fileID: 11400000, guid: 3c2086e9d8c6a4035a710845f7d00997, type: 2}
   text: {fileID: 600528560}
 --- !u!1 &1426616446
 GameObject:

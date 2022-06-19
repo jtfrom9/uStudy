@@ -6,6 +6,7 @@ using UnityEngine.UI;
 
 using Cysharp.Threading.Tasks;
 using UniRx;
+using VContainer;
 
 using Hedwig.Runtime;
 
@@ -15,14 +16,15 @@ public class EffectTest : MonoBehaviour
     List<Transform> targets = new List<Transform>();
 
     [SerializeField]
-    EffectFactory effectFactory;
-
-    [SerializeField]
     Button hitButton;
+
     [SerializeField]
     Toggle continuousToggle;
 
-    IEffect[] createEffects(IEffectFactory factory, Transform target, int damage, Vector3 position)
+    [Inject]
+    IEffectFactory factory;
+
+    IEffect[] createEffects(Transform target, int damage, Vector3 position)
     {
         return new IEffect[] {
             factory.CreateDamageEffect(target, damage),
@@ -74,7 +76,7 @@ public class EffectTest : MonoBehaviour
 
             foreach (var target in _targets)
             {
-                var e = createEffects(effectFactory, target, Random.Range(1, 30), hitPosition(target));
+                var e = createEffects(target, Random.Range(1, 30), hitPosition(target));
                 tasks.Add(e.PlayAndDispose());
             }
             // Debug.Break();

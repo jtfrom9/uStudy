@@ -744,7 +744,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 766484628}
-  - component: {fileID: 766484627}
+  - component: {fileID: 766484630}
   - component: {fileID: 766484629}
   m_Layer: 0
   m_Name: Main
@@ -753,26 +753,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &766484627
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 766484626}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d83277e30f3646a19fdf8697caaf854, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targets:
-  - {fileID: 75417330}
-  - {fileID: 744343503}
-  - {fileID: 1058277159}
-  - {fileID: 1629816688}
-  effectFactory: {fileID: 11400000, guid: 57f4334a222ec4bb083294df946a8a38, type: 2}
-  hitButton: {fileID: 291204843}
-  continuousToggle: {fileID: 1924821592}
 --- !u!4 &766484628
 Transform:
   m_ObjectHideFlags: 0
@@ -797,13 +777,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 766484626}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b2c62ac3bcd44fb9e09835581422057, type: 3}
+  m_Script: {fileID: 11500000, guid: f782371e15ba8420998e501b61de73e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
     TypeName: 
   autoRun: 1
-  autoInjectGameObjects: []
+  autoInjectGameObjects:
+  - {fileID: 766484626}
+  effectFactory: {fileID: 11400000, guid: b2c574491e7fe496c83c795e1bee2a48, type: 2}
+--- !u!114 &766484630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766484626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3d83277e30f3646a19fdf8697caaf854, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targets:
+  - {fileID: 75417330}
+  - {fileID: 744343503}
+  - {fileID: 1058277159}
+  - {fileID: 1629816688}
+  hitButton: {fileID: 291204843}
+  continuousToggle: {fileID: 1924821592}
 --- !u!1 &966534224
 GameObject:
   m_ObjectHideFlags: 0

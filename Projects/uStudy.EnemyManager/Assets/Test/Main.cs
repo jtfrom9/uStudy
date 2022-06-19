@@ -18,7 +18,7 @@ public class Main : LifetimeScope
     SimpleEnemyPrefabInstaller enemyPrefabInstaller;
 
     [SerializeField]
-    EffectFactory effectFactory;
+    EffectAssets effectAssets;
 
     [SerializeField]
     Text text;
@@ -27,7 +27,7 @@ public class Main : LifetimeScope
     IEnemyManager enemyManager;
 
     protected override void Configure(IContainerBuilder builder) {
-        builder.RegisterInstance<IEffectFactory>(effectFactory);
+        builder.RegisterInstance<IEffectFactory>(effectAssets);
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
     }
 

@@ -7,8 +7,8 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/EffectFactory", fileName = "EffectFactory")]
-    public class EffectFactory : ScriptableObject, IEffectFactory
+    [CreateAssetMenu(menuName = "Hedwig/EffectAssets", fileName = "EffectAssets")]
+    public class EffectAssets : ScriptableObject, IEffectFactory
     {
         [SerializeField, InterfaceType(typeof(IDamageEffect))]
         Component? damageEffectPrefab;
