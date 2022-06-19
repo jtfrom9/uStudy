@@ -23,5 +23,20 @@ namespace Hedwig.Runtime
                 endValue,
                 duration);
         }
+
+        public static Vector3 X(this Vector3 vec, float x)
+        {
+            return new Vector3(x, vec.y, vec.z);
+        }
+
+        public static Vector3 Y(this Vector3 vec, float y)
+        {
+            return new Vector3(vec.x, y, vec.z);
+        }
+
+        public static Vector3 Z(this Vector3 vec, float z)
+        {
+            return new Vector3(vec.x, vec.y, z);
+        }
     }
 }

@@ -13,6 +13,13 @@ namespace Hedwig.Runtime
     {
         NavMeshAgent? _agent;
 
+        Vector3 initialPosition;
+        Quaternion initialRotation;
+        Vector3 initialScale;
+        float distanceToGround;
+
+        bool _selected;
+
         void Awake()
         {
             _agent = GetComponent<NavMeshAgent>();
@@ -20,17 +27,46 @@ namespace Hedwig.Runtime
 
             var mr = GetComponent<MeshRenderer>();
             mr.material.color = UnityEngine.Random.ColorHSV();
+
+            this.distanceToGround = mr.bounds.extents.y;
         }
 
-        #region IEnemy
+        void Start()
+        {
+            this.initialPosition = transform.position;
+            this.initialRotation = transform.rotation;
+            this.initialScale = transform.localScale;
+        }
 
+        #region ISelectable
+        void ISelectable.Select(bool v)
+        {
+            selector?.Show(v);
+            _selected = v;
+        }
+        bool ISelectable.selected { get => _selected; }
+        #endregion
+
+        #region ICharactor
+        Transform ICharactor.transform => transform;
+        float ICharactor.distanceToGround => distanceToGround;
+        #endregion
+
+        #region IEnemy
         public string Name { get => gameObject.name; }
         public int Health { get; private set; }
+        ISelector? selector;
 
         void IEnemy.SetDestination(Vector3 pos)
         {
-            Debug.Log($"{Name}: dest: ${pos}");
+            _agent!.isStopped = false;
             _agent?.SetDestination(pos);
+        }
+
+        void IEnemy.Stop()
+        {
+            _agent!.isStopped = true;
+            _agent?.SetDestination(transform.position);
         }
 
         Subject<DamageEvent> onAttcked = new Subject<DamageEvent>();
@@ -52,11 +88,20 @@ namespace Hedwig.Runtime
             }
         }
 
+        IEnemyControl IEnemy.GetControl() => this;
+
         #endregion
 
         #region IEnemyControl
         void IEnemyControl.SetHealth(int v) {
             this.Health = v;
+        }
+        void IEnemyControl.SetSelector(ISelector? selector) {
+            this.selector = selector;
+        }
+        void IEnemyControl.ResetPos() {
+            transform.SetPositionAndRotation(initialPosition, initialRotation);
+            transform.localScale = initialScale;
         }
         #endregion
 
@@ -66,9 +111,17 @@ namespace Hedwig.Runtime
         {
             onAttcked.OnCompleted();
             onDeath.OnCompleted();
+            selector?.Dispose();
             Destroy(gameObject);
         }
         #endregion
 
+        [ContextMenu("Select")]
+        void Context_Select() {
+            var selectable = (this as ISelectable);
+            if(selectable!=null) {
+                selectable.Select(!selectable.selected);
+            }
+        }
     }
 }

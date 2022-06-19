@@ -15,6 +15,7 @@ namespace Hedwig.Runtime
         CompositeDisposable disposable = new CompositeDisposable();
 
         IEffectFactory effectFactory;
+        ISelectorFactory selectorFactory;
 
         void OnEnemyAttacked(DamageEvent e)
         {
@@ -49,9 +50,10 @@ namespace Hedwig.Runtime
         }
 
         // ctor
-        public EnemyManager(IEffectFactory effectFactory)
+        public EnemyManager(IEffectFactory effectFactory, ISelectorFactory selectorFactory)
         {
             this.effectFactory = effectFactory;
+            this.selectorFactory = selectorFactory;
         }
 
         #region IEnemyManager
@@ -64,11 +66,9 @@ namespace Hedwig.Runtime
             enemy.OnAttacked.Subscribe(OnEnemyAttacked).AddTo(disposable);
             enemy.OnDeath.Subscribe(OnEnemyDeath).AddTo(disposable);
 
-            var ec = enemy as IEnemyControl;
-            if (ec != null)
-            {
-                ec.SetHealth(100);
-            }
+            var ctrl = enemy.GetControl();
+            ctrl.SetHealth(100);
+            ctrl.SetSelector(selectorFactory.Create(enemy));
         }
 
         #endregion
