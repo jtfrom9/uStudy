@@ -44,7 +44,8 @@
     "com.cysharp.unitask": "2.3.1",
     "com.demigiant.dotween": "1.2.632",
     "com.neuecc.unirx": "7.1.0",
-    "net.wraithavengames.unityinterfacesupport": "1.0.0"
+    "net.wraithavengames.unityinterfacesupport": "1.0.0",
+    "jp.hadashikick.vcontainer": "1.11.0"
   },
   "scopedRegistries": [
     {
@@ -55,6 +56,7 @@
         "com.demigiant.dotween",
         "com.neuecc.unirx",
         "com.openupm",
+        "jp.hadashikick.vcontainer",
         "net.wraithavengames.unityinterfacesupport"
       ]
     }

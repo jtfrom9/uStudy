@@ -33,6 +33,7 @@ MonoBehaviour:
     - com.demigiant.dotween
     - com.neuecc.unirx
     - com.openupm
+    - jp.hadashikick.vcontainer
     - net.wraithavengames.unityinterfacesupport
     m_IsDefault: 0
     m_Capabilities: 0
