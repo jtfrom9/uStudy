@@ -19,13 +19,11 @@ namespace Hedwig.Runtime
         void OnEnemyAttacked(DamageEvent e)
         {
             Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}");
-            if (effectFactory != null)
-            {
-                // var effect = effectFactory.CreateDamageEffect(
-                //     e.enemy.transform,
-                //     e.damage);
-                // effect.Play().Forget();
-                var effects = new IEffect?[] {
+            // var effect = effectFactory.CreateDamageEffect(
+            //     e.enemy.transform,
+            //     e.damage);
+            // effect.Play().Forget();
+            var effects = new IEffect?[] {
                     effectFactory.CreateDamageEffect(
                         e.enemy.transform,
                         e.damage),
@@ -34,10 +32,9 @@ namespace Hedwig.Runtime
                         e.position,
                         Vector3.zero)
                 };
-                foreach (var effect in effects)
-                {
-                    effect?.PlayAndDispose().Forget();
-                }
+            foreach (var effect in effects)
+            {
+                effect?.PlayAndDispose().Forget();
             }
         }
 
