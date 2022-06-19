@@ -37,9 +37,9 @@ namespace Hedwig.Runtime
         void SetHealth(int v);
     }
 
-    public interface IEnemyManager
+    public interface IEnemyManager: System.IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }
-        void SetEffectFactory(IEffectFactory factory);
+        void AddEnemy(IEnemy eney);
     }
 }

@@ -15,6 +15,9 @@ public class EffectTest : MonoBehaviour
     List<Transform> targets = new List<Transform>();
 
     [SerializeField]
+    EffectFactory effectFactory;
+
+    [SerializeField]
     Button hitButton;
     [SerializeField]
     Toggle continuousToggle;
@@ -65,14 +68,13 @@ public class EffectTest : MonoBehaviour
                 hitButton.interactable = false;
             }
 
-            var factory = FindObjectOfType<EffectFactory>();
             var _targets = new Transform[] { null }.Concat(targets.ToArray());
 
             var tasks = new List<UniTask>();
 
             foreach (var target in _targets)
             {
-                var e = createEffects(factory, target, Random.Range(1, 30), hitPosition(target));
+                var e = createEffects(effectFactory, target, Random.Range(1, 30), hitPosition(target));
                 tasks.Add(e.PlayAndDispose());
             }
             // Debug.Break();

@@ -327,55 +327,6 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8e92bdc89cc064600a03877e9a4b006d, type: 3}
---- !u!1 &684874149
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 684874151}
-  - component: {fileID: 684874150}
-  m_Layer: 0
-  m_Name: EffectFactory
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &684874150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 684874149}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76f2d9450fd0f420090c4d95ef62ab62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
-  hitEffectPrefab: {fileID: 8746990141809343180, guid: 01ebaa997f8c64a6481c414da0320441, type: 3}
-  gazeTarget: {fileID: 963194228}
-  damageEffectParameter:
-    duration: 1
---- !u!4 &684874151
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 684874149}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0
@@ -593,27 +544,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 937874039}
-  - component: {fileID: 937874038}
+  - component: {fileID: 937874040}
   m_Layer: 0
-  m_Name: EnemyManager
+  m_Name: EnemyInstaller
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &937874038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 937874037}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b94023498c6c04c41b64c10102cce780, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  enemyPrefab: {fileID: 0}
 --- !u!4 &937874039
 Transform:
   m_ObjectHideFlags: 0
@@ -634,6 +572,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &937874040
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 937874037}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b94023498c6c04c41b64c10102cce780, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &944397344
 GameObject:
   m_ObjectHideFlags: 0
@@ -699,7 +649,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &963194225
 GameObject:
@@ -815,7 +765,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1215610765
 MonoBehaviour:
@@ -829,8 +779,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3e430aa2fbeaf4d2fbc6df16864ebaf4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  enemyManagerController: {fileID: 937874038}
-  effectFactory: {fileID: 684874150}
+  parentReference:
+    TypeName: 
+  autoRun: 1
+  autoInjectGameObjects:
+  - {fileID: 937874037}
+  - {fileID: 1215610763}
+  enemyPrefabInstaller: {fileID: 0}
+  effectFactory: {fileID: 11400000, guid: 3c2086e9d8c6a4035a710845f7d00997, type: 2}
   text: {fileID: 600528560}
 --- !u!1 &1426616446
 GameObject:
@@ -1168,7 +1124,7 @@ RectTransform:
   - {fileID: 1478597245}
   - {fileID: 600528559}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}

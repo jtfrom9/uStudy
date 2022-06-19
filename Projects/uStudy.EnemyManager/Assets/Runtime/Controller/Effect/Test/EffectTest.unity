@@ -745,6 +745,7 @@ GameObject:
   m_Component:
   - component: {fileID: 766484628}
   - component: {fileID: 766484627}
+  - component: {fileID: 766484629}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -769,6 +770,7 @@ MonoBehaviour:
   - {fileID: 744343503}
   - {fileID: 1058277159}
   - {fileID: 1629816688}
+  effectFactory: {fileID: 11400000, guid: 57f4334a222ec4bb083294df946a8a38, type: 2}
   hitButton: {fileID: 291204843}
   continuousToggle: {fileID: 1924821592}
 --- !u!4 &766484628
@@ -784,8 +786,24 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &766484629
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 766484626}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b2c62ac3bcd44fb9e09835581422057, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  parentReference:
+    TypeName: 
+  autoRun: 1
+  autoInjectGameObjects: []
 --- !u!1 &966534224
 GameObject:
   m_ObjectHideFlags: 0
@@ -921,7 +939,7 @@ Transform:
   - {fileID: 1058277159}
   - {fileID: 1629816688}
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1058277158
 GameObject:
@@ -1273,54 +1291,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1781464286}
   m_CullTransparentMesh: 1
---- !u!1 &1798719129
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1798719131}
-  - component: {fileID: 1798719130}
-  m_Layer: 0
-  m_Name: EffectFactory
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1798719130
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1798719129}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 76f2d9450fd0f420090c4d95ef62ab62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
-  hitEffectPrefab: {fileID: 0}
-  damageEffectParameter:
-    duration: 1
---- !u!4 &1798719131
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1798719129}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1924821590
 GameObject:
   m_ObjectHideFlags: 0

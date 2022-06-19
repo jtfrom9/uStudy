@@ -7,13 +7,15 @@ using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using VContainer;
+using VContainer.Unity;
 
 using Hedwig.Runtime;
 
-public class Main : MonoBehaviour
+public class Main : LifetimeScope
 {
     [SerializeField]
-    SimpleEnemyManagerController enemyManagerController;
+    SimpleEnemyPrefabInstaller enemyPrefabInstaller;
 
     [SerializeField]
     EffectFactory effectFactory;
@@ -21,11 +23,19 @@ public class Main : MonoBehaviour
     [SerializeField]
     Text text;
 
+    [Inject]
+    IEnemyManager enemyManager;
+
+    protected override void Configure(IContainerBuilder builder) {
+        builder.RegisterInstance<IEffectFactory>(effectFactory);
+        builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+    }
+
     async UniTaskVoid RnadomMoveEnemy()
     {
-        while (enemyManagerController.Enemies.Count > 0)
+        while (enemyManager.Enemies.Count > 0)
         {
-            foreach (var enemy in enemyManagerController.Enemies)
+            foreach (var enemy in enemyManager.Enemies)
             {
                 var x = Random.Range(-30f, 30f);
                 var z = Random.Range(-30f, 30f);
@@ -37,10 +47,10 @@ public class Main : MonoBehaviour
 
     async UniTaskVoid RandomAttach()
     {
-        while (enemyManagerController.Enemies.Count > 0)
+        while (enemyManager.Enemies.Count > 0)
         {
             await UniTask.Delay(1000);
-            foreach (var enemy in enemyManagerController.Enemies)
+            foreach (var enemy in enemyManager.Enemies)
             {
                 enemy.Attacked(Random.Range(1, 10));
             }
@@ -57,15 +67,14 @@ public class Main : MonoBehaviour
             .SetEase(Ease.Linear)
             .SetLoops(-1, LoopType.Restart);
 
-        var em = enemyManagerController as IEnemyManager;
         this.UpdateAsObservable().Subscribe(_ =>
         {
-            text.text = $"# of enemy: {em.Enemies.Count}";
-            foreach(var e in em.Enemies) {
+            text.text = $"# of enemy: {enemyManager.Enemies.Count}";
+            foreach(var e in enemyManager.Enemies) {
                 text.text += $"\n {e.Name}: {e.Health}";
             }
 
-            if (em.Enemies.Count == 0)
+            if (enemyManager.Enemies.Count == 0)
             {
 #if UNITY_EDITOR
                 UnityEditor.EditorApplication.isPlaying = false;
@@ -74,11 +83,5 @@ public class Main : MonoBehaviour
 #endif
             }
         }).AddTo(this);
-    }
-
-    void Awake()
-    {
-        var em = enemyManagerController as IEnemyManager;
-        em.SetEffectFactory(effectFactory);
     }
 }

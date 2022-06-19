@@ -7,7 +7,8 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class EffectFactory : MonoBehaviour, IEffectFactory
+    [CreateAssetMenu(menuName = "Hedwig/EffectFactory", fileName = "EffectFactory")]
+    public class EffectFactory : ScriptableObject, IEffectFactory
     {
         [SerializeField, InterfaceType(typeof(IDamageEffect))]
         Component? damageEffectPrefab;
@@ -21,12 +22,12 @@ namespace Hedwig.Runtime
         #region  IEffectFactory
         public IDamageEffect? CreateDamageEffect(Transform parent, int damage)
         {
-            if(damageEffectParameter==null) {
+            if(damageEffectPrefab ==null) {
                 return null;
             }
             var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
             effect?.Initialize(parent,
-                damageEffectParameter,
+                damageEffectParameter!,
                 damage);
             return effect;
         }
