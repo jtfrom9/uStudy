@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: EffectTest.EffectAssets
   m_EditorClassIdentifier: 
   damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
-  hitEffectPrefab: {fileID: 0}
+  hitEffectPrefab: {fileID: 8575580264491783538, guid: 9c9eafce25a50459bb5b257b4c75a12b, type: 3}
   damageEffectParameter:
     duration: 1

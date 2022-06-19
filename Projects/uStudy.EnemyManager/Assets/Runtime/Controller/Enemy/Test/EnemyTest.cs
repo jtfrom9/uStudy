@@ -12,7 +12,7 @@ using VContainer.Unity;
 
 using Hedwig.Runtime;
 
-public class Main : LifetimeScope
+public class EnemyTest : LifetimeScope
 {
     [SerializeField]
     SimpleEnemyPrefabInstaller enemyPrefabInstaller;
