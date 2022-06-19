@@ -11,7 +11,6 @@ namespace Hedwig.Runtime
 {
     public class DamageTextEffectController : MonoBehaviour, IDamageEffect
     {
-        Transform? gazeTarget;
         float duration;
         int damage;
         TextMeshPro? tmp;
@@ -23,6 +22,7 @@ namespace Hedwig.Runtime
         UniTask _play()
         {
             var token = this.GetCancellationTokenOnDestroy();
+            var gazeTarget = Camera.main.transform.position;
 
             // t1 = transform.DOLocalMoveY(1, duration).ToUniTask(cancellationToken: token);
             var t1 = transform.DOLocalMoveY(1, duration).OnUpdate(() =>
@@ -41,9 +41,8 @@ namespace Hedwig.Runtime
         }
 
         #region IDamageEffect
-        public void Initialize(Transform parent, Transform gazeTarget, DamageEffectParameter param, int damage)
+        public void Initialize(Transform parent, DamageEffectParameter param, int damage)
         {
-            this.gazeTarget = gazeTarget;
             this.duration = param.duration;
             this.damage = damage;
             transform.SetParent(parent, false);

@@ -38,12 +38,12 @@ namespace Hedwig.Runtime
 
     public interface IDamageEffect : IEffect
     {
-        void Initialize(Transform parent, Transform gazeTarget, DamageEffectParameter duration, int damage);
+        void Initialize(Transform parent, DamageEffectParameter duration, int damage);
     }
 
     public interface IHitEffect: IEffect
     {
-        void Initialize(Transform parent, Transform gazeTarget, Vector3 position, Vector3 normal);
+        void Initialize(Transform parent, Vector3 position, Vector3 normal);
     }
 
     public interface IEffectFactory

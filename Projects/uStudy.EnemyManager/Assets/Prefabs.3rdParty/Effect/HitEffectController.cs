@@ -14,7 +14,6 @@ namespace Hedwig.Runtime
         [SerializeField]
         ParticleSystem? _particleSystem;
 
-        Transform? gazeTarget;
         EffectCompleteHandler? completeHandler;
 
         class EffectCompleteHandler : MonoBehaviour {
@@ -31,9 +30,8 @@ namespace Hedwig.Runtime
         }
 
         #region IDamageEffect
-        public void Initialize(Transform parent, Transform gazeTarget, Vector3 position, Vector3 normal)
+        public void Initialize(Transform parent, Vector3 position, Vector3 normal)
         {
-            this.gazeTarget = gazeTarget;
             transform.position = position;
             transform.SetParent(parent, true);
         }

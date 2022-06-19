@@ -16,9 +16,6 @@ namespace Hedwig.Runtime
         Component? hitEffectPrefab;
 
         [SerializeField]
-        Transform? gazeTarget;
-
-        [SerializeField]
         DamageEffectParameter? damageEffectParameter;
 
         #region  IEffectFactory
@@ -29,7 +26,6 @@ namespace Hedwig.Runtime
             }
             var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
             effect?.Initialize(parent,
-                gazeTarget != null ? gazeTarget : Camera.main.transform,
                 damageEffectParameter,
                 damage);
             return effect;
@@ -42,7 +38,6 @@ namespace Hedwig.Runtime
             }
             var effect = Instantiate(hitEffectPrefab) as IHitEffect;
             effect?.Initialize(parent,
-                gazeTarget != null ? gazeTarget : Camera.main.transform,
                 position,
                 normal);
             return effect;

@@ -1304,7 +1304,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
   hitEffectPrefab: {fileID: 0}
-  gazeTarget: {fileID: 0}
   damageEffectParameter:
     duration: 1
 --- !u!4 &1798719131
