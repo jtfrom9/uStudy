@@ -35,7 +35,14 @@ namespace Hedwig.Runtime
         TMP_Dropdown? dropdown;
         // Dropdown? dropdown;
 
+
+        [SerializeField]
+        GameObject? bulletPrefab;
+
         [Inject] IEnemyManager? enemyManager;
+        
+        [SerializeField]
+        Vector3 tower = new Vector3(10, 20, -10);
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -61,7 +68,6 @@ namespace Hedwig.Runtime
                     var enemy = enemyManager!.Enemies[index];
                     if (enemy != null)
                     {
-                        var tower = new Vector3(10, 20, -10);
                         if (Camera.main.transform.position != tower)
                         {
                             Camera.main.transform.SetParent(null);
@@ -199,6 +205,42 @@ namespace Hedwig.Runtime
             enemyManager.SelectExclusive(0);
         }
 
+        void shot() {
+            if(!towerView) return;
+            if(bulletPrefab==null) return;
+            var e = enemyManager?.Selected();
+            if (e == null) return;
+
+            var go = Instantiate(bulletPrefab);
+            go.transform.position = tower;
+
+            go.transform.DOMove(e.transform.position, 3).OnComplete(() =>
+            {
+                Destroy(go);
+            });
+
+            var start = go.transform.position;
+            var end = e.transform.position;
+            var dir = end - start;
+            Debug.Log(dir.magnitude);
+
+            go.transform.DOPath(new Vector3[]{
+                (start + end) / 2 + Vector3.up * 5 + Vector3.right * Random.Range(-1f, 1f),
+                end
+            }, 3, PathType.CatmullRom).SetEase(Ease.InQuart);
+
+            // var rb = go.GetComponent<Rigidbody>();
+            // var dir = e.transform.position - go.transform.position;
+            // rb.velocity = dir.normalized * 10;
+        }
+
+        void aim() {
+            if (!towerView) return;
+            var e = enemyManager?.Selected();
+            if(e==null) return;
+            Debug.DrawLine(tower, e.transform.position, Color.red, 100);
+        }
+
         void Update()
         {
             if (enemyManager == null) return;
@@ -209,6 +251,10 @@ namespace Hedwig.Runtime
             if (Input.GetKeyDown(KeyCode.LeftArrow)) {
                 selectPrev(enemyManager);
             }
+            if(Input.GetKeyDown(KeyCode.Space)) {
+                shot();
+            }
+            aim();
         }
     }
 }
