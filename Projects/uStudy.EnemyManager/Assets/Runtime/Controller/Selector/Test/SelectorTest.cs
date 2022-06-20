@@ -17,9 +17,6 @@ namespace Hedwig.Runtime
     public class SelectorTest : LifetimeScope
     {
         [SerializeField]
-        DummyEffectFactory? dummy;
-
-        [SerializeField]
         SelectorAssets? selectorAssets;
 
         [SerializeField]
@@ -42,7 +39,7 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance<IEffectFactory>(dummy!);
+            builder.Register<IEffectFactory, DummyEffectFactory>(Lifetime.Singleton);
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
         }

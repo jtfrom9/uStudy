@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public class DummyEffectFactory : MonoBehaviour, IEffectFactory
+    public class DummyEffectFactory : IEffectFactory
     {
         #region DummyEffectFactory
         public IDamageEffect? CreateDamageEffect(Transform parent, int damage)

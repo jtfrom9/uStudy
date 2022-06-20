@@ -2,9 +2,11 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using System.Linq;
 using UnityEngine;
 using UniRx;
+using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
@@ -71,7 +73,7 @@ namespace Hedwig.Runtime
         public static IEnemy? Selected(this IEnemyManager manager)
         {
             var index = manager.SelectedIndex();
-            return index > 0 ? manager.Enemies[index] : null;
+            return index >= 0 ? manager.Enemies[index] : null;
         }
 
 
@@ -84,6 +86,24 @@ namespace Hedwig.Runtime
                     manager.Enemies[i].Select(index == i);
                 }
             }
+        }
+
+        public static UniTask RandomWalk(this IEnemyManager manager, float min, float max, int msec, CancellationToken token)
+        {
+            return UniTask.Create(async () =>
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    foreach (var enemy in manager.Enemies)
+                    {
+                        var x = Random.Range(min, max);
+                        var z = Random.Range(min, max);
+                        var pos = new Vector3(x, 0, z);
+                        enemy.SetDestination(pos);
+                    }
+                    await UniTask.Delay(msec, cancellationToken: token);
+                }
+            });
         }
     }
 }

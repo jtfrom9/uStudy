@@ -3423,7 +3423,6 @@ GameObject:
   m_Component:
   - component: {fileID: 1915988971}
   - component: {fileID: 1915988972}
-  - component: {fileID: 1915988973}
   m_Layer: 0
   m_Name: Main
   m_TagString: Untagged
@@ -3464,23 +3463,10 @@ MonoBehaviour:
   autoInjectGameObjects:
   - {fileID: 1915988970}
   - {fileID: 1745696088}
-  dummy: {fileID: 1915988973}
   selectorAssets: {fileID: 11400000, guid: 7db805db3918a47418ad73735e3ff471, type: 2}
   goButton: {fileID: 771307003}
   resetButton: {fileID: 476078515}
   dropdown: {fileID: 1033547967}
---- !u!114 &1915988973
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1915988970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f6c6ca83e41648bc9f4d715daf1a656, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1001 &9134180466199500693
 PrefabInstance:
   m_ObjectHideFlags: 0
