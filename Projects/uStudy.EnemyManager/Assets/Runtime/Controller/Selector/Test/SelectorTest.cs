@@ -40,7 +40,7 @@ namespace Hedwig.Runtime
         GameObject? bulletPrefab;
 
         [Inject] IEnemyManager? enemyManager;
-        
+
         [SerializeField]
         Vector3 tower = new Vector3(10, 20, -10);
 

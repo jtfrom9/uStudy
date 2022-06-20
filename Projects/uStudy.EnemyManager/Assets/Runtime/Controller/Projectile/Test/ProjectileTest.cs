@@ -13,14 +13,45 @@ namespace Hedwig.Runtime
     public class ProjectileTest : LifetimeScope
     {
         [SerializeField]
+        SelectorAssets? selectorAssets;
+
+        [SerializeField]
         ProjectileAssets? projectileAssets;
+
+        [SerializeField, InterfaceType(typeof(ILauncher))]
+        BasicLauncher? basicLauncher;
+
+        [Inject] IEnemyManager? enemyManager;
 
         protected override void Configure(IContainerBuilder builder)
         {
             builder.Register<IEffectFactory, DummyEffectFactory>(Lifetime.Singleton);
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-            builder.Register<ISelectorFactory, DummySelectorFactory>(Lifetime.Scoped);
+            builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
             builder.RegisterInstance<IProjectileFactory>(projectileAssets!);
+        }
+
+        void Start()
+        {
+            if(enemyManager==null) return;
+            var token = this.GetCancellationTokenOnDestroy();
+            enemyManager.SelectExclusive(0);
+            enemyManager.RandomWalk(-30, 30, 3000, token).Forget();
+        }
+
+        void Update()
+        {
+            var enemy = enemyManager?.Selected();
+            if(enemy==null) return;
+
+            var launcher = basicLauncher as ILauncher;
+            if(launcher==null) return;
+            launcher.Aim(enemy.transform);
+
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                launcher.Launch();
+            }
         }
 
         // async void Stop() 

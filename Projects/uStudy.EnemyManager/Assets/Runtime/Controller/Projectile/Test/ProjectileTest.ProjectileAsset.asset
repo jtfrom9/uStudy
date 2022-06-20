@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 41f9ab61fa7084da68742271ed5d26b9, type: 3}
   m_Name: ProjectileTest.ProjectileAsset
   m_EditorClassIdentifier: 
-  projectilePrefab: {fileID: 4069804659088182445, guid: 215387d69cb3a48e49a3b02c3b5e8659, type: 3}
+  projectilePrefab: {fileID: 5586160393224907224, guid: 215387d69cb3a48e49a3b02c3b5e8659, type: 3}

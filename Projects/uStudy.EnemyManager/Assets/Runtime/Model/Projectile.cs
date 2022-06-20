@@ -8,12 +8,12 @@ namespace Hedwig.Runtime
 {
     public interface IProjectile : System.IDisposable
     {
-        void Initialize(Vector3 start, Vector3 end, float duration);
+        void Initialize(Vector3 initial, Transform target, float duration);
         void Go();
     }
 
     public interface IProjectileFactory
     {
-        IProjectile? Create(Vector3 start, Vector3 end, float duration);
+        IProjectile? Create(Vector3 start, Transform target, float duration);
     }
 }
