@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,22 +17,54 @@ using Hedwig.Runtime;
 public class EnemyTest : LifetimeScope
 {
     [SerializeField]
-    EffectAssets effectAssets;
+    Setting? setting;
 
     [SerializeField]
-    Text text;
+    Text? text;
 
     [Inject]
-    IEnemyManager enemyManager;
+    IEnemyManager? enemyManager;
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterInstance<IEffectFactory>(effectAssets);
-        builder.Register<ISelectorFactory, DummySelectorFactory>(Lifetime.Singleton);
+        builder.RegisterInstance<Setting>(setting!)
+            .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
     }
 
-    async UniTaskVoid RnadomMoveEnemy()
+    void Start()
+    {
+        if(enemyManager==null) return;
+        if(text==null) return;
+
+        RnadomMoveEnemy(enemyManager).Forget();
+        RandomAttach(enemyManager).Forget();
+
+        Camera.main.transform.position = new Vector3(0, 1, -20);
+        Camera.main.transform.DORotateAround(Vector3.zero, Vector3.up, 360, 10)
+            .SetEase(Ease.Linear)
+            .SetLoops(-1, LoopType.Restart);
+
+        this.UpdateAsObservable().Subscribe(_ =>
+        {
+            text.text = $"# of enemy: {enemyManager.Enemies.Count}";
+            foreach (var e in enemyManager.Enemies)
+            {
+                text.text += $"\n {e.Name}: {e.Health}";
+            }
+
+            if (enemyManager.Enemies.Count == 0)
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                Application.Quit ();
+#endif
+            }
+        }).AddTo(this);
+    }
+
+    async UniTaskVoid RnadomMoveEnemy(IEnemyManager enemyManager)
     {
         while (enemyManager.Enemies.Count > 0)
         {
@@ -44,7 +78,7 @@ public class EnemyTest : LifetimeScope
         }
     }
 
-    async UniTaskVoid RandomAttach()
+    async UniTaskVoid RandomAttach(IEnemyManager enemyManager)
     {
         while (enemyManager.Enemies.Count > 0)
         {
@@ -54,33 +88,5 @@ public class EnemyTest : LifetimeScope
                 enemy.Attacked(Random.Range(1, 10));
             }
         }
-    }
-
-    void Start()
-    {
-        RnadomMoveEnemy().Forget();
-        RandomAttach().Forget();
-
-        Camera.main.transform.position = new Vector3(0, 1, -20);
-        Camera.main.transform.DORotateAround(Vector3.zero, Vector3.up, 360, 10)
-            .SetEase(Ease.Linear)
-            .SetLoops(-1, LoopType.Restart);
-
-        this.UpdateAsObservable().Subscribe(_ =>
-        {
-            text.text = $"# of enemy: {enemyManager.Enemies.Count}";
-            foreach(var e in enemyManager.Enemies) {
-                text.text += $"\n {e.Name}: {e.Health}";
-            }
-
-            if (enemyManager.Enemies.Count == 0)
-            {
-#if UNITY_EDITOR
-                UnityEditor.EditorApplication.isPlaying = false;
-#else
-                Application.Quit ();
-#endif
-            }
-        }).AddTo(this);
     }
 }

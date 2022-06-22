@@ -16,7 +16,7 @@ namespace Hedwig.Runtime
         Vector3 initialPosition;
         Quaternion initialRotation;
         Vector3 initialScale;
-        float distanceToGround;
+        float? _distanceToGround;
 
         bool _selected;
 
@@ -27,8 +27,6 @@ namespace Hedwig.Runtime
 
             var mr = GetComponent<MeshRenderer>();
             mr.material.color = UnityEngine.Random.ColorHSV();
-
-            this.distanceToGround = mr.bounds.extents.y;
         }
 
         void Start()
@@ -77,7 +75,15 @@ namespace Hedwig.Runtime
 
         #region ICharactor
         Transform ICharactor.transform => transform;
-        float ICharactor.distanceToGround => distanceToGround;
+        float ICharactor.distanceToGround {
+            get {
+                if(_distanceToGround==null) {
+                    var mr = GetComponent<MeshRenderer>();
+                    _distanceToGround = mr.bounds.extents.y;
+                }
+                return _distanceToGround.Value;
+            }
+        }
         #endregion
 
         #region IEnemy

@@ -7,11 +7,15 @@ using UnityEngine.UI;
 using Cysharp.Threading.Tasks;
 using UniRx;
 using VContainer;
+using VContainer.Unity;
 
 using Hedwig.Runtime;
 
-public class EffectTest : MonoBehaviour
+public class EffectTest : LifetimeScope
 {
+    [SerializeField]
+    Setting setting;
+
     [SerializeField]
     List<Transform> targets = new List<Transform>();
 
@@ -23,6 +27,17 @@ public class EffectTest : MonoBehaviour
 
     [Inject]
     IEffectFactory factory;
+
+    protected override void Configure(IContainerBuilder builder)
+    {
+        builder.RegisterInstance<IEffectFactory>(setting);
+
+        foreach (var target in targets)
+        {
+            var mr = target.gameObject.GetComponent<MeshRenderer>();
+            mr.material.color = new Color(0.1f, 0.1f, 0.1f);
+        }
+    }
 
     IEffect[] createEffects(Transform target, int damage, Vector3 position)
     {
@@ -53,13 +68,6 @@ public class EffectTest : MonoBehaviour
         }
     }
 
-    void Awake()
-    {
-        foreach(var target in targets) {
-            var mr = target.gameObject.GetComponent<MeshRenderer>();
-            mr.material.color = new Color(0.1f, 0.1f, 0.1f);
-        }
-    }
 
     void Start()
     {

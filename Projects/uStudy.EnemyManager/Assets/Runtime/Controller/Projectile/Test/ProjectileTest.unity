@@ -704,9 +704,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1209448252}
-  selectorAssets: {fileID: 11400000, guid: 7db805db3918a47418ad73735e3ff471, type: 2}
-  effectAssets: {fileID: 11400000, guid: b2c574491e7fe496c83c795e1bee2a48, type: 2}
-  projectileAssets: {fileID: 11400000, guid: 2d21d0fe8b36f4775a6e6d5ad4b65480, type: 2}
+  setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
 --- !u!4 &1209448254
 Transform:
   m_ObjectHideFlags: 0

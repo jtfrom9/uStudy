@@ -3462,8 +3462,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1915988970}
-  - {fileID: 1745696088}
-  selectorAssets: {fileID: 11400000, guid: 7db805db3918a47418ad73735e3ff471, type: 2}
+  setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   goButton: {fileID: 771307003}
   resetButton: {fileID: 476078515}
   dropdown: {fileID: 1033547967}

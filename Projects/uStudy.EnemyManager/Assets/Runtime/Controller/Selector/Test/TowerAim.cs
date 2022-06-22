@@ -14,6 +14,9 @@ using Hedwig.Runtime;
 public class TowerAim : LifetimeScope
 {
     [SerializeField]
+    Setting? setting;
+
+    [SerializeField]
     Transform? launcherPoint;
 
     [Inject] IEnemyManager? enemyManager;
@@ -22,9 +25,9 @@ public class TowerAim : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.Register<IEffectFactory, DummyEffectFactory>(Lifetime.Singleton);
+        builder.RegisterInstance<Setting>(setting!)
+            .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-        builder.Register<ISelectorFactory, DummySelectorFactory>(Lifetime.Singleton);
     }
 
     void Start()

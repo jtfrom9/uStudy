@@ -784,8 +784,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1215610763}
-  enemyPrefabInstaller: {fileID: 0}
-  effectAssets: {fileID: 11400000, guid: 3c2086e9d8c6a4035a710845f7d00997, type: 2}
+  setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   text: {fileID: 600528560}
 --- !u!1 &1426616446
 GameObject:

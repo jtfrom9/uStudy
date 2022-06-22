@@ -815,6 +815,7 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1780342146}
+  setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   launcherPoint: {fileID: 785377695}
 --- !u!4 &1780342149
 Transform:

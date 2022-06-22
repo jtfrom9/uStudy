@@ -15,23 +15,16 @@ namespace Hedwig.Runtime
     public class ProjectileTest : LifetimeScope
     {
         [SerializeField]
-        SelectorAssets? selectorAssets;
-
-        [SerializeField]
-        EffectAssets? effectAssets;
-
-        [SerializeField]
-        ProjectileAssets? projectileAssets;
+        Setting? setting;
 
         [Inject] IEnemyManager? enemyManager;
         [Inject] Launcher? launcher;
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance<IEffectFactory>(effectAssets!);
+            builder.RegisterInstance<Setting>(setting!)
+                .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-            builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
-            builder.RegisterInstance<IProjectileFactory>(projectileAssets!);
             builder.Register<Launcher>(Lifetime.Singleton);
         }
 
