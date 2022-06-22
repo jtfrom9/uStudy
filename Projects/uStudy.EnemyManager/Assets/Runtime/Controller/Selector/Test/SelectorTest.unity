@@ -3467,6 +3467,8 @@ MonoBehaviour:
   goButton: {fileID: 771307003}
   resetButton: {fileID: 476078515}
   dropdown: {fileID: 1033547967}
+  bulletPrefab: {fileID: 0}
+  tower: {x: 10, y: 20, z: -10}
 --- !u!1001 &9134180466199500693
 PrefabInstance:
   m_ObjectHideFlags: 0

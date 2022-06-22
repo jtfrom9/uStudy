@@ -2,11 +2,13 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 using UniRx;
+using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 using VContainer;
 using VContainer.Unity;
@@ -25,16 +27,8 @@ namespace Hedwig.Runtime
         [SerializeField]
         Button? resetButton;
 
-        // [SerializeField]
-        // Toggle? trackCamToggle;
-
-        // [SerializeField]
-        // Toggle? birdViewToggle;
-
         [SerializeField]
         TMP_Dropdown? dropdown;
-        // Dropdown? dropdown;
-
 
         [SerializeField]
         GameObject? bulletPrefab;
@@ -51,6 +45,25 @@ namespace Hedwig.Runtime
             builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
         }
 
+        void Start()
+        {
+            if (enemyManager == null)
+            {
+                Debug.LogError($"enemyManager: {enemyManager}");
+                return;
+            }
+
+            var selection = new SingleSelection(enemyManager.Enemies);
+            selection.SelectExclusive(0);
+
+            setupUI(selection, enemyManager);
+
+            this.UpdateAsObservable().Subscribe(_ =>
+            {
+                update(selection, enemyManager);
+            }).AddTo(this);
+        }
+
         void resetCam()
         {
             Camera.main.transform.SetParent(null);
@@ -58,32 +71,31 @@ namespace Hedwig.Runtime
             Camera.main.transform.rotation = Quaternion.identity;
         }
 
-        void trackCam(int index)
+        void trackCam(ISelectable? selectable)
         {
+            var enemy = selectable as IEnemy;
+            if(enemy==null) return;
             if(DOTween.IsTweening(Camera.main.transform)) {
                 Camera.main.transform.DOKill();
             }
             try {
-                if(towerView) {
-                    var enemy = enemyManager!.Enemies[index];
-                    if (enemy != null)
-                    {
-                        if (Camera.main.transform.position != tower)
-                        {
-                            Camera.main.transform.SetParent(null);
-                            Camera.main.transform.DOMove(tower, 1)
-                                .OnUpdate(() =>
-                                {
-                                    Camera.main.transform.LookAt(enemy.transform.position);
-                                });
-                        }else
-                        {
-                            Camera.main.transform.DOLookAt(enemy.transform.position, 1);
-                        }
-                    }
-                }else
+                if (towerView)
                 {
-                    var enemy = enemyManager!.Enemies[index];
+                    if (Camera.main.transform.position != tower)
+                    {
+                        Camera.main.transform.SetParent(null);
+                        Camera.main.transform.DOMove(tower, 1)
+                            .OnUpdate(() =>
+                            {
+                                Camera.main.transform.LookAt(enemy.transform.position);
+                            });
+                    }
+                    else
+                    {
+                        Camera.main.transform.DOLookAt(enemy.transform.position, 1);
+                    }
+                } else
+                {
                     Camera.main.transform.SetParent(enemy.transform, true);
                     var pos = new Vector3(0, 3f, -3);
                     var rot = new Vector3(30, 0, 0);
@@ -100,115 +112,77 @@ namespace Hedwig.Runtime
             }
         }
 
-        // bool tracking { get => trackCamToggle?.isOn ?? false; }
-        // bool birdView { get => birdViewToggle?.isOn ?? false; }
-
         bool tracking { get => dropdown!.options[dropdown.value].text != "Init"; }
         bool birdView { get => dropdown!.options[dropdown.value].text == "Bird"; }
         bool towerView { get => dropdown!.options[dropdown.value].text == "Tower"; }
 
-        void selectNext(IEnemyManager enemyManager)
+        void selectNext(SingleSelection selection, IEnemyManager enemyManager)
         {
-            var cur = enemyManager.SelectedIndex();
-            var next = enemyManager.Enemies.Count - 1 == cur ? 0 : cur + 1;
-            Debug.Log($"{cur} -> {next}");
-            enemyManager.SelectExclusive(next);
-            if(tracking) trackCam(next);
+            selection.Next();
+            if(tracking) trackCam(selection.Current);
         }
 
-        void selectPrev(IEnemyManager enemyManager)
+        void selectPrev(SingleSelection selection, IEnemyManager enemyManager)
         {
-            var cur = enemyManager.SelectedIndex();
-            var prev = cur == 0 ? enemyManager.Enemies.Count - 1 : cur - 1;
-            enemyManager.SelectExclusive(prev);
-            if (tracking) trackCam(prev);
+            selection.Prev();
+            if (tracking) trackCam(selection.Current);
         }
 
-        void Start()
+        void setupUI(SingleSelection selection, IEnemyManager enemyManager)
         {
-            if (enemyManager == null)
-            {
-                Debug.LogError($"enemyManager: {enemyManager}");
-                return;
-            }
             bool go = false;
             var tmp = goButton!.GetComponentInChildren<TextMeshProUGUI>();
+            var ct = new CancellationTokenSource();
+
             goButton?.OnClickAsObservable().Subscribe(_ =>
             {
                 go = !go;
                 tmp!.text = (go) ? "Stop" : "Go";
-                if (!go)
+                if (go) {
+                    enemyManager.RandomWalk(-10f, 10f, 3000, ct.Token).Forget();
+                } else
                 {
-                    foreach (var enemy in enemyManager!.Enemies)
-                    {
-                        enemy.Stop();
-                    }
+                    ct.Cancel();
+                    ct = new CancellationTokenSource();
+                    enemyManager.StopAll();
                 }
             }).AddTo(this);
 
             resetButton?.OnClickAsObservable().Subscribe(_ =>
             {
-                foreach (var enemy in enemyManager!.Enemies)
+                foreach (var enemy in enemyManager.Enemies)
                 {
                     enemy.GetControl().ResetPos();
                 }
             }).AddTo(this);
 
-            // trackCamToggle?.OnValueChangedAsObservable().Subscribe(v => { 
-            //     if(v) {
-            //         trackCam(enemyManager.SelectedIndex());
-            //     }else {
-            //         resetCam();
-            //     }
-            // }).AddTo(this);
-
-            // birdViewToggle?.OnValueChangedAsObservable().Subscribe(v =>
-            // {
-            //     trackCam(enemyManager.SelectedIndex());
-            // }).AddTo(this);
-
-            UniTask.Create(async () =>
+            if (dropdown != null)
             {
-                while (true)
-                {
-                    if (go)
-                    {
-                        foreach (var enemy in enemyManager!.Enemies)
-                        {
-                            var x = Random.Range(-10f, 10f);
-                            var z = Random.Range(-10f, 10f);
-                            var pos = new Vector3(x, 0, z);
-                            Debug.Log($"{enemy.Name}: {pos}");
-                            enemy.SetDestination(pos);
-                        }
-                    }
-                    await UniTask.Delay(3000);
-                }
-            }).Forget();
-
-            if(dropdown!=null) {
                 dropdown.options.Add(new TMP_Dropdown.OptionData("Init"));
                 dropdown.options.Add(new TMP_Dropdown.OptionData("Track"));
                 dropdown.options.Add(new TMP_Dropdown.OptionData("Bird"));
                 dropdown.options.Add(new TMP_Dropdown.OptionData("Tower"));
             }
-            dropdown.ObserveEveryValueChanged(v => v!.value).Subscribe(v => { 
+            dropdown.ObserveEveryValueChanged(v => v!.value).Subscribe(v =>
+            {
                 Debug.Log(dropdown!.options[v].text);
                 Debug.Log(tracking);
-                if(tracking) {
-                    trackCam(enemyManager.SelectedIndex());
-                }else {
+                if (tracking)
+                {
+                    trackCam(selection.Current);
+                }
+                else
+                {
                     resetCam();
                 }
             }).AddTo(this);
-
-            enemyManager.SelectExclusive(0);
         }
 
-        void shot() {
-            if(!towerView) return;
-            if(bulletPrefab==null) return;
-            var e = enemyManager?.Selected();
+        void shot(SingleSelection selection)
+        {
+            if (!towerView) return;
+            if (bulletPrefab == null) return;
+            var e = selection.Current as IEnemy;
             if (e == null) return;
 
             var go = Instantiate(bulletPrefab);
@@ -228,33 +202,31 @@ namespace Hedwig.Runtime
                 (start + end) / 2 + Vector3.up * 5 + Vector3.right * Random.Range(-1f, 1f),
                 end
             }, 3, PathType.CatmullRom).SetEase(Ease.InQuart);
-
-            // var rb = go.GetComponent<Rigidbody>();
-            // var dir = e.transform.position - go.transform.position;
-            // rb.velocity = dir.normalized * 10;
         }
 
-        void aim() {
+        void aim(SingleSelection selection)
+        {
             if (!towerView) return;
-            var e = enemyManager?.Selected();
-            if(e==null) return;
+            var e = selection.Current as IEnemy;
+            if (e == null) return;
             Debug.DrawLine(tower, e.transform.position, Color.red, 100);
         }
 
-        void Update()
+        void update(SingleSelection selection, IEnemyManager enemyManager)
         {
-            if (enemyManager == null) return;
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
-                selectNext(enemyManager);
+                selectNext(selection, enemyManager);
             }
-            if (Input.GetKeyDown(KeyCode.LeftArrow)) {
-                selectPrev(enemyManager);
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                selectPrev(selection, enemyManager);
             }
-            if(Input.GetKeyDown(KeyCode.Space)) {
-                shot();
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                shot(selection);
             }
-            aim();
+            aim(selection);
         }
     }
 }

@@ -53,41 +53,6 @@ namespace Hedwig.Runtime
 
     public static class EnemyManagerExtension
     {
-        public static int SelectedIndex(this IEnemyManager manager)
-        {
-            if (manager.Enemies.Count > 0)
-            {
-                var list = manager.Enemies
-                    .Select((enemy, index) => (enemy, index))
-                    .Where(v => v.enemy.selected)
-                    .Select(v => v.index)
-                    .ToList();
-                return list.Count > 0 ? list[0] : -1;
-            }
-            else
-            {
-                return -1;
-            }
-        }
-
-        public static IEnemy? Selected(this IEnemyManager manager)
-        {
-            var index = manager.SelectedIndex();
-            return index >= 0 ? manager.Enemies[index] : null;
-        }
-
-
-        public static void SelectExclusive(this IEnemyManager manager, int index)
-        {
-            if (manager.Enemies.Count > 0 && index >= 0 && index < manager.Enemies.Count)
-            {
-                foreach (var (e, i) in manager.Enemies.Select((e, i) => (e, i)))
-                {
-                    manager.Enemies[i].Select(index == i);
-                }
-            }
-        }
-
         public static UniTask RandomWalk(this IEnemyManager manager, float min, float max, int msec, CancellationToken token)
         {
             return UniTask.Create(async () =>
@@ -104,6 +69,13 @@ namespace Hedwig.Runtime
                     await UniTask.Delay(msec, cancellationToken: token);
                 }
             });
+        }
+
+        public static void StopAll(this IEnemyManager manager)
+        {
+            foreach(var enemy in manager.Enemies) {
+                enemy.Stop();
+            }
         }
     }
 }

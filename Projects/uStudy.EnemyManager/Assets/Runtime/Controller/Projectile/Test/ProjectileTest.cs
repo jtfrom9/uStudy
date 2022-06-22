@@ -7,6 +7,8 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using VContainer;
 using VContainer.Unity;
+using UniRx;
+using UniRx.Triggers;
 
 namespace Hedwig.Runtime
 {
@@ -34,20 +36,25 @@ namespace Hedwig.Runtime
         void Start()
         {
             if(enemyManager==null) return;
+            var launcher = basicLauncher as ILauncher;
+            if (launcher == null) return;
+
             var token = this.GetCancellationTokenOnDestroy();
-            enemyManager.SelectExclusive(0);
+            var selection = new SingleSelection(enemyManager.Enemies);
+            selection.SelectExclusive(0);
+
             enemyManager.RandomWalk(-30, 30, 3000, token).Forget();
+
+            this.UpdateAsObservable().Subscribe(_ => {
+                var enemy = selection.Current as IEnemy;
+                if (enemy == null) return;
+                _update(launcher, enemy);
+            }).AddTo(this);
         }
 
-        void Update()
+        void _update(ILauncher launcher, IEnemy enemy)
         {
-            var enemy = enemyManager?.Selected();
-            if(enemy==null) return;
-
-            var launcher = basicLauncher as ILauncher;
-            if(launcher==null) return;
             launcher.Aim(enemy.transform);
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 launcher.Launch();
