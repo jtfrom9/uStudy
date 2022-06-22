@@ -1,15 +1,13 @@
 #nullable enable
 
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
-using VContainer;
 
 namespace Hedwig.Runtime
 {
-    public class EnemyManager : IEnemyManager
+    public class EnemyManager: IEnemyManager
     {
         List<IEnemy> _enemies = new List<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
@@ -54,6 +52,15 @@ namespace Hedwig.Runtime
         {
             this.effectFactory = effectFactory;
             this.selectorFactory = selectorFactory;
+
+            var enemyRepository = Controller.Find<IEnemyRepository>();
+            if (enemyRepository != null)
+            {
+                foreach (var enemy in enemyRepository.GetEnemies())
+                {
+                    this.AddEnemy(enemy);
+                }
+            }
         }
 
         #region IEnemyManager

@@ -1,10 +1,9 @@
 #nullable enable
 
-using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
-using System.Linq;
 using UnityEngine;
+
 using UniRx;
 using Cysharp.Threading.Tasks;
 
@@ -24,7 +23,7 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IEnemy: ICharactor, System.IDisposable
+    public interface IEnemy: ICharactor, ISelectable
     {
         string Name { get; }
         int Health { get; }
@@ -44,6 +43,12 @@ namespace Hedwig.Runtime
         void SetSelector(ISelector? selector);
         void ResetPos();
     }
+
+    public interface IEnemyRepository
+    {
+        IEnemy[] GetEnemies();
+    }
+
 
     public interface IEnemyManager: System.IDisposable
     {

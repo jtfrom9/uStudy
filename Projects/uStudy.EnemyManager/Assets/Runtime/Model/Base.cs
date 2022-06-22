@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using UnityEngine;
 
 namespace Hedwig.Runtime
@@ -10,7 +11,7 @@ namespace Hedwig.Runtime
         bool selected { get; }
     }
 
-    public interface ICharactor: ISelectable
+    public interface ICharactor: IDisposable
     {
         Transform transform { get; }
         float distanceToGround { get; }

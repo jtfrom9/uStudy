@@ -15,9 +15,6 @@ using Hedwig.Runtime;
 public class EnemyTest : LifetimeScope
 {
     [SerializeField]
-    SimpleEnemyPrefabInstaller enemyPrefabInstaller;
-
-    [SerializeField]
     EffectAssets effectAssets;
 
     [SerializeField]
@@ -26,8 +23,10 @@ public class EnemyTest : LifetimeScope
     [Inject]
     IEnemyManager enemyManager;
 
-    protected override void Configure(IContainerBuilder builder) {
+    protected override void Configure(IContainerBuilder builder)
+    {
         builder.RegisterInstance<IEffectFactory>(effectAssets);
+        builder.Register<ISelectorFactory, DummySelectorFactory>(Lifetime.Singleton);
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
     }
 

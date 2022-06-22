@@ -60,7 +60,8 @@ namespace Hedwig.Runtime
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                launcher.Launch(20);
+                if(launcher.CanLaunch)
+                    launcher.Launch(20);
             }
         }
 

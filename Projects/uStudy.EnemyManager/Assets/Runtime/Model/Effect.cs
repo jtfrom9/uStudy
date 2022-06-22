@@ -1,7 +1,6 @@
 #nullable enable
 
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
@@ -23,7 +22,7 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IEffect : System.IDisposable
+    public interface IEffect : IDisposable
     {
         UniTask Play();
     }

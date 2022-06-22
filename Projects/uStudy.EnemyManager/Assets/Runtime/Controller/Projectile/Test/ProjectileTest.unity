@@ -168,7 +168,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 253982897}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b94023498c6c04c41b64c10102cce780, type: 3}
+  m_Script: {fileID: 11500000, guid: 73712cfd2e3034360918bbda75e846ca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &283761532
@@ -700,11 +700,8 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1209448252}
-  - {fileID: 253982897}
-  - {fileID: 390149039}
   selectorAssets: {fileID: 11400000, guid: 7db805db3918a47418ad73735e3ff471, type: 2}
   projectileAssets: {fileID: 11400000, guid: 2d21d0fe8b36f4775a6e6d5ad4b65480, type: 2}
-  basicLauncher: {fileID: 390149040}
 --- !u!4 &1209448254
 Transform:
   m_ObjectHideFlags: 0

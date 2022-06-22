@@ -1,12 +1,11 @@
 #nullable enable
 
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public interface IProjectile : System.IDisposable
+    public interface IProjectile : IDisposable
     {
         void Initialize(Vector3 initial, Transform target, float duration);
         void Go();
