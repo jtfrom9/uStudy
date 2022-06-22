@@ -41,6 +41,10 @@ namespace Hedwig.Runtime
                 transform.position,
                 this._target.transform.position
             });
+            if (_target != null)
+            {
+                transform.LookAt(_target.transform.position);
+            }
         }
 
         #region ILauncher
@@ -54,10 +58,6 @@ namespace Hedwig.Runtime
         void ILauncherController.Aim(IEnemy? enemy)
         {
             this._target = enemy;
-            if (enemy != null)
-            {
-                transform.LookAt(enemy.transform.position);
-            }
         }
 
         #endregion

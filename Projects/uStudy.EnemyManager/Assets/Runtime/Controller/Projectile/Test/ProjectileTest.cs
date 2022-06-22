@@ -18,6 +18,9 @@ namespace Hedwig.Runtime
         SelectorAssets? selectorAssets;
 
         [SerializeField]
+        EffectAssets? effectAssets;
+
+        [SerializeField]
         ProjectileAssets? projectileAssets;
 
         [Inject] IEnemyManager? enemyManager;
@@ -25,7 +28,7 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.Register<IEffectFactory, DummyEffectFactory>(Lifetime.Singleton);
+            builder.RegisterInstance<IEffectFactory>(effectAssets!);
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
             builder.RegisterInstance<IProjectileFactory>(projectileAssets!);
@@ -49,19 +52,27 @@ namespace Hedwig.Runtime
             {
                 var enemy = selection.Current as IEnemy;
                 if (enemy == null) return;
-                _update(launcher, enemy);
+                _update(launcher, enemy, selection);
             }).AddTo(this);
 
             var token = this.GetCancellationTokenOnDestroy();
             enemyManager.RandomWalk(-30, 30, 3000, token).Forget();
         }
 
-        void _update(Launcher launcher, IEnemy enemy)
+        void _update(Launcher launcher, IEnemy enemy, SingleSelection selection)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 if(launcher.CanLaunch)
-                    launcher.Launch(20);
+                    launcher.Launch(10);
+            }
+            if(Input.GetKeyDown(KeyCode.RightArrow))
+            {
+                selection.Next();
+            }
+            if (Input.GetKeyDown(KeyCode.LeftArrow))
+            {
+                selection.Prev();
             }
         }
 

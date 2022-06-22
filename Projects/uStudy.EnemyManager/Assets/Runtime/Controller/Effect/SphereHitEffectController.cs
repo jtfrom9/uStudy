@@ -10,7 +10,8 @@ namespace Hedwig.Runtime
     public class SphereHitEffectController : MonoBehaviour, IHitEffect
     {
         #region IEffect
-        UniTask IEffect.Play() {
+        UniTask IEffect.Play()
+        {
             return transform.DOShakeScale(1f, 2f, 20, 1, true).ToUniTask();
         }
         #endregion
