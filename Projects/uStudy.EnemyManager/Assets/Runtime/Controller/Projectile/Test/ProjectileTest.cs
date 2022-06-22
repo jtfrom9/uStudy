@@ -20,10 +20,8 @@ namespace Hedwig.Runtime
         [SerializeField]
         ProjectileAssets? projectileAssets;
 
-        [SerializeField, InterfaceType(typeof(ILauncher))]
-        BasicLauncher? basicLauncher;
-
         [Inject] IEnemyManager? enemyManager;
+        [Inject] Launcher? launcher;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -31,33 +29,38 @@ namespace Hedwig.Runtime
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.RegisterInstance<ISelectorFactory>(selectorAssets!);
             builder.RegisterInstance<IProjectileFactory>(projectileAssets!);
+            builder.Register<Launcher>(Lifetime.Singleton);
         }
 
         void Start()
         {
-            if(enemyManager==null) return;
-            var launcher = basicLauncher as ILauncher;
+            if (enemyManager == null) return;
             if (launcher == null) return;
 
-            var token = this.GetCancellationTokenOnDestroy();
             var selection = new SingleSelection(enemyManager.Enemies);
+            selection.onCurrentChanged.Subscribe(selectable =>
+            {
+                launcher.Aim(selectable as IEnemy);
+            }).AddTo(this);
+
             selection.SelectExclusive(0);
 
-            enemyManager.RandomWalk(-30, 30, 3000, token).Forget();
-
-            this.UpdateAsObservable().Subscribe(_ => {
+            this.UpdateAsObservable().Subscribe(_ =>
+            {
                 var enemy = selection.Current as IEnemy;
                 if (enemy == null) return;
                 _update(launcher, enemy);
             }).AddTo(this);
+
+            var token = this.GetCancellationTokenOnDestroy();
+            enemyManager.RandomWalk(-30, 30, 3000, token).Forget();
         }
 
-        void _update(ILauncher launcher, IEnemy enemy)
+        void _update(Launcher launcher, IEnemy enemy)
         {
-            launcher.Aim(enemy.transform);
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                launcher.Launch();
+                launcher.Launch(20);
             }
         }
 

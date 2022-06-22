@@ -4,6 +4,7 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -26,6 +27,8 @@ namespace Hedwig.Runtime
             }
         }
 
+        public readonly ISubject<ISelectable?> onCurrentChanged = new Subject<ISelectable?>();
+
         public void SelectExclusive(int index)
         {
             if (_selectables.Count > 0 && index >= 0 && index < _selectables.Count)
@@ -35,6 +38,7 @@ namespace Hedwig.Runtime
                     _selectables[i].Select(index == i);
                 }
             }
+            this.onCurrentChanged.OnNext(Current);
         }
 
         public void Next()
