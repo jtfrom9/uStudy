@@ -66,49 +66,34 @@ namespace Hedwig.Runtime
 
         void resetCam()
         {
-            Camera.main.transform.SetParent(null);
-            Camera.main.transform.position = new Vector3(0, 1, -10);
-            Camera.main.transform.rotation = Quaternion.identity;
+            Camera.main.ResetPosition(new Vector3(0, 1, -10), Quaternion.identity);
         }
 
         void trackCam(ISelectable? selectable)
         {
             var enemy = selectable as IEnemy;
-            if(enemy==null) return;
-            if(DOTween.IsTweening(Camera.main.transform)) {
-                Camera.main.transform.DOKill();
+            if (enemy == null) return;
+
+            if (towerView)
+            {
+                Camera.main.MoveWithLookAt(tower, enemy.transform.position, 1);
             }
-            try {
-                if (towerView)
+            else
+            {
+                if (birdView)
                 {
-                    if (Camera.main.transform.position != tower)
-                    {
-                        Camera.main.transform.SetParent(null);
-                        Camera.main.transform.DOMove(tower, 1)
-                            .OnUpdate(() =>
-                            {
-                                Camera.main.transform.LookAt(enemy.transform.position);
-                            });
-                    }
-                    else
-                    {
-                        Camera.main.transform.DOLookAt(enemy.transform.position, 1);
-                    }
-                } else
-                {
-                    Camera.main.transform.SetParent(enemy.transform, true);
-                    var pos = new Vector3(0, 3f, -3);
-                    var rot = new Vector3(30, 0, 0);
-                    if (birdView)
-                    {
-                        pos = new Vector3(0, 10, -3);
-                        rot = new Vector3(80, 0, 0);
-                    }
-                    Camera.main.transform.DOLocalMove(pos, 1);
-                    Camera.main.transform.DOLocalRotate(rot, 1);
+                    Camera.main.Tracking(enemy.transform,
+                        new Vector3(0, 10, -3),
+                        new Vector3(80, 0, 0),
+                        1);
                 }
-            }catch {
-                resetCam();
+                else
+                {
+                    Camera.main.Tracking(enemy.transform,
+                        new Vector3(0, 3f, -3),
+                        new Vector3(30, 0, 0),
+                        1);
+                }
             }
         }
 
