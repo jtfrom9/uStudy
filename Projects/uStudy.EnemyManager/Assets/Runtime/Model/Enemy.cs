@@ -1,6 +1,7 @@
 #nullable enable
 
 using System.Collections.Generic;
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -49,7 +50,6 @@ namespace Hedwig.Runtime
         IEnemy[] GetEnemies();
     }
 
-
     public interface IEnemyManager: System.IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }
@@ -66,13 +66,20 @@ namespace Hedwig.Runtime
                 {
                     foreach (var enemy in manager.Enemies)
                     {
-                        var x = Random.Range(min, max);
-                        var z = Random.Range(min, max);
+                        var x = UnityEngine.Random.Range(min, max);
+                        var z = UnityEngine.Random.Range(min, max);
                         var pos = new Vector3(x, 0, z);
                         enemy.SetDestination(pos);
                     }
-                    await UniTask.Delay(msec, cancellationToken: token);
+                    try
+                    {
+                        await UniTask.Delay(msec, cancellationToken: token);
+                    }catch (OperationCanceledException e)
+                    {
+                        break;
+                    }
                 }
+                manager.StopAll();
             });
         }
 

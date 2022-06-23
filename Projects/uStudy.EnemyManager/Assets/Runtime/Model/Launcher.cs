@@ -21,14 +21,14 @@ namespace Hedwig.Runtime
             this.launcherController?.Aim(enemy);
         }
 
-        public void Launch(float duration)
+        public void Launch(ProjectileConfig config)
         {
             if(launcherController==null || launcherController.target==null)
                 return;
             var projectile = projectileFactory.Create(
                 launcherController.mazzlePosition,
                 launcherController.target.transform,
-                duration);
+                config);
             projectile?.Go();
         }
 

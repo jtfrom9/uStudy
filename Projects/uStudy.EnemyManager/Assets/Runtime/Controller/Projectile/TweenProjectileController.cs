@@ -1,8 +1,7 @@
 #nullable enable
 
+using System;
 using System.Threading;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 using DG.Tweening;
@@ -13,85 +12,101 @@ namespace Hedwig.Runtime
     public class TweenProjectileController : MonoBehaviour, IProjectile
     {
         Transform? target;
-        float duration;
+        ProjectileConfig? config;
 
-        CancellationTokenSource tokenSource = new CancellationTokenSource();
-
-        // void OnCollisionEnter(Collision collision)
-        // {
-        //     if (collision.gameObject.CompareTag("Character"))
-        //     {
-        //         if (DOTween.IsTweening(transform))
-        //         {
-        //             transform.DOKill();
-        //             active = false;
-        //             // Destroy(gameObject);
-        //         }
-        //     }
-        // }
+        CancellationTokenSource cts = new CancellationTokenSource();
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag("Character") || other.gameObject.CompareTag("Environment"))
+            if (other.gameObject.CompareTag(Collision.CharacterTag) ||
+                other.gameObject.CompareTag(Collision.EnvironmentTag))
             {
-                if (DOTween.IsTweening(transform))
-                {
-                    tokenSource.Cancel();
-                }
+                cts.Cancel();
             }
         }
 
-        async UniTaskVoid go()
+        async UniTask<bool> move(Vector3 destRelative, float duration) {
+            try
+            {
+                await transform.DOMove(destRelative, duration)
+                    .SetRelative(true)
+                    .SetEase(Ease.Linear)
+                    .ToUniTask(cancellationToken: cts.Token);
+                return true;
+            } catch (OperationCanceledException) {
+                return false;
+            }
+        }
+
+        async UniTaskVoid go(ProjectileConfig config)
         {
             if (this.target == null) return;
 
-            int max = (int)(duration);
-            float speed = 10.0f;
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            Debug.Log($"{config}");
 
-            Vector3 prevDir = Vector3.zero;
-            for (var i = 0; i < max; i++)
+            stopwatch.Start();
+
+            var prevDir = Vector3.zero;
+            var distance = config.distance;
+            for (var i = 0; i < config.NumAdjust; i++)
             {
                 var start = transform.position;
-                var end = target.position + target.up * Random.Range(-0.3f, 0.3f) + target.right * Random.Range(-0.3f, 0.3f);
+                var rand = config.MakeRandom(target);
+                Debug.Log($"rand: {rand}");
+                var end = target.position + rand;
                 var dir = end - start;
-                if (prevDir != Vector3.zero)
+
+                if (i > 0 && config.adjustMaxAngle.HasValue)
                 {
                     var angle = Vector3.Angle(dir, prevDir);
-                    if (angle > 45)
+                    if (config.adjustMaxAngle.Value < angle)
                     {
                         var cross = Vector3.Cross(dir, prevDir);
-                        dir = Quaternion.AngleAxis(-45, cross) * prevDir;
-
-                        var recalc = Vector3.Angle(dir, prevDir);
-                        if (recalc > 45)
-                        {
-                            Debug.Log($"angle: {recalc}");
-                        }
+                        dir = Quaternion.AngleAxis(-config.adjustMaxAngle.Value, cross) * prevDir;
                     }
-                }
-                prevDir = dir;
 
-                await transform.DOMove(dir.normalized * speed, 1.0f)
-                    .SetRelative(true)
-                    .SetEase(Ease.Linear)
-                    .ToUniTask(cancellationToken: tokenSource.Token);
-                if (tokenSource.IsCancellationRequested)
+                    // var recalc = Vector3.Angle(dir, prevDir);
+                    // if (recalc > config.maxAngle)
+                    // {
+                    //     Debug.Log($"angle: {recalc}");
+                    // }
+                }
+
+                var destRelative = dir.normalized * config.speed * config.EachDuration;
+                // var distRelative = destRelative.magnitude;
+                // if(distRelative > dir.magnitude) {
+                //     destRelative = dir;
+                //     Debug.Log($"near: ${destRelative}");
+                // }
+                Debug.Log($"DOMove: {destRelative} {config.EachDuration}");
+                var result = await move(destRelative, config.EachDuration);
+                distance -= destRelative.magnitude;
+
+                if (!result)
                     break;
+
+                prevDir = dir;
             }
-            Destroy(gameObject);
+
+            stopwatch.Stop();
+            Debug.Log($"elapsed: {stopwatch.Elapsed.TotalMilliseconds}");
+            if(config.destroyAtEnd)
+                Destroy(gameObject);
         }
 
         #region IProjectile
-        void IProjectile.Initialize(Vector3 initial, Transform target, float duration)
+        void IProjectile.Initialize(Vector3 initial, Transform target, ProjectileConfig config)
         {
             transform.position = initial;
             this.target = target;
-            this.duration = duration;
+            this.config = config;
         }
 
         void IProjectile.Go()
         {
-            go().Forget();
+            if(config==null) return;
+            go(config).Forget();
         }
         #endregion
 

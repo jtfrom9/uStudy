@@ -11,12 +11,12 @@ namespace Hedwig.Runtime
         [SerializeField, InterfaceType(typeof(IProjectile))]
         Component? projectilePrefab;
 
-        IProjectile? IProjectileFactory.Create(Vector3 start, Transform target, float duration)
+        IProjectile? IProjectileFactory.Create(Vector3 start, Transform target, ProjectileConfig config)
         {
             if (projectilePrefab == null) return null;
             // var projectile = Instantiate(projectilePrefab, start, Quaternion.identity) as IProjectile;
             var projectile = Instantiate(projectilePrefab) as IProjectile;
-            projectile?.Initialize(start, target, duration);
+            projectile?.Initialize(start, target, config);
             return projectile;
         }
         #endregion

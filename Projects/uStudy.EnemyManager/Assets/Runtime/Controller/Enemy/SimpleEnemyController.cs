@@ -38,29 +38,12 @@ namespace Hedwig.Runtime
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag("Projectile"))
+            if (other.gameObject.CompareTag(Collision.ProjectileTag))
             {
                 var projectile = other.gameObject.GetComponent<IProjectile>();
-
                 var pos = other.ClosestPointOnBounds(this.transform.position);
-
                 var damage = new DamageEvent(this, 10, pos);
                 this.onAttcked.OnNext(damage);
-                // projectile.Dispose();
-            }
-        }
-
-
-        void OnCollisionEnter(Collision collision)
-        {
-            // Debug.Log(collision.gameObject.tag);
-            if (collision.gameObject.CompareTag("Projectile"))
-            {
-                var projectile = collision.gameObject.GetComponent<IProjectile>();
-
-                var damage = new DamageEvent(this, 10, collision.contacts[0].point);
-                this.onAttcked.OnNext(damage);
-                // projectile.Dispose();
             }
         }
 
