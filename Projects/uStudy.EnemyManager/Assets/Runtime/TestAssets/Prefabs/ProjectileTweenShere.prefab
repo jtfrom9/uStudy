@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 5586160393224907224}
   - component: {fileID: 6227263060490453551}
   m_Layer: 0
-  m_Name: TweenBullet
+  m_Name: ProjectileTweenShere
   m_TagString: Projectile
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
