@@ -11,7 +11,6 @@ namespace Hedwig.Runtime
 {
     public class TweenProjectileController : MonoBehaviour, IProjectile
     {
-        Transform? target;
         ProjectileConfig? config;
 
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -38,11 +37,9 @@ namespace Hedwig.Runtime
             }
         }
 
-        async UniTaskVoid go(ProjectileConfig config)
+        async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
         {
-            if (this.target == null) return;
-
-            var stopwatch = new System.Diagnostics.Stopwatch();
+             var stopwatch = new System.Diagnostics.Stopwatch();
             Debug.Log($"{config}");
 
             stopwatch.Start();
@@ -52,9 +49,9 @@ namespace Hedwig.Runtime
             for (var i = 0; i < config.NumAdjust; i++)
             {
                 var start = transform.position;
-                var rand = config.MakeRandom(target);
+                var rand = config.MakeRandom(target.transform);
                 Debug.Log($"rand: {rand}");
-                var end = target.position + rand;
+                var end = target.transform.position + rand;
                 var dir = end - start;
 
                 if (i > 0 && config.adjustMaxAngle.HasValue)
@@ -95,21 +92,6 @@ namespace Hedwig.Runtime
                 Destroy(gameObject);
         }
 
-        #region IProjectile
-        void IProjectile.Initialize(Vector3 initial, Transform target, ProjectileConfig config)
-        {
-            transform.position = initial;
-            this.target = target;
-            this.config = config;
-        }
-
-        void IProjectile.Go()
-        {
-            if(config==null) return;
-            go(config).Forget();
-        }
-        #endregion
-
         #region IDisposable
         void System.IDisposable.Dispose()
         {
@@ -118,5 +100,25 @@ namespace Hedwig.Runtime
         }
         #endregion
 
+        #region IMobileObject
+        Transform IMobileObject.transform { get => transform; }
+        #endregion
+
+        #region IProjectile
+        void IProjectile.Initialize(Vector3 initial, ProjectileConfig config)
+        {
+            transform.position = initial;
+            this.config = config;
+        }
+
+        void IProjectile.Go(IMobileObject target)
+        {
+            if(config==null) return;
+            go(config, target).Forget();
+        }
+
+        void IProjectile.Go(Vector3 target)
+        {}
+        #endregion
     }
 }

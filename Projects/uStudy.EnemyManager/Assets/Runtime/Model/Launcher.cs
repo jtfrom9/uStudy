@@ -27,9 +27,8 @@ namespace Hedwig.Runtime
                 return;
             var projectile = projectileFactory.Create(
                 launcherController.mazzlePosition,
-                launcherController.target.transform,
                 config);
-            projectile?.Go();
+            projectile?.Go(launcherController.target);
         }
 
         ILauncherController? launcherController;

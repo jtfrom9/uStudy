@@ -11,9 +11,13 @@ namespace Hedwig.Runtime
         bool selected { get; }
     }
 
-    public interface ICharactor: IDisposable
+    public interface IMobileObject: IDisposable
     {
         Transform transform { get; }
+    }
+
+    public interface ICharactor: IMobileObject
+    {
         float distanceToGround { get; }
     }
 }

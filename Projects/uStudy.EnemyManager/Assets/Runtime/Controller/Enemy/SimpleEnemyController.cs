@@ -56,8 +56,21 @@ namespace Hedwig.Runtime
         bool ISelectable.selected { get => _selected; }
         #endregion
 
+        #region IDisposable
+        public void Dispose()
+        {
+            onAttcked.OnCompleted();
+            onDeath.OnCompleted();
+            selector?.Dispose();
+            Destroy(gameObject);
+        }
+        #endregion
+
+        #region IMobileObject
+        Transform IMobileObject.transform => transform;
+        #endregion
+
         #region ICharactor
-        Transform ICharactor.transform => transform;
         float ICharactor.distanceToGround {
             get {
                 if(_distanceToGround==null) {
@@ -119,17 +132,6 @@ namespace Hedwig.Runtime
         void IEnemyControl.ResetPos() {
             transform.SetPositionAndRotation(initialPosition, initialRotation);
             transform.localScale = initialScale;
-        }
-        #endregion
-
-
-        #region IDisposable
-        public void Dispose()
-        {
-            onAttcked.OnCompleted();
-            onDeath.OnCompleted();
-            selector?.Dispose();
-            Destroy(gameObject);
         }
         #endregion
 
