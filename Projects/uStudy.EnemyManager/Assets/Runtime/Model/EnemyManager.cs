@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
         CompositeDisposable disposable = new CompositeDisposable();
 
         IEffectFactory effectFactory;
-        ISelectorFactory selectorFactory;
+        ICursorFactory selectorFactory;
 
         void OnEnemyAttacked(DamageEvent e)
         {
@@ -48,7 +48,7 @@ namespace Hedwig.Runtime
         }
 
         // ctor
-        public EnemyManager(IEffectFactory effectFactory, ISelectorFactory selectorFactory)
+        public EnemyManager(IEffectFactory effectFactory, ICursorFactory selectorFactory)
         {
             this.effectFactory = effectFactory;
             this.selectorFactory = selectorFactory;

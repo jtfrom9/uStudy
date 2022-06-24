@@ -5,10 +5,10 @@ using DG.Tweening;
 
 namespace Hedwig.Runtime
 {
-    public class QuadSelectorController : MonoBehaviour, ISelector
+    public class QuadCursorController : MonoBehaviour, ICursor
     {
         #region ISelector
-        void ISelector.Initialize(Transform target, float distanceToGround)
+        void ICursor.Initialize(Transform target, float distanceToGround)
         {
             Debug.Log($"{target.gameObject.name}: {target.position}");
             // transform.position = target.position.Y(0.01f);
@@ -27,9 +27,9 @@ namespace Hedwig.Runtime
             gameObject.SetActive(false);
         }
 
-        bool ISelector.visible { get => gameObject.activeSelf; }
+        bool ICursor.visible { get => gameObject.activeSelf; }
 
-        void ISelector.Show(bool v)
+        void ICursor.Show(bool v)
         {
             gameObject.SetActive(v);
         }

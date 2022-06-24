@@ -85,7 +85,7 @@ namespace Hedwig.Runtime
         #region IEnemy
         public string Name { get => gameObject.name; }
         public int Health { get; private set; }
-        ISelector? selector;
+        ICursor? selector;
 
         void IEnemy.SetDestination(Vector3 pos)
         {
@@ -126,7 +126,7 @@ namespace Hedwig.Runtime
         void IEnemyControl.SetHealth(int v) {
             this.Health = v;
         }
-        void IEnemyControl.SetSelector(ISelector? selector) {
+        void IEnemyControl.SetSelector(ICursor? selector) {
             this.selector = selector;
         }
         void IEnemyControl.ResetPos() {

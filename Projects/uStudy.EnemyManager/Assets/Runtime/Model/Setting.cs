@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Hedwig.Runtime
 {
     [CreateAssetMenu(menuName ="Hedwig/Setting", fileName ="HedwigRuntimeSetting")]
-    public class Setting : ScriptableObject, IProjectileFactory, IEffectFactory, ISelectorFactory
+    public class Setting : ScriptableObject, IProjectileFactory, IEffectFactory, ICursorFactory
     {
         #region  IProjectileFactory
         [SerializeField, InterfaceType(typeof(IProjectile))]
@@ -58,17 +58,17 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        #region ISelectorFactory
-        [SerializeField, InterfaceType(typeof(ISelector))]
+        #region ICursorFactory
+        [SerializeField, InterfaceType(typeof(ICursor))]
         Component? selectorPrefab;
 
-        ISelector? ISelectorFactory.Create(ICharactor charactor)
+        ICursor? ICursorFactory.Create(ICharactor charactor)
         {
             if (selectorPrefab == null)
             {
                 return null;
             }
-            var selector = Instantiate(selectorPrefab) as ISelector;
+            var selector = Instantiate(selectorPrefab) as ICursor;
             selector?.Initialize(charactor.transform, charactor.distanceToGround);
             return selector;
         }

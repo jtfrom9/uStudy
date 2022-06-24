@@ -16,7 +16,7 @@ using DG.Tweening;
 
 namespace Hedwig.Runtime
 {
-    public class SelectorTest : LifetimeScope
+    public class CursorTest : LifetimeScope
     {
         [SerializeField]
         Setting? setting;

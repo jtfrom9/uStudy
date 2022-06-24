@@ -5,15 +5,15 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public interface ISelector: IDisposable
+    public interface ICursor: IDisposable
     {
         void Initialize(Transform target, float distanceToGround);
         bool visible { get; }
         void Show(bool v);
     }
 
-    public interface ISelectorFactory
+    public interface ICursorFactory
     {
-        ISelector? Create(ICharactor charactor);
+        ICursor? Create(ICharactor charactor);
     }
 }
