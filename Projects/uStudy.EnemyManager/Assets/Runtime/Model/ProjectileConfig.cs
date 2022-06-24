@@ -1,3 +1,5 @@
+#nullable enable
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +9,9 @@ namespace Hedwig.Runtime
     [CreateAssetMenu(menuName = "Hedwig/ProjectileConfig", fileName = "ProjectileConfig")]
     public class ProjectileConfig : ScriptableObject
     {
-        [SerializeField] public bool destroyAtEnd = true;
+        [SerializeField] public Projectile.EndType endType = Projectile.EndType.Destroy;
+        [SerializeField] GameObject? endEffectPrefab;
+
         [SerializeField] public float speed = 10f;
         [SerializeField] public float distance = 10;
 

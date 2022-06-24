@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: Shot
   m_EditorClassIdentifier: 
-  destroyAtEnd: 1
-  speed: 10
+  endType: 0
+  endEffectPrefab: {fileID: 0}
+  speed: 200
   distance: 30
   adjust: 0
   period: 0

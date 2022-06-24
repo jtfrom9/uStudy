@@ -7,18 +7,32 @@ using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 
+using Hedwig.Runtime.Projectile;
+
 namespace Hedwig.Runtime
 {
     public class TweenProjectileController : MonoBehaviour, IProjectile
     {
         ProjectileConfig? config;
+        Status _status = Status.Init;
+        EndReason _endReson = EndReason.Expired;
 
         CancellationTokenSource cts = new CancellationTokenSource();
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag(Collision.CharacterTag) ||
-                other.gameObject.CompareTag(Collision.EnvironmentTag))
+            var hit = false;
+            if (other.gameObject.CompareTag(Collision.CharacterTag))
+            {
+                _endReson = EndReason.TargetHit;
+                hit = true;
+            }
+            if (other.gameObject.CompareTag(Collision.EnvironmentTag))
+            {
+                _endReson = EndReason.OtherHit;
+                hit = true;
+            }
+            if (hit)
             {
                 cts.Cancel();
             }
@@ -37,13 +51,8 @@ namespace Hedwig.Runtime
             }
         }
 
-        async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
+        async UniTask mainLoop(ProjectileConfig config, IMobileObject target)
         {
-             var stopwatch = new System.Diagnostics.Stopwatch();
-            Debug.Log($"{config}");
-
-            stopwatch.Start();
-
             var prevDir = Vector3.zero;
             var distance = config.distance;
             for (var i = 0; i < config.NumAdjust; i++)
@@ -85,17 +94,32 @@ namespace Hedwig.Runtime
 
                 prevDir = dir;
             }
+        }
 
+        async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
+        {
+            Debug.Log($"{config}");
+
+            var stopwatch = new System.Diagnostics.Stopwatch();
+            stopwatch.Start();
+            await mainLoop(config, target);
             stopwatch.Stop();
-            Debug.Log($"elapsed: {stopwatch.Elapsed.TotalMilliseconds}");
-            if(config.destroyAtEnd)
+            Debug.Log($"elapsed: {stopwatch.ElapsedMilliseconds}");
+
+            _status = Status.End;
+            if (config.endType == EndType.Destroy)
+            {
                 Destroy(gameObject);
+            }
         }
 
         #region IDisposable
         void System.IDisposable.Dispose()
         {
-            transform.DOKill();
+            if (DOTween.IsTweening(transform))
+            {
+                transform.DOKill();
+            }
             Destroy(gameObject);
         }
         #endregion
@@ -105,6 +129,10 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IProjectile
+
+        Status IProjectile.status { get=> _status; }
+        EndReason IProjectile.endRegion { get => _endReson; }
+
         void IProjectile.Initialize(Vector3 initial, ProjectileConfig config)
         {
             transform.position = initial;
@@ -113,7 +141,14 @@ namespace Hedwig.Runtime
 
         void IProjectile.Go(IMobileObject target)
         {
-            if(config==null) return;
+            if (config == null)
+            {
+                throw new InvalidConditionException($"config: ${config}");
+            }
+            if (_status != Status.Init)
+            {
+                throw new InvalidConditionException($"status: ${_status}");
+            }
             go(config, target).Forget();
         }
 

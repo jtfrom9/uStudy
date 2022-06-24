@@ -12,8 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: NoHoming
   m_EditorClassIdentifier: 
-  duration: 10
-  recalcPeriod: 0.2
+  endType: 0
+  endEffectPrefab: {fileID: 0}
   speed: 2.45
-  randomRange: {x: 0, y: 0}
+  distance: 10
+  adjust: 0
+  period: 0
   maxAngle: 30
+  random: 0
+  range: {x: 0, y: 0}
