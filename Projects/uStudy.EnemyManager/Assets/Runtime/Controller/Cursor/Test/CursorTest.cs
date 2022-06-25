@@ -52,6 +52,7 @@ namespace Hedwig.Runtime
                 Debug.LogError($"enemyManager: {enemyManager}");
                 return;
             }
+            enemyManager.Setup();
 
             var selection = new SingleSelection(enemyManager.Enemies);
             selection.SelectExclusive(0);
@@ -76,7 +77,7 @@ namespace Hedwig.Runtime
 
             if (towerView)
             {
-                Camera.main.MoveWithLookAt(tower, enemy.transform.position, 1);
+                Camera.main.MoveWithLookAt(tower, enemy.transform.Position, 1);
             }
             else
             {
@@ -173,13 +174,13 @@ namespace Hedwig.Runtime
             var go = Instantiate(bulletPrefab);
             go.transform.position = tower;
 
-            go.transform.DOMove(e.transform.position, 3).OnComplete(() =>
+            go.transform.DOMove(e.transform.Position, 3).OnComplete(() =>
             {
                 Destroy(go);
             });
 
             var start = go.transform.position;
-            var end = e.transform.position;
+            var end = e.transform.Position;
             var dir = end - start;
             Debug.Log(dir.magnitude);
 
@@ -194,7 +195,7 @@ namespace Hedwig.Runtime
             if (!towerView) return;
             var e = selection.Current as IEnemy;
             if (e == null) return;
-            Debug.DrawLine(tower, e.transform.position, Color.red, 100);
+            Debug.DrawLine(tower, e.transform.Position, Color.red, 100);
         }
 
         void update(SingleSelection selection, IEnemyManager enemyManager)

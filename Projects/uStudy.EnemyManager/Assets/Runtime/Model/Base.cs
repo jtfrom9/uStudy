@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
 
     public interface IMobileObject: IDisposable
     {
-        Transform transform { get; }
+        ITransform transform { get; }
     }
 
     public interface ICharactor: IMobileObject

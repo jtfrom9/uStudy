@@ -37,6 +37,8 @@ public class EnemyTest : LifetimeScope
         if(enemyManager==null) return;
         if(text==null) return;
 
+        enemyManager.Setup();
+
         RnadomMoveEnemy(enemyManager).Forget();
         RandomAttach(enemyManager).Forget();
 

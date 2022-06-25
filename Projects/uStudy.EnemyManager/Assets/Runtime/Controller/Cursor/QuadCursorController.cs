@@ -8,12 +8,11 @@ namespace Hedwig.Runtime
     public class QuadCursorController : MonoBehaviour, ICursor
     {
         #region ISelector
-        void ICursor.Initialize(Transform target, float distanceToGround)
+        void ICursor.Initialize(IMobileObject target, float distanceToGround)
         {
-            Debug.Log($"{target.gameObject.name}: {target.position}");
             // transform.position = target.position.Y(0.01f);
             // transform.SetParent(target, true);
-            transform.SetParent(target);
+            transform.SetParent(target.transform);
             transform.localPosition = Vector3.down * distanceToGround;
             // transform.position = transform.position.Y(0.01f);
 

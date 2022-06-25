@@ -32,7 +32,7 @@ public class CachedTransformTest
         var ct = go.CachedTransform();
         await UniTask.NextFrame();
 
-        Assert.AreEqual(pos, ct.position);
+        Assert.AreEqual(pos, ct.Position);
     });
 
     [UnityTest]

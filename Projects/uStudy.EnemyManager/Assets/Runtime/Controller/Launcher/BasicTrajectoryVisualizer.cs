@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
+using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
@@ -12,9 +13,10 @@ namespace Hedwig.Runtime
     {
         LineRenderer? lineRenderer;
         bool _visible;
-        Transform? _start;
-        Transform? _end;
         ProjectileConfig? _config;
+
+        Vector3? _start;
+        Vector3? _end;
 
         void Awake()
         {
@@ -31,19 +33,26 @@ namespace Hedwig.Runtime
             lineRenderer.startWidth = 0.1f;
             lineRenderer.endWidth = 0.1f;
 
-            this.UpdateAsObservable().Where(_ => _visible).Subscribe(_ =>
-            {
-                _update(lineRenderer);
-            }).AddTo(this);
+            // this.UpdateAsObservable().Where(_ => _visible).Subscribe(_ =>
+            // {
+            //     _update(lineRenderer);
+            // }).AddTo(this);
+
+            // var task1 = this._start.ObserveEveryValueChanged(t => t.position).ToUniTask();
+            // var task2 = this._end.ObserveEveryValueChanged(t => t.position).ToUniTask();
+            // UniTask.WhenAny(task1, task2).ToObservable()
+            //     .Subscribe(_ => _update(lineRenderer)).AddTo(this);
         }
 
-        void _update(LineRenderer lineRenderer)
+        void _update()
         {
             if (this._start == null || this._end == null || this._config==null)
                 return;
+            if(lineRenderer==null)
+                return;
             var points = new Vector3[] {
-                this._start.position,
-                this._end.position
+                this._start.Value,
+                this._end.Value
             };
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);
@@ -52,13 +61,15 @@ namespace Hedwig.Runtime
         #region ITrajectoryVisualizer
         bool ITrajectoryVisualizer.visible { get => _visible; }
 
-        void ITrajectoryVisualizer.SetStartTarget(Transform target)
+        void ITrajectoryVisualizer.SetStartTarget(Vector3 pos)
         {
-            this._start = target;
+            this._start = pos;
+            _update();
         }
-        void ITrajectoryVisualizer.SetEndTarget(Transform target)
+        void ITrajectoryVisualizer.SetEndTarget(Vector3 pos)
         {
-            this._end = target;
+            this._end = pos;
+            _update();
         }
         void ITrajectoryVisualizer.SetConfig(ProjectileConfig? config)
         {

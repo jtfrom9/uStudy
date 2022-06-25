@@ -61,7 +61,7 @@ public class TowerAim : LifetimeScope
 
         if (lr != null)
         {
-            lr.SetPositions(new Vector3[] { launcherPoint.position, enemy.transform.position });
+            lr.SetPositions(new Vector3[] { launcherPoint.position, enemy.transform.Position });
             // lr.startWidth = 0.01f;
             // lr.endWidth = 0.01f;
         }

@@ -31,7 +31,7 @@ namespace Hedwig.Runtime
         [SerializeField]
         DamageEffectParameter? damageEffectParameter;
 
-        public IDamageEffect? CreateDamageEffect(Transform parent, int damage)
+        public IDamageEffect? CreateDamageEffect(IMobileObject parent, int damage)
         {
             if (damageEffectPrefab == null)
             {
@@ -44,7 +44,7 @@ namespace Hedwig.Runtime
             return effect;
         }
 
-        public IHitEffect? CreateHitEffect(Transform parent, Vector3 position, Vector3 normal)
+        public IHitEffect? CreateHitEffect(IMobileObject parent, Vector3 position, Vector3 normal)
         {
             if (hitEffectPrefab == null)
             {
@@ -69,7 +69,7 @@ namespace Hedwig.Runtime
                 return null;
             }
             var selector = Instantiate(selectorPrefab) as ICursor;
-            selector?.Initialize(charactor.transform, charactor.distanceToGround);
+            selector?.Initialize(charactor, charactor.distanceToGround);
             return selector;
         }
         #endregion

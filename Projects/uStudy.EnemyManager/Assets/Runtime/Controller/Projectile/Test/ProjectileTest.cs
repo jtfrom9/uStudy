@@ -64,6 +64,7 @@ namespace Hedwig.Runtime
             if (enemyManager == null) return;
             if (launcher == null) return;
 
+            enemyManager.Setup();
             setupUI(enemyManager);
 
             var selection = new SingleSelection(enemyManager.Enemies);

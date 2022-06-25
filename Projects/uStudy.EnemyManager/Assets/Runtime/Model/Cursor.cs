@@ -7,7 +7,7 @@ namespace Hedwig.Runtime
 {
     public interface ICursor: IDisposable
     {
-        void Initialize(Transform target, float distanceToGround);
+        void Initialize(IMobileObject target, float distanceToGround);
         bool visible { get; }
         void Show(bool v);
     }

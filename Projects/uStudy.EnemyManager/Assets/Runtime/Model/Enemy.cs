@@ -1,7 +1,7 @@
 #nullable enable
 
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -50,9 +50,10 @@ namespace Hedwig.Runtime
         IEnemy[] GetEnemies();
     }
 
-    public interface IEnemyManager: System.IDisposable
+    public interface IEnemyManager: IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }
+        void Setup();
         void AddEnemy(IEnemy eney);
     }
 

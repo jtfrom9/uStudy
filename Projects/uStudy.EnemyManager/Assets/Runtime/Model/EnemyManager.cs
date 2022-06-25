@@ -1,9 +1,11 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
+using VContainer.Unity;
 
 namespace Hedwig.Runtime
 {
@@ -24,10 +26,10 @@ namespace Hedwig.Runtime
             // effect.Play().Forget();
             var effects = new IEffect?[] {
                     effectFactory.CreateDamageEffect(
-                        e.enemy.transform,
+                        e.enemy,
                         e.damage),
                     effectFactory.CreateHitEffect(
-                        e.enemy.transform,
+                        e.enemy,
                         e.position,
                         Vector3.zero)
                 };
@@ -47,28 +49,7 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        // ctor
-        public EnemyManager(IEffectFactory effectFactory, ICursorFactory selectorFactory)
-        {
-            this.effectFactory = effectFactory;
-            this.selectorFactory = selectorFactory;
-
-            var enemyRepository = Controller.Find<IEnemyRepository>();
-            if (enemyRepository != null)
-            {
-                foreach (var enemy in enemyRepository.GetEnemies())
-                {
-                    this.AddEnemy(enemy);
-                }
-            }
-        }
-
-        #region IEnemyManager
-
-        public IReadOnlyList<IEnemy> Enemies { get => _enemies; }
-
-        public void AddEnemy(IEnemy enemy)
-        {
+        void addEnemy(IEnemy enemy) {
             _enemies.Add(enemy);
             enemy.OnAttacked.Subscribe(OnEnemyAttacked).AddTo(disposable);
             enemy.OnDeath.Subscribe(OnEnemyDeath).AddTo(disposable);
@@ -78,14 +59,37 @@ namespace Hedwig.Runtime
             ctrl.SetSelector(selectorFactory.Create(enemy));
         }
 
+        // ctor
+        public EnemyManager(IEffectFactory effectFactory, ICursorFactory selectorFactory)
+        {
+            this.effectFactory = effectFactory;
+            this.selectorFactory = selectorFactory;
+
+        }
+
+        #region IEnemyManager
+
+        IReadOnlyList<IEnemy> IEnemyManager.Enemies { get => _enemies; }
+
+        void IEnemyManager.Setup()
+        {
+            var enemyRepository = Controller.Find<IEnemyRepository>();
+            if (enemyRepository != null)
+            {
+                foreach (var enemy in enemyRepository.GetEnemies())
+                {
+                    addEnemy(enemy);
+                }
+            }
+        }
+
+        void IEnemyManager.AddEnemy(IEnemy enemy) => addEnemy(enemy);
         #endregion
 
         #region IDisposable
-
-        public void Dispose() {
+        void IDisposable.Dispose() {
             this.disposable.Dispose();
         }
-
         #endregion
     }
 }

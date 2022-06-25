@@ -13,11 +13,16 @@ namespace Hedwig.Runtime
 {
     public class TweenProjectileController : MonoBehaviour, IProjectile
     {
+        CachedTransform _transform = new CachedTransform();
         ProjectileConfig? config;
         Status _status = Status.Init;
         EndReason _endReson = EndReason.Expired;
 
         CancellationTokenSource cts = new CancellationTokenSource();
+
+        void Awake() {
+            _transform.Initialize(transform);
+        }
 
         void OnTriggerEnter(Collider other)
         {
@@ -60,7 +65,7 @@ namespace Hedwig.Runtime
                 var start = transform.position;
                 var rand = config.MakeRandom(target.transform);
                 Debug.Log($"rand: {rand}");
-                var end = target.transform.position + rand;
+                var end = target.transform.Position + rand;
                 var dir = end - start;
 
                 if (i > 0 && config.adjustMaxAngle.HasValue)
@@ -125,7 +130,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
-        Transform IMobileObject.transform { get => transform; }
+        ITransform IMobileObject.transform { get => _transform; }
         #endregion
 
         #region IProjectile

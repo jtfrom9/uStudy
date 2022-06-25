@@ -11,6 +11,7 @@ namespace Hedwig.Runtime
 {
     public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
     {
+        CachedTransform _transform = new CachedTransform();
         NavMeshAgent? _agent;
 
         Vector3 initialPosition;
@@ -22,6 +23,7 @@ namespace Hedwig.Runtime
 
         void Awake()
         {
+            _transform.Initialize(transform);
             _agent = GetComponent<NavMeshAgent>();
             _agent.speed = 3;
 
@@ -67,7 +69,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
-        Transform IMobileObject.transform => transform;
+        ITransform IMobileObject.transform { get => _transform; }
         #endregion
 
         #region ICharactor

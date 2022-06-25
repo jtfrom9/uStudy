@@ -17,7 +17,7 @@ public class EffectTest : LifetimeScope
     Setting setting;
 
     [SerializeField]
-    List<Transform> targets = new List<Transform>();
+    List<GameObject> targets = new List<GameObject>();
 
     [SerializeField]
     Button hitButton;
@@ -34,12 +34,12 @@ public class EffectTest : LifetimeScope
 
         foreach (var target in targets)
         {
-            var mr = target.gameObject.GetComponent<MeshRenderer>();
+            var mr = target.transform.gameObject.GetComponent<MeshRenderer>();
             mr.material.color = new Color(0.1f, 0.1f, 0.1f);
         }
     }
 
-    IEffect[] createEffects(Transform target, int damage, Vector3 position)
+    IEffect[] createEffects(IMobileObject target, int damage, Vector3 position)
     {
         return new IEffect[] {
             factory.CreateDamageEffect(target, damage),
@@ -47,19 +47,18 @@ public class EffectTest : LifetimeScope
         }.Where(e => e != null).ToArray();
     }
 
-    Vector3 hitPosition(Transform target) {
+    Vector3 hitPosition(IMobileObject target) {
         var position = Vector3.zero;
         if (target != null)
         {
             var hit = new RaycastHit();
             var origin = Camera.main.transform.position;
-            var dir = target.position - origin;
+            var dir = target.transform.Position - origin;
             if (!Physics.Raycast(origin, dir, out hit, 100))
             {
                 Debug.LogError("failed not raycast");
                 return Vector3.zero;
             }
-            Debug.Log($"{target.gameObject.name}: {hit.point}");
             return hit.point;
         }
         else
@@ -68,6 +67,16 @@ public class EffectTest : LifetimeScope
         }
     }
 
+    class DummyMobileObject : MonoBehaviour, IMobileObject
+    {
+        CachedTransform _transform = new CachedTransform();
+        ITransform IMobileObject.transform { get => _transform; }
+        public void Dispose() { Destroy(gameObject); }
+        void Awake()
+        {
+            _transform.Initialize(transform);
+        }
+    }
 
     void Start()
     {
@@ -78,7 +87,10 @@ public class EffectTest : LifetimeScope
                 hitButton.interactable = false;
             }
 
-            var _targets = new Transform[] { null }.Concat(targets.ToArray());
+            var _targets = targets.Select(target =>
+            {
+                return target.AddComponent<DummyMobileObject>() as IMobileObject;
+            });
 
             var tasks = new List<UniTask>();
 
@@ -87,7 +99,6 @@ public class EffectTest : LifetimeScope
                 var e = createEffects(target, Random.Range(1, 30), hitPosition(target));
                 tasks.Add(e.PlayAndDispose());
             }
-            // Debug.Break();
             await UniTask.WhenAll(tasks);
 
             if (!continuousToggle.isOn)

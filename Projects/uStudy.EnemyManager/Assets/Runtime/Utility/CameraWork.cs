@@ -48,5 +48,13 @@ namespace Hedwig.Runtime
             camera.transform.DOLocalMove(localPosition, duration);
             camera.transform.DOLocalRotate(localRotation, duration);
         }
+
+        public static void Tracking(this Camera camera, ITransform target, Vector3 localPosition, Vector3 localRotation, float duration)
+        {
+            camera.killTween();
+            camera.transform.SetParent(target, true);
+            camera.transform.DOLocalMove(localPosition, duration);
+            camera.transform.DOLocalRotate(localRotation, duration);
+        }
     }
 }

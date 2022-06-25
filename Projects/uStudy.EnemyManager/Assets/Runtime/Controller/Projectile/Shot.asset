@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endType: 0
   endEffectPrefab: {fileID: 0}
-  speed: 200
+  speed: 250
   distance: 30
   adjust: 0
   period: 0

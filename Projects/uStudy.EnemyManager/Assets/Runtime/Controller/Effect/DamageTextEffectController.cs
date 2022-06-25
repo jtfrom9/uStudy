@@ -41,11 +41,11 @@ namespace Hedwig.Runtime
         }
 
         #region IDamageEffect
-        public void Initialize(Transform parent, DamageEffectParameter param, int damage)
+        public void Initialize(IMobileObject parent, DamageEffectParameter param, int damage)
         {
             this.duration = param.duration;
             this.damage = damage;
-            transform.SetParent(parent, false);
+            transform.SetParent(parent.transform, false);
         }
         public UniTask Play() => _play();
         #endregion

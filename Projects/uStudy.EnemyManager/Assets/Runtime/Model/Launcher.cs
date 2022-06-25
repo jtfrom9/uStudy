@@ -2,21 +2,22 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
     public interface ILauncherController
     {
-        Vector3 mazzlePosition { get; }
-        Transform mazzle { get; }
+        ITransform mazzle { get; }
         IEnemy? target { get; }
         bool CanLaunch { get; }
         void SetTarget(IEnemy? enemy);
     }
 
-    public class Launcher
+    public class Launcher: System.IDisposable
     {
         ProjectileConfig? config;
+        CompositeDisposable disposable = new CompositeDisposable();
 
         public bool CanLaunch { get => launcherController?.CanLaunch ?? false && config != null; }
 
@@ -36,10 +37,15 @@ namespace Hedwig.Runtime
         public void SetTarget(IEnemy? enemy)
         {
             launcherController?.SetTarget(enemy);
-            if (trajectoryVisualizer != null && launcherController != null)
+            if (enemy != null)
             {
-                if (enemy != null)
-                    trajectoryVisualizer.SetEndTarget(enemy.transform);
+                if (launcherController != null && trajectoryVisualizer != null)
+                {
+                    enemy.transform.OnPositionChanged.Subscribe(pos =>
+                    {
+                        trajectoryVisualizer.SetEndTarget(pos);
+                    }).AddTo(disposable);
+                }
             }
         }
 
@@ -53,9 +59,13 @@ namespace Hedwig.Runtime
                 trajectoryVisualizer.Show(false);
             }
             var projectile = projectileFactory.Create(
-                launcherController.mazzlePosition,
+                launcherController.mazzle.Position,
                 this.config);
             projectile?.Go(launcherController.target);
+        }
+
+        public void Dispose() {
+            disposable.Dispose();
         }
 
         IProjectileFactory projectileFactory;
@@ -68,9 +78,11 @@ namespace Hedwig.Runtime
             this.launcherController = Controller.Find<ILauncherController>();
             this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
 
-            if (trajectoryVisualizer != null)
+            if (trajectoryVisualizer != null && launcherController!=null)
             {
-                trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
+                launcherController.mazzle.OnPositionChanged.Subscribe(position => {
+                    trajectoryVisualizer.SetStartTarget(position);
+                }).AddTo(disposable);
             }
         }
     }

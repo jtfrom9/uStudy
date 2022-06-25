@@ -32,7 +32,7 @@ namespace Hedwig.Runtime
 
         public float EachDuration { get => Duration / NumAdjust; }
 
-        public Vector3 MakeRandom(Transform target)
+        public Vector3 MakeRandom(ITransform target)
         {
             if (!randomRange.HasValue) return Vector3.zero;
             else
@@ -40,7 +40,7 @@ namespace Hedwig.Runtime
                 var v = randomRange.Value;
                 var _r = UnityEngine.Random.Range(-v.x, v.x);
                 var _u = UnityEngine.Random.Range(-v.y, v.y);
-                return target.right * _r + target.up * _u;
+                return target.Right * _r + target.Up * _u;
             }
         }
 
