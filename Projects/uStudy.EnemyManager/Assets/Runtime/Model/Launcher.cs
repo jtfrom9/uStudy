@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Hedwig.Runtime
@@ -7,37 +8,70 @@ namespace Hedwig.Runtime
     public interface ILauncherController
     {
         Vector3 mazzlePosition { get; }
+        Transform mazzle { get; }
         IEnemy? target { get; }
         bool CanLaunch { get; }
-        void Aim(IEnemy? enemy);
+        void SetTarget(IEnemy? enemy);
     }
 
     public class Launcher
     {
-        public bool CanLaunch { get => launcherController?.CanLaunch ?? false; }
+        ProjectileConfig? config;
 
-        public void Aim(IEnemy? enemy)
+        public bool CanLaunch { get => launcherController?.CanLaunch ?? false && config != null; }
+
+        public void SetProjectileConfig(ProjectileConfig? config)
         {
-            this.launcherController?.Aim(enemy);
+            this.config = config;
+            if(this.trajectoryVisualizer!=null) {
+                this.trajectoryVisualizer.SetConfig(config);
+            }
         }
 
-        public void Launch(ProjectileConfig config)
+        public void ShowTrajectory(bool v)
+        {
+            this.trajectoryVisualizer?.Show(v);
+        }
+
+        public void SetTarget(IEnemy? enemy)
+        {
+            launcherController?.SetTarget(enemy);
+            if (trajectoryVisualizer != null && launcherController != null)
+            {
+                if (enemy != null)
+                    trajectoryVisualizer.SetEndTarget(enemy.transform);
+            }
+        }
+
+        public void Launch()
         {
             if(launcherController==null || launcherController.target==null)
                 return;
+            if(config==null)
+                return;
+            if(trajectoryVisualizer!=null) {
+                trajectoryVisualizer.Show(false);
+            }
             var projectile = projectileFactory.Create(
                 launcherController.mazzlePosition,
-                config);
+                this.config);
             projectile?.Go(launcherController.target);
         }
 
-        ILauncherController? launcherController;
         IProjectileFactory projectileFactory;
+        ILauncherController? launcherController;
+        ITrajectoryVisualizer? trajectoryVisualizer;
 
         public Launcher(IProjectileFactory projectileFactory)
         {
             this.projectileFactory = projectileFactory;
             this.launcherController = Controller.Find<ILauncherController>();
+            this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
+
+            if (trajectoryVisualizer != null)
+            {
+                trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
+            }
         }
     }
 }

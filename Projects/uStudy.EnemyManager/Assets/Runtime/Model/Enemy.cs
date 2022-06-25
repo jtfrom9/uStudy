@@ -74,7 +74,7 @@ namespace Hedwig.Runtime
                     try
                     {
                         await UniTask.Delay(msec, cancellationToken: token);
-                    }catch (OperationCanceledException e)
+                    }catch (OperationCanceledException)
                     {
                         break;
                     }

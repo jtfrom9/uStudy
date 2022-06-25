@@ -69,7 +69,8 @@ namespace Hedwig.Runtime
             var selection = new SingleSelection(enemyManager.Enemies);
             selection.onCurrentChanged.Subscribe(selectable =>
             {
-                launcher.Aim(selectable as IEnemy);
+                launcher.SetTarget(selectable as IEnemy);
+                launcher.ShowTrajectory(true);
             }).AddTo(this);
 
             selection.SelectExclusive(0);
@@ -82,16 +83,16 @@ namespace Hedwig.Runtime
             }).AddTo(this);
 
             this.projectileConfigIndex = projectileConfigs.Count - 1;
+            launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
         }
 
         void _update(Launcher launcher, IEnemy enemy, SingleSelection selection)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (launcher.CanLaunch && projectileConfigIndex >=0)
+                if (launcher.CanLaunch)
                 {
-                    var config = projectileConfigs[projectileConfigIndex];
-                    launcher.Launch(config);
+                    launcher.Launch();
                 }
             }
             if(Input.GetKeyDown(KeyCode.RightArrow))
@@ -107,12 +108,14 @@ namespace Hedwig.Runtime
                 if (projectileConfigIndex < 0) return;
                 projectileConfigIndex++;
                 if (projectileConfigIndex == projectileConfigs.Count - 1) projectileConfigIndex = 0;
+                launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
             }
-            if(Input.GetKeyDown(KeyCode.UpArrow)) 
+            if(Input.GetKeyDown(KeyCode.UpArrow))
             {
                 if (projectileConfigIndex < 0) return;
                 projectileConfigIndex--;
                 if (projectileConfigIndex < 0) projectileConfigIndex = projectileConfigs.Count - 1;
+                launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
             }
         }
 
