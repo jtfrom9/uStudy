@@ -17,6 +17,7 @@ namespace Hedwig.Runtime
         ProjectileConfig? config;
         Status _status = Status.Init;
         EndReason _endReson = EndReason.Expired;
+        GameObject? lastHit;
 
         CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -43,12 +44,32 @@ namespace Hedwig.Runtime
             }
         }
 
+        // void hitTest(Vector3 pos, Vector3 dir, float speed) {
+        //     var hit = new RaycastHit();
+        //     if(Physics.Raycast(pos, dir, out hit, speed *Time.deltaTime)) {
+        //         if(hit.collider.gameObject.CompareTag(Collision.CharacterTag)) {
+        //             Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
+        //             Debug.Break();
+        //             lastHit = hit.collider.gameObject;
+        //             cts.Cancel();
+        //         }
+        //         if (hit.collider.gameObject.CompareTag(Collision.EnvironmentTag))
+        //         {
+        //             Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
+        //             Debug.Break();
+        //         }
+        //     }
+        // }
+
         async UniTask<bool> move(Vector3 destRelative, float duration) {
+            var dir = destRelative.normalized;
+            var speed = destRelative.magnitude / duration;
             try
             {
                 await transform.DOMove(destRelative, duration)
                     .SetRelative(true)
                     .SetEase(Ease.Linear)
+                    // .OnUpdate(() => hitTest(transform.position, dir, speed))
                     .ToUniTask(cancellationToken: cts.Token);
                 return true;
             } catch (OperationCanceledException) {
@@ -99,6 +120,16 @@ namespace Hedwig.Runtime
 
                 prevDir = dir;
             }
+
+            // if (lastHit != null)
+            // {
+            //     await UniTask.NextFrame();
+            //     var enemy = lastHit.GetComponent<IEnemy>();
+            //     if (enemy != null)
+            //     {
+            //         enemy.Attacked(10);
+            //     }
+            // }
         }
 
         async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
