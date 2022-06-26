@@ -6,8 +6,13 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public interface ICameraTransform : ITransform
+    public class CameraTransform
     {
-        Camera camera { get; }
+        public static ITransform? Find()
+        {
+            var camera = Object.FindObjectOfType<Camera>();
+            if (camera == null) { return null; }
+            return camera.gameObject.CachedTransform();
+        }
     }
 }

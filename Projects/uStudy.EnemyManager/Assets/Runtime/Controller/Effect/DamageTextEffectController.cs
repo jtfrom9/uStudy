@@ -14,20 +14,22 @@ namespace Hedwig.Runtime
         float duration;
         int damage;
         TextMeshPro? tmp;
+        ITransform? cameraTransform;
 
         void Awake() {
             tmp = GetComponentInChildren<TextMeshPro>();
+            cameraTransform = CameraTransform.Find();
         }
 
         UniTask _play()
         {
             var token = this.GetCancellationTokenOnDestroy();
-            var gazeTarget = Camera.main.transform.position;
 
             // t1 = transform.DOLocalMoveY(1, duration).ToUniTask(cancellationToken: token);
             var t1 = transform.DOLocalMoveY(1, duration).OnUpdate(() =>
             {
-                transform.LookAt(gazeTarget);
+                if(cameraTransform!=null)
+                    transform.LookAt(cameraTransform.Position);
             }).ToUniTask(cancellationToken: token);
 
             var t2 = DOTween.To(
