@@ -31,6 +31,7 @@ MonoBehaviour:
     m_Scopes:
     - com.cysharp.unitask
     - com.demigiant.dotween
+    - com.jtfrom9.input-observable
     - com.neuecc.unirx
     - com.openupm
     - jp.hadashikick.vcontainer

@@ -17,4 +17,5 @@ MonoBehaviour:
   hitEffectPrefab: {fileID: 8575580264491783538, guid: 9c9eafce25a50459bb5b257b4c75a12b, type: 3}
   damageEffectParameter:
     duration: 1
-  selectorPrefab: {fileID: 6712026441703237070, guid: dcde3c461ddf54484acd7b3b970f17c6, type: 3}
+  targetCursorPrefab: {fileID: 6712026441703237070, guid: dcde3c461ddf54484acd7b3b970f17c6, type: 3}
+  freeCursorPrefab: {fileID: 6712026441703237070, guid: dcde3c461ddf54484acd7b3b970f17c6, type: 3}

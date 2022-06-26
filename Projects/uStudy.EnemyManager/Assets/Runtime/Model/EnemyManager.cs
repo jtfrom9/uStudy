@@ -56,7 +56,7 @@ namespace Hedwig.Runtime
 
             var ctrl = enemy.GetControl();
             ctrl.SetHealth(100);
-            ctrl.SetSelector(selectorFactory.Create(enemy));
+            ctrl.SetSelector(selectorFactory.CreateTargetCusor(enemy));
         }
 
         // ctor

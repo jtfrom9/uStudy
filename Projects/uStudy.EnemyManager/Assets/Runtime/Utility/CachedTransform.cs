@@ -47,9 +47,11 @@ namespace Hedwig.Runtime
         Transform? ITransform.Raw { get => _transform; }
         #endregion
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             disposable.Dispose();
+            onPositionChanged.OnCompleted();
+            onRotationChanged.OnCompleted();
         }
 
         public void Initialize(Transform transform)
@@ -66,10 +68,10 @@ namespace Hedwig.Runtime
                 onRotationChanged.OnNext(rot);
             }).AddTo(disposable);
 
-            transform.OnDestroyAsObservable().Subscribe(_ =>
+            _transform.OnDestroyAsObservable().Subscribe(_ =>
             {
-                disposable.Dispose();
-            }).AddTo(transform);
+                this.Dispose();
+            });
         }
 
         public CachedTransform()

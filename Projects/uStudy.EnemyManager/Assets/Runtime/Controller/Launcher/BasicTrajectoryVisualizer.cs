@@ -36,35 +36,21 @@ namespace Hedwig.Runtime
             lineRenderer.endWidth = 0.1f;
         }
 
-        void show(bool v)
-        {
-            if (lineRenderer != null)
-            {
-                if (v)
-                {
-                    lineRenderer.enabled = true;
-                }
-                else
-                {
-                    lineRenderer.positionCount = 0;
-                    lineRenderer.enabled = false;
-                }
-            }
-        }
-
         void redraw()
         {
-            if (this._start == null || this._end == null || this._config == null)
-            {
-                show(false);
-                return;
-            }
             if (lineRenderer == null)
                 return;
+            if (!_visible || this._start == null || this._end == null || this._config == null)
+            {
+                lineRenderer.positionCount = 0;
+                lineRenderer.enabled = false;
+                return;
+            }
             var points = new Vector3[] {
                 this._start.Position,
                 this._end.Position
             };
+            lineRenderer.enabled = true;
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);
         }
@@ -78,11 +64,25 @@ namespace Hedwig.Runtime
         {
             if (this._start != null)
             {
-                disposables.Add(this._start.OnPositionChanged.Subscribe(_ => redraw()));
+                disposables.Add(this._start.OnPositionChanged
+                    .Subscribe(
+                        _ => redraw(),
+                        () => { // onComplete
+                            this._start = null;
+                            redraw();
+                        }
+                ));
             }
             if (this._end != null)
             {
-                disposables.Add(this._end.OnPositionChanged.Subscribe(_ => redraw()));
+                disposables.Add(this._end.OnPositionChanged
+                    .Subscribe(
+                        _ => redraw(),
+                        () => {  // onComplete
+                            this._end = null;
+                            redraw();
+                        }
+                ));
             }
         }
 
@@ -94,23 +94,23 @@ namespace Hedwig.Runtime
             this.clearHandler();
             this._start = target;
             this.setupHandler();
+            this.redraw();
         }
         void ITrajectoryVisualizer.SetEndTarget(ITransform? target)
         {
             this.clearHandler();
             this._end = target;
             this.setupHandler();
+            this.redraw();
         }
         void ITrajectoryVisualizer.SetConfig(ProjectileConfig? config)
         {
             this._config = config;
-            show(_visible);
             redraw();
         }
         void ITrajectoryVisualizer.Show(bool v)
         {
             _visible = v;
-            show(v);
             redraw();
         }
         #endregion

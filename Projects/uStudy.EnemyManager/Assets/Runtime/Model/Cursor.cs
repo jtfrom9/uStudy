@@ -7,13 +7,24 @@ namespace Hedwig.Runtime
 {
     public interface ICursor: IDisposable
     {
-        void Initialize(IMobileObject target, float distanceToGround);
         bool visible { get; }
         void Show(bool v);
     }
 
+    public interface ITargetCursor : ICursor
+    {
+        void Initialize(IMobileObject target, float distanceToGround);
+    }
+
+    public interface IFreeCursor : ICursor, IMobileObject
+    {
+        void Initialize();
+        void Move(Vector3 pos);
+    }
+
     public interface ICursorFactory
     {
-        ICursor? Create(ICharactor charactor);
+        ITargetCursor? CreateTargetCusor(ICharactor charactor);
+        IFreeCursor? CreateFreeCusor();
     }
 }

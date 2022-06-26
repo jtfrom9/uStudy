@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.TestTools;
 using Cysharp.Threading.Tasks;
 using UniRx;
+using UniRx.Triggers;
 
 using Hedwig.Runtime;
 
@@ -17,7 +18,8 @@ public class CachedTransformTest
     {
     }
 
-    GameObject makeGameObject() {
+    GameObject makeGameObject()
+    {
         var go = new GameObject("Hoge");
         go.AddComponent<Dummy>();
         return go;
@@ -43,7 +45,8 @@ public class CachedTransformTest
 
         int count = 0;
         Vector3 pos = Vector3.zero;
-        ct.OnPositionChanged.Subscribe(p => {
+        ct.OnPositionChanged.Subscribe(p =>
+        {
             count++;
             pos = p;
         });
@@ -55,5 +58,21 @@ public class CachedTransformTest
         await UniTask.NextFrame();
         Assert.AreEqual(1, count);
         Assert.AreEqual(new Vector3(1, 0, 0), pos);
+    });
+
+    class disposable: IDisposable {
+        public void Dispose() {
+            Debug.Log("disposable.Dispose");
+        }
+    }
+
+    [UnityTest]
+    public IEnumerator TestCachedPosition2() => UniTask.ToCoroutine(async () =>
+    {
+        var go = makeGameObject();
+        var d = new CompositeDisposable();
+        go.OnDestroyAsObservable().Subscribe(_ => { Debug.Log("destroy"); });
+        // d.Dispose();
+        // UnityEngine.Object.Destroy(go);
     });
 }

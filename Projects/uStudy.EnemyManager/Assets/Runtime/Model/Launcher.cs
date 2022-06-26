@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
@@ -14,7 +15,7 @@ namespace Hedwig.Runtime
         void SetTarget(IMobileObject? target);
     }
 
-    public class Launcher: System.IDisposable
+    public class Launcher: IDisposable
     {
         ProjectileConfig? config;
         CompositeDisposable disposable = new CompositeDisposable();
@@ -32,10 +33,10 @@ namespace Hedwig.Runtime
             this.trajectoryVisualizer?.Show(v);
         }
 
-        public void SetTarget(IEnemy? enemy)
+        public void SetTarget(IMobileObject? target)
         {
-            launcherController?.SetTarget(enemy);
-            trajectoryVisualizer?.SetEndTarget(enemy?.transform);
+            launcherController?.SetTarget(target);
+            trajectoryVisualizer?.SetEndTarget(target?.transform);
         }
 
         void setupMazzle() {
@@ -60,11 +61,15 @@ namespace Hedwig.Runtime
             projectile?.Go(launcherController.target);
         }
 
-        public void Dispose() {
+        void IDisposable.Dispose()
+        {
             disposable.Dispose();
         }
 
+        // injected
         IProjectileFactory projectileFactory;
+
+        // find
         ILauncherController? launcherController;
         ITrajectoryVisualizer? trajectoryVisualizer;
 

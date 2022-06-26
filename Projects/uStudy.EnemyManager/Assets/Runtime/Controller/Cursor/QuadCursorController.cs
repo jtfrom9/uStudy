@@ -1,3 +1,6 @@
+#nullable enable
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,10 +8,25 @@ using DG.Tweening;
 
 namespace Hedwig.Runtime
 {
-    public class QuadCursorController : MonoBehaviour, ICursor
+    public class QuadCursorController : MonoBehaviour, ITargetCursor, IFreeCursor
     {
-        #region ISelector
-        void ICursor.Initialize(IMobileObject target, float distanceToGround)
+        CachedTransform _transform = new CachedTransform();
+
+        void Awake() {
+            _transform.Initialize(transform);
+        }
+
+        ITransform IMobileObject.transform { get => _transform; }
+
+        void IFreeCursor.Initialize()
+        {
+            transform.DOScale(Vector3.one * 1.5f, 1).SetLoops(-1, LoopType.Yoyo);
+        }
+        void IFreeCursor.Move(Vector3 pos) {
+            transform.position = pos;
+        }
+
+        void ITargetCursor.Initialize(IMobileObject target, float distanceToGround)
         {
             // transform.position = target.position.Y(0.01f);
             // transform.SetParent(target, true);
@@ -32,9 +50,10 @@ namespace Hedwig.Runtime
         {
             gameObject.SetActive(v);
         }
-        #endregion
 
-        void System.IDisposable.Dispose() {
+        void IDisposable.Dispose()
+        {
+            transform.DOKill();
             Destroy(gameObject);
         }
     }

@@ -80,7 +80,7 @@ namespace Hedwig.Runtime
                         break;
                     }
                 }
-                manager.StopAll();
+                // manager.StopAll();
             });
         }
 

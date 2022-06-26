@@ -59,18 +59,32 @@ namespace Hedwig.Runtime
         #endregion
 
         #region ICursorFactory
-        [SerializeField, InterfaceType(typeof(ICursor))]
-        Component? selectorPrefab;
+        [SerializeField, InterfaceType(typeof(ITargetCursor))]
+        Component? targetCursorPrefab;
 
-        ICursor? ICursorFactory.Create(ICharactor charactor)
+        [SerializeField, InterfaceType(typeof(IFreeCursor))]
+        Component? freeCursorPrefab;
+
+        ITargetCursor? ICursorFactory.CreateTargetCusor(ICharactor charactor)
         {
-            if (selectorPrefab == null)
+            if (targetCursorPrefab == null)
             {
                 return null;
             }
-            var selector = Instantiate(selectorPrefab) as ICursor;
-            selector?.Initialize(charactor, charactor.distanceToGround);
-            return selector;
+            var cursor = Instantiate(targetCursorPrefab) as ITargetCursor;
+            cursor?.Initialize(charactor, charactor.distanceToGround);
+            return cursor;
+        }
+
+        IFreeCursor? ICursorFactory.CreateFreeCusor()
+        {
+            if (freeCursorPrefab==null)
+            {
+                return null;
+            }
+            var cursor = Instantiate(freeCursorPrefab) as IFreeCursor;
+            cursor?.Initialize();
+            return cursor;
         }
         #endregion
     }
