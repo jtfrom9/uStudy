@@ -15,8 +15,10 @@ namespace Hedwig.Runtime
         bool _visible;
         ProjectileConfig? _config;
 
-        Vector3? _start;
-        Vector3? _end;
+        ITransform? _start;
+        ITransform? _end;
+
+        CompositeDisposable disposables = new CompositeDisposable();
 
         void Awake()
         {
@@ -32,62 +34,84 @@ namespace Hedwig.Runtime
 
             lineRenderer.startWidth = 0.1f;
             lineRenderer.endWidth = 0.1f;
-
-            // this.UpdateAsObservable().Where(_ => _visible).Subscribe(_ =>
-            // {
-            //     _update(lineRenderer);
-            // }).AddTo(this);
-
-            // var task1 = this._start.ObserveEveryValueChanged(t => t.position).ToUniTask();
-            // var task2 = this._end.ObserveEveryValueChanged(t => t.position).ToUniTask();
-            // UniTask.WhenAny(task1, task2).ToObservable()
-            //     .Subscribe(_ => _update(lineRenderer)).AddTo(this);
         }
 
-        void _update()
+        void show(bool v)
         {
-            if (this._start == null || this._end == null || this._config==null)
-                return;
-            if(lineRenderer==null)
-                return;
-            var points = new Vector3[] {
-                this._start.Value,
-                this._end.Value
-            };
-            lineRenderer.positionCount = points.Length;
-            lineRenderer.SetPositions(points);
-        }
-
-        #region ITrajectoryVisualizer
-        bool ITrajectoryVisualizer.visible { get => _visible; }
-
-        void ITrajectoryVisualizer.SetStartTarget(Vector3 pos)
-        {
-            this._start = pos;
-            _update();
-        }
-        void ITrajectoryVisualizer.SetEndTarget(Vector3 pos)
-        {
-            this._end = pos;
-            _update();
-        }
-        void ITrajectoryVisualizer.SetConfig(ProjectileConfig? config)
-        {
-            this._config = config;
-        }
-
-        void ITrajectoryVisualizer.Show(bool v) {
-            _visible = v;
             if (lineRenderer != null)
             {
                 if (v)
                 {
                     lineRenderer.enabled = true;
-                } else {
+                }
+                else
+                {
                     lineRenderer.positionCount = 0;
                     lineRenderer.enabled = false;
                 }
             }
+        }
+
+        void redraw()
+        {
+            if (this._start == null || this._end == null || this._config == null)
+            {
+                show(false);
+                return;
+            }
+            if (lineRenderer == null)
+                return;
+            var points = new Vector3[] {
+                this._start.Position,
+                this._end.Position
+            };
+            lineRenderer.positionCount = points.Length;
+            lineRenderer.SetPositions(points);
+        }
+
+        void clearHandler()
+        {
+            disposables.Clear();
+        }
+
+        void setupHandler()
+        {
+            if (this._start != null)
+            {
+                disposables.Add(this._start.OnPositionChanged.Subscribe(_ => redraw()));
+            }
+            if (this._end != null)
+            {
+                disposables.Add(this._end.OnPositionChanged.Subscribe(_ => redraw()));
+            }
+        }
+
+        #region ITrajectoryVisualizer
+        bool ITrajectoryVisualizer.visible { get => _visible; }
+
+        void ITrajectoryVisualizer.SetStartTarget(ITransform? target)
+        {
+            this.clearHandler();
+            this._start = target;
+            this.setupHandler();
+        }
+        void ITrajectoryVisualizer.SetEndTarget(ITransform? target)
+        {
+            this.clearHandler();
+            this._end = target;
+            this.setupHandler();
+        }
+        void ITrajectoryVisualizer.SetConfig(ProjectileConfig? config)
+        {
+            this._config = config;
+            show(_visible);
+            redraw();
+        }
+        void ITrajectoryVisualizer.Show(bool v)
+        {
+            _visible = v;
+            show(v);
+            redraw();
         }
         #endregion
     }

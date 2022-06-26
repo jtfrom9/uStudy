@@ -13,54 +13,55 @@ namespace Hedwig.Runtime
         Transform? mazzle;
 
         CachedTransform _tranform = new CachedTransform();
-        IEnemy? _target;
+        IMobileObject? _target;
         IDisposable? _disposable;
 
-        void Start()
+        void Awake()
         {
             if (mazzle != null)
             {
                 _tranform.Initialize(mazzle);
+
+                // (_tranform as ITransform).OnPositionChanged.Subscribe(pos =>
+                // {
+                //     Debug.Log($"muzzle: {pos}");
+                // });
             }
-            // this.UpdateAsObservable().Subscribe(_ =>
-            // {
-            //     _update();
-            // }).AddTo(this);
         }
 
-        // void _update()
-        // {
-        //     if (this._target == null) return;
-        //     if (this._target.transform.position == Vector3.zero) return;
-        //     if (_target != null)
-        //     {
-        //         transform.LookAt(_target.transform.position);
-        //     }
-        // }
-
-        #region ILauncher
-
-        ITransform ILauncherController.mazzle { get => _tranform; }
-
-        IEnemy? ILauncherController.target { get => this._target; }
-
-        bool ILauncherController.CanLaunch { get => this._target != null && this.mazzle != null; }
-
-        void ILauncherController.SetTarget(IEnemy? enemy)
+        void clearHandler()
         {
             if (_disposable != null)
             {
                 _disposable.Dispose();
                 _disposable = null;
             }
-            this._target = enemy;
+        }
 
-            if(this._target!=null) {
+        void setupHandler()
+        {
+            if (this._target != null)
+            {
                 _disposable = this._target.transform.OnPositionChanged.Subscribe(pos =>
                 {
-                    this.transform.LookAt(pos);
+                    transform.LookAt(pos);
                 }).AddTo(this);
             }
+        }
+
+        #region ILauncher
+
+        ITransform ILauncherController.mazzle { get => _tranform; }
+
+        IMobileObject? ILauncherController.target { get => this._target; }
+
+        bool ILauncherController.CanLaunch { get => this._target != null && this.mazzle != null; }
+
+        void ILauncherController.SetTarget(IMobileObject? target)
+        {
+            this.clearHandler();
+            this._target = target;
+            this.setupHandler();
         }
 
         #endregion

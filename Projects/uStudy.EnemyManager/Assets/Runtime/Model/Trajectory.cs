@@ -9,8 +9,8 @@ namespace Hedwig.Runtime
     public interface ITrajectoryVisualizer
     {
         bool visible { get; }
-        void SetStartTarget(Vector3 position);
-        void SetEndTarget(Vector3 position);
+        void SetStartTarget(ITransform? target);
+        void SetEndTarget(ITransform? target);
         void SetConfig(ProjectileConfig? config);
         void Show(bool v);
     }

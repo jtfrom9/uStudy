@@ -9,9 +9,9 @@ namespace Hedwig.Runtime
     public interface ILauncherController
     {
         ITransform mazzle { get; }
-        IEnemy? target { get; }
+        IMobileObject? target { get; }
         bool CanLaunch { get; }
-        void SetTarget(IEnemy? enemy);
+        void SetTarget(IMobileObject? target);
     }
 
     public class Launcher: System.IDisposable
@@ -24,9 +24,7 @@ namespace Hedwig.Runtime
         public void SetProjectileConfig(ProjectileConfig? config)
         {
             this.config = config;
-            if(this.trajectoryVisualizer!=null) {
-                this.trajectoryVisualizer.SetConfig(config);
-            }
+            this.trajectoryVisualizer?.SetConfig(config);
         }
 
         public void ShowTrajectory(bool v)
@@ -37,15 +35,13 @@ namespace Hedwig.Runtime
         public void SetTarget(IEnemy? enemy)
         {
             launcherController?.SetTarget(enemy);
-            if (enemy != null)
+            trajectoryVisualizer?.SetEndTarget(enemy?.transform);
+        }
+
+        void setupMazzle() {
+            if (trajectoryVisualizer != null && launcherController != null)
             {
-                if (launcherController != null && trajectoryVisualizer != null)
-                {
-                    enemy.transform.OnPositionChanged.Subscribe(pos =>
-                    {
-                        trajectoryVisualizer.SetEndTarget(pos);
-                    }).AddTo(disposable);
-                }
+                trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
             }
         }
 
@@ -77,13 +73,7 @@ namespace Hedwig.Runtime
             this.projectileFactory = projectileFactory;
             this.launcherController = Controller.Find<ILauncherController>();
             this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
-
-            if (trajectoryVisualizer != null && launcherController!=null)
-            {
-                launcherController.mazzle.OnPositionChanged.Subscribe(position => {
-                    trajectoryVisualizer.SetStartTarget(position);
-                }).AddTo(disposable);
-            }
+            this.setupMazzle();
         }
     }
 }
