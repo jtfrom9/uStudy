@@ -13,58 +13,33 @@ using Hedwig.Runtime;
 
 public class TowerAim : LifetimeScope
 {
-    [SerializeField]
-    Setting? setting;
-
-    [SerializeField]
-    Transform? launcherPoint;
+    [SerializeField] Setting? setting;
+    [SerializeField] ProjectileConfig? shot;
+    [SerializeField] ProjectileConfig? bomb;
 
     [Inject] IEnemyManager? enemyManager;
-
-    LineRenderer? lr;
+    [Inject] Launcher? launcher;
 
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterInstance<Setting>(setting!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+        builder.Register<Launcher>(Lifetime.Singleton);
     }
 
     void Start()
     {
-        if (enemyManager == null)
-        {
-            return;
-        }
-        if (launcherPoint == null)
-        {
-            return;
-        }
+        if (enemyManager == null) return;
+        enemyManager.Setup();
+
+        if(launcher==null) return;
+
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
-        var selection = new SingleSelection(enemyManager.Enemies);
-        selection.SelectExclusive(0);
 
-        TryGetComponent(out lr);
-
-        this.UpdateAsObservable().Subscribe(_ =>
-        {
-            update(selection, launcherPoint);
-        }).AddTo(this);
+        launcher.SetTarget(enemyManager.Enemies[0]);
+        launcher.SetProjectileConfig(shot);
+        launcher.ShowTrajectory(true);
     }
-
-    void update(SingleSelection selection, Transform launcherPoint)
-    {
-        var enemy = selection.Current as IEnemy;
-        if (enemy == null) return;
-        // Debug.DrawLine(launcherPoint.position, cur.transform.position, Color.red, 100);
-
-        if (lr != null)
-        {
-            lr.SetPositions(new Vector3[] { launcherPoint.position, enemy.transform.Position });
-            // lr.startWidth = 0.01f;
-            // lr.endWidth = 0.01f;
-        }
-    }
-
 }
