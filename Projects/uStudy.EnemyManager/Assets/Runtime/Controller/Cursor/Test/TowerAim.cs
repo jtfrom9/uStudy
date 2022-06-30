@@ -111,13 +111,24 @@ public class TowerAim : LifetimeScope
         input.Any().Where(e => e.type != InputEventType.End).Subscribe(e =>
         {
             var ray = Camera.main.ScreenPointToRay(e.position);
-            var hit = new RaycastHit();
-            if (Physics.Raycast(ray, out hit, 100))
+            var hits = Physics.RaycastAll(ray, 100);
+            var highestY = 0f;
+            Vector3? result = null;
+            foreach(var hit in hits)
             {
                 if (hit.collider.gameObject.CompareTag(Hedwig.Runtime.Collision.EnvironmentTag))
                 {
-                    setCursor(hit.point);
+                    // setCursor(hit.point);
+                    var y = hit.point.y;
+                    if (result==null || y > highestY)
+                    {
+                        result = hit.point;
+                        highestY = y;
+                    }
                 }
+            }
+            if(result.HasValue) {
+                setCursor(result.Value);
             }
         }).AddTo(this);
         input.OnEnd.Subscribe(_ =>
