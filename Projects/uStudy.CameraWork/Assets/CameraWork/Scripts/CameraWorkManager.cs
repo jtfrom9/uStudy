@@ -53,8 +53,8 @@ public class CameraWorkManager : MonoBehaviour
         {
             _camera.DOKill();
         }
-        _camera.DOLocalMove(move, 1);
-        _camera.DOLocalRotate(rot, 1);
+        _camera.DOLocalMove(move, 1).SetUpdate(UpdateType.Late);
+        _camera.DOLocalRotate(rot, 1).SetUpdate(UpdateType.Late);
 
         dropdown.value = Array.IndexOf(agents, agent);
     }
