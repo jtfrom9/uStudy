@@ -15,8 +15,7 @@ using Hedwig.Runtime;
 public class TowerAim : LifetimeScope
 {
     [SerializeField] Setting? setting;
-    [SerializeField] ProjectileConfig? shot;
-    [SerializeField] ProjectileConfig? bomb;
+    [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] Launcher? launcher;
@@ -34,13 +33,15 @@ public class TowerAim : LifetimeScope
 
     void Start()
     {
+        if (configs.Count == 0) { return; }
+        var config = configs[0];
         if (enemyManager == null) return;
         enemyManager.Setup();
 
         if(launcher==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
-        // enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
+        enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
 
         // enemyManager.Enemies[0].Select(true);
 
@@ -51,10 +52,14 @@ public class TowerAim : LifetimeScope
         }).AddTo(this);
         selection.SelectExclusive(0);
 
+        launcher.OnConfigChanged.Subscribe(config => {
+            Debug.Log($"config changed: {config?.name ?? "n/a"}");
+        }).AddTo(this);
+
         setupKey(selection,launcher);
         setupMouse(launcher);
 
-        launcher.SetProjectileConfig(shot);
+        launcher.SetProjectileConfig(config);
         launcher.ShowTrajectory(true);
     }
 
@@ -67,9 +72,21 @@ public class TowerAim : LifetimeScope
             {
                 selection.Next();
             }
+            if(Input.GetKeyDown(KeyCode.DownArrow)) {
+                var cur = configs.FindIndex(0, configs.Count, (config) => config == launcher.config);
+                var next = cur == configs.Count - 1 ? 0 : cur + 1;
+                launcher.SetProjectileConfig(configs[next]);
+            }
+            if (Input.GetKeyDown(KeyCode.UpArrow)) {
+                var cur = configs.FindIndex(0, configs.Count, (config) => config == launcher.config);
+                var prev = cur == 0 ? configs.Count - 1 : cur - 1;
+                launcher.SetProjectileConfig(configs[prev]);
+            }
             if(Input.GetKeyDown(KeyCode.Space))
             {
-                launcher.ShowTrajectory(!launcher.trajectory);
+                if (launcher.CanLaunch)
+                    launcher.Launch();
+                // launcher.ShowTrajectory(!launcher.trajectory);
             }
         }).AddTo(this);
     }

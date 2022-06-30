@@ -17,15 +17,22 @@ namespace Hedwig.Runtime
 
     public class Launcher: IDisposable
     {
-        ProjectileConfig? config;
+        ProjectileConfig? _config;
         CompositeDisposable disposable = new CompositeDisposable();
 
         public bool CanLaunch { get => launcherController?.CanLaunch ?? false && config != null; }
 
+        public ProjectileConfig? config { get => _config; }
+
+        Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
+
+        public ISubject<ProjectileConfig?> OnConfigChanged { get => onConfigChanged; }
+
         public void SetProjectileConfig(ProjectileConfig? config)
         {
-            this.config = config;
+            this._config = config;
             this.trajectoryVisualizer?.SetConfig(config);
+            onConfigChanged.OnNext(config);
         }
 
         public void ShowTrajectory(bool v)
@@ -54,9 +61,6 @@ namespace Hedwig.Runtime
                 return;
             if(config==null)
                 return;
-            if(trajectoryVisualizer!=null) {
-                trajectoryVisualizer.Show(false);
-            }
             var projectile = projectileFactory.Create(
                 launcherController.mazzle.Position,
                 this.config);
@@ -65,6 +69,7 @@ namespace Hedwig.Runtime
 
         void IDisposable.Dispose()
         {
+            onConfigChanged.OnCompleted();
             disposable.Dispose();
         }
 
