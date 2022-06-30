@@ -40,7 +40,7 @@ public class TowerAim : LifetimeScope
         if(launcher==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
-        enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
+        // enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
 
         // enemyManager.Enemies[0].Select(true);
 

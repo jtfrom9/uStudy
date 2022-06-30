@@ -24,6 +24,7 @@ namespace Hedwig.Runtime
 
         [SerializeField] bool random;
         [SerializeField] Vector2 range;
+        [SerializeField] public TrajectoryBase? trajectory;
 
         public Vector2? randomRange { get => (random) ? range : Vector2.zero; }
 

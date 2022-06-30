@@ -36,6 +36,32 @@ namespace Hedwig.Runtime
             lineRenderer.endWidth = 0.1f;
         }
 
+        // Vector3 SampleCurve(Vector3 start, Vector3 end, Vector3 control, float t)
+        // {
+        //     // Interpolate along line S0: control - start;
+        //     Vector3 Q0 = Vector3.Lerp(start, control, t);
+        //     // Interpolate along line S1: S1 = end - control;
+        //     Vector3 Q1 = Vector3.Lerp(control, end, t);
+        //     // Interpolate along line S2: Q1 - Q0
+        //     Vector3 Q2 = Vector3.Lerp(Q0, Q1, t);
+        //     return Q2; // Q2 is a point on the curve at time t
+        // }
+
+        // Vector3[] makePoints(Vector3 start, Vector3 end)
+        // {
+        //     var control = ((start + end) / 2) + Vector3.up * 5;
+        //     var points = new List<Vector3>() {
+        //         start
+        //     };
+        //     for (var i = 1; i <= 10; i++)
+        //     {
+        //         var mid = SampleCurve(start, end, control, (float)i / 10);
+        //         points.Add(mid);
+        //     }
+        //     points.Add(end);
+        //     return points.ToArray();
+        // }
+
         void redraw()
         {
             if (lineRenderer == null)
@@ -46,10 +72,12 @@ namespace Hedwig.Runtime
                 lineRenderer.enabled = false;
                 return;
             }
-            var points = new Vector3[] {
-                this._start.Position,
-                this._end.Position
-            };
+            // var points = new Vector3[] {
+            //     this._start.Position,
+            //     this._end.Position
+            // };
+            var points = _config.trajectory?.MakePoints(this._start.Position, this._end.Position) ?? new Vector3[] { };
+            // var points = makePoints(this._start.Position, this._end.Position);
             lineRenderer.enabled = true;
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);

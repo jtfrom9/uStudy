@@ -14,4 +14,9 @@ namespace Hedwig.Runtime
         void SetConfig(ProjectileConfig? config);
         void Show(bool v);
     }
+
+    public abstract class TrajectoryBase: ScriptableObject
+    {
+        public abstract Vector3[] MakePoints(Vector3 start, Vector3 end);
+    }
 }
