@@ -33,6 +33,8 @@ namespace Hedwig.Runtime
             this.trajectoryVisualizer?.Show(v);
         }
 
+        public bool trajectory { get => trajectoryVisualizer?.visible ?? false; }
+
         public void SetTarget(IMobileObject? target)
         {
             launcherController?.SetTarget(target);

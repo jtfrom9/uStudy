@@ -48,18 +48,17 @@ public class TowerAim : LifetimeScope
         selection.onCurrentChanged.Subscribe(selectable =>
         {
             launcher.SetTarget(selectable as IEnemy);
-            launcher.ShowTrajectory(true);
         }).AddTo(this);
         selection.SelectExclusive(0);
 
-        setupKey(selection);
+        setupKey(selection,launcher);
         setupMouse(launcher);
 
         launcher.SetProjectileConfig(shot);
         launcher.ShowTrajectory(true);
     }
 
-    void setupKey(SingleSelection selection) {
+    void setupKey(SingleSelection selection, Launcher launcher) {
         this.UpdateAsObservable().Subscribe(_ => {
             if(Input.GetKeyDown(KeyCode.LeftArrow)) {
                 selection.Prev();
@@ -67,6 +66,10 @@ public class TowerAim : LifetimeScope
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
                 selection.Next();
+            }
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                launcher.ShowTrajectory(!launcher.trajectory);
             }
         }).AddTo(this);
     }
