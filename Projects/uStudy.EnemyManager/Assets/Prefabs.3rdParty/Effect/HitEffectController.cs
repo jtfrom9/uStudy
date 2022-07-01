@@ -1,8 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UniRx;
@@ -44,7 +42,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IDisposable
-        public void Dispose() 
+        void IDisposable.Dispose()
         {
             Destroy(gameObject);
         }

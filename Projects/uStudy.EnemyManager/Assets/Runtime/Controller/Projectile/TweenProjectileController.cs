@@ -134,8 +134,6 @@ namespace Hedwig.Runtime
 
         async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
         {
-            Debug.Log($"{config}");
-
             var stopwatch = new System.Diagnostics.Stopwatch();
             stopwatch.Start();
             await mainLoop(config, target);
@@ -150,7 +148,7 @@ namespace Hedwig.Runtime
         }
 
         #region IDisposable
-        void System.IDisposable.Dispose()
+        void IDisposable.Dispose()
         {
             if (DOTween.IsTweening(transform))
             {

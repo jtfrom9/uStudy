@@ -1,7 +1,6 @@
 #nullable enable
 
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using TMPro;
 using DG.Tweening;
@@ -53,9 +52,9 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IDisposable
-        public void Dispose()
+        void IDisposable.Dispose()
         {
-            Destroy(this.gameObject);
+            Destroy(gameObject);
         }
         #endregion
     }

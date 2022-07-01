@@ -29,6 +29,11 @@ namespace Hedwig.Runtime
             }
         }
 
+        void OnDestroy()
+        {
+            this.clearHandler();
+        }
+
         void clearHandler()
         {
             if (_disposable != null)

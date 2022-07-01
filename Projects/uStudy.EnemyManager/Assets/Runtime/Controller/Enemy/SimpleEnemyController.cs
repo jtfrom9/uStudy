@@ -49,6 +49,13 @@ namespace Hedwig.Runtime
             }
         }
 
+        void OnDestroy()
+        {
+            onAttcked.OnCompleted();
+            onDeath.OnCompleted();
+            selector?.Dispose();
+        }
+
         #region ISelectable
         void ISelectable.Select(bool v)
         {
@@ -59,11 +66,8 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IDisposable
-        public void Dispose()
+        void IDisposable.Dispose()
         {
-            onAttcked.OnCompleted();
-            onDeath.OnCompleted();
-            selector?.Dispose();
             Destroy(gameObject);
         }
         #endregion

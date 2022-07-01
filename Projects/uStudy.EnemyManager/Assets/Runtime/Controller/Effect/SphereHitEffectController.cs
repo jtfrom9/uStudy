@@ -1,5 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
+#nullable enable
+
+using System;
 using UnityEngine;
 
 using Cysharp.Threading.Tasks;
@@ -23,14 +24,8 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        void System.IDisposable.Dispose() {
-            Destroy(this.gameObject);
+        void IDisposable.Dispose() {
+            Destroy(gameObject);
         }
-
-        // async void Start()
-        // {
-        //     await (this as IEffect).Play();
-        //     Debug.Log("done");
-        // }
     }
 }

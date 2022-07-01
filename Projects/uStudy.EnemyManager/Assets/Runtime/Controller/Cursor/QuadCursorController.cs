@@ -1,8 +1,6 @@
 #nullable enable
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
@@ -53,7 +51,10 @@ namespace Hedwig.Runtime
 
         void IDisposable.Dispose()
         {
-            transform.DOKill();
+            if (DOTween.IsTweening(transform))
+            {
+                transform.DOKill();
+            }
             Destroy(gameObject);
         }
     }
