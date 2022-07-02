@@ -5677,8 +5677,10 @@ MonoBehaviour:
   - {fileID: 1780342146}
   setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   configs:
+  - {fileID: 11400000, guid: 02efc6f2200a540d5937f2fa09b8b362, type: 2}
   - {fileID: 11400000, guid: 4eee44c5d3f634faf9e2dfa581e3ba3f, type: 2}
-  - {fileID: 11400000, guid: 930466f1612a44a3490eef2c224eae34, type: 2}
+  - {fileID: 11400000, guid: fcbdd8a230c284507884c338274b6023, type: 2}
+  - {fileID: 11400000, guid: 65d6195aabdc54a538b09d2bd4d04b7a, type: 2}
 --- !u!4 &1780342149
 Transform:
   m_ObjectHideFlags: 0

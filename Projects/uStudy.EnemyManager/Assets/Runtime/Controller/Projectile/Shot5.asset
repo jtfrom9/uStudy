@@ -10,15 +10,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
-  m_Name: Shot
+  m_Name: Shot5
   m_EditorClassIdentifier: 
   endType: 0
   endEffectPrefab: {fileID: 0}
-  speed: 250
-  distance: 30
+  successionCount: 5
+  successionInterval: 100
+  recastTime: 1000
+  shake: 1
+  speed: 100
+  distance: 50
   adjust: 0
   period: 0
   maxAngle: 0
-  random: 0
-  range: {x: 0, y: 0}
-  trajectory: {fileID: 11400000, guid: 7f45eb912569b4aada767b68670b7dd3, type: 2}
+  trajectory: {fileID: 0}

@@ -91,9 +91,9 @@ namespace Hedwig.Runtime
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                if (launcher.CanLaunch)
+                if (launcher.CanFire)
                 {
-                    launcher.Launch();
+                    launcher.Fire();
                 }
             }
             if(Input.GetKeyDown(KeyCode.RightArrow))

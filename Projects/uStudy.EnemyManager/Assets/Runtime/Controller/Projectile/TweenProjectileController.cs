@@ -85,7 +85,7 @@ namespace Hedwig.Runtime
             {
                 var start = transform.position;
                 var rand = config.MakeRandom(target.transform);
-                Debug.Log($"rand: {rand}");
+                // Debug.Log($"rand: {rand}");
                 var end = target.transform.Position + rand;
                 var dir = end - start;
 
@@ -111,7 +111,7 @@ namespace Hedwig.Runtime
                 //     destRelative = dir;
                 //     Debug.Log($"near: ${destRelative}");
                 // }
-                Debug.Log($"DOMove: {destRelative} {config.EachDuration}");
+                // Debug.Log($"DOMove: {destRelative} {config.EachDuration}");
                 var result = await move(destRelative, config.EachDuration);
                 distance -= destRelative.magnitude;
 
@@ -134,11 +134,11 @@ namespace Hedwig.Runtime
 
         async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
         {
-            var stopwatch = new System.Diagnostics.Stopwatch();
-            stopwatch.Start();
+            // var stopwatch = new System.Diagnostics.Stopwatch();
+            // stopwatch.Start();
             await mainLoop(config, target);
-            stopwatch.Stop();
-            Debug.Log($"elapsed: {stopwatch.ElapsedMilliseconds}");
+            // stopwatch.Stop();
+            // Debug.Log($"elapsed: {stopwatch.ElapsedMilliseconds}");
 
             _status = Status.End;
             if (config.endType == EndType.Destroy)

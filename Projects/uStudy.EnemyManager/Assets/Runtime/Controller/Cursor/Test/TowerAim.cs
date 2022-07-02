@@ -18,17 +18,21 @@ public class TowerAim : LifetimeScope
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
 
     [Inject] IEnemyManager? enemyManager;
+    [Inject] SimpleCursorManager? cursorManager;
     [Inject] Launcher? launcher;
-    [Inject] ICursorFactory? cursorFactory;
 
-    IFreeCursor? _cursor;
+    CompositeDisposable disposables = new CompositeDisposable();
+    InputObservableContext? context;
 
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterInstance<Setting>(setting!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+        builder.Register<SimpleCursorManager>(Lifetime.Singleton);
         builder.Register<Launcher>(Lifetime.Singleton);
+
+        context = this.DefaultInputContext();
     }
 
     void Start()
@@ -38,14 +42,13 @@ public class TowerAim : LifetimeScope
         if (enemyManager == null) return;
         enemyManager.Setup();
 
+        if(cursorManager==null) return;
         if(launcher==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
 
-        // enemyManager.Enemies[0].Select(true);
-
-        var selection = new SingleSelection(enemyManager.Enemies);
+         var selection = new SingleSelection(enemyManager.Enemies);
         selection.onCurrentChanged.Subscribe(selectable =>
         {
             launcher.SetTarget(selectable as IEnemy);
@@ -54,13 +57,45 @@ public class TowerAim : LifetimeScope
 
         launcher.OnConfigChanged.Subscribe(config => {
             Debug.Log($"config changed: {config?.name ?? "n/a"}");
+            var style = InputStyle.Normal;
+            if (config != null)
+            {
+                switch (config.type)
+                {
+                    case ProjectileType.Fire:
+                        style = InputStyle.Normal;
+                        break;
+                    case ProjectileType.Burst:
+                        style = InputStyle.MoveOnly;
+                        break;
+                }
+                setupMouse(launcher, cursorManager, style);
+            }else {
+                disableMouse();
+            }
+        }).AddTo(this);
+
+        launcher.OnCanFireChanged.Subscribe(v => {
+            Debug.Log($"CanLaunch: {v}");
+        }).AddTo(this);
+
+        launcher.OnRecastTimeUpdated.Subscribe(v => {
+            Debug.Log($"Recast: {v}");
         }).AddTo(this);
 
         setupKey(selection,launcher);
-        setupMouse(launcher);
+
+        (cursorManager as ICursorManager).OnCursorCreated.Subscribe(cursor => {
+            launcher.SetTarget(cursor);
+        }).AddTo(this);
 
         launcher.SetProjectileConfig(config);
-        launcher.ShowTrajectory(true);
+    }
+
+    protected override void OnDestroy()
+    {
+        base.OnDestroy();
+        disposables.Dispose();
     }
 
     void setupKey(SingleSelection selection, Launcher launcher) {
@@ -82,58 +117,83 @@ public class TowerAim : LifetimeScope
                 var prev = cur == 0 ? configs.Count - 1 : cur - 1;
                 launcher.SetProjectileConfig(configs[prev]);
             }
-            if(Input.GetKeyDown(KeyCode.Space))
-            {
-                if (launcher.CanLaunch)
-                    launcher.Launch();
-                // launcher.ShowTrajectory(!launcher.trajectory);
-            }
+            // if(Input.GetKeyDown(KeyCode.Space))
+            // {
+            //     if (launcher.CanLaunch)
+            //         launcher.Launch();
+            //     // launcher.ShowTrajectory(!launcher.trajectory);
+            // }
         }).AddTo(this);
     }
 
-    void setCursor(Vector3? pos) {
-        if(pos.HasValue) {
-            if (_cursor == null)
+    void setupNormalShotStyle(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
+    {
+        input.OnBegin.Subscribe(async e =>
+        {
+            cursorManager.Move(e.position);
+            if (launcher.CanFire)
             {
-                _cursor = cursorFactory?.CreateFreeCusor();
-                launcher?.SetTarget(_cursor);
+                await launcher.Fire();
+                cursorManager.Reset();
             }
-            _cursor?.Move(pos.Value);
-        }else {
-            _cursor?.Dispose();
-            _cursor = null;
-        }
+            else
+            {
+                Debug.LogWarning("recasting");
+            }
+        }).AddTo(disposables);
     }
 
-    void setupMouse(Launcher launcher)
+    void setupLongPressStyle(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
     {
-        var input = this.DefaultInputContext().GetObservable(0);
+        input.Keep(100, () => true).Subscribe(e =>
+        {
+            launcher.StartFire();
+        }).AddTo(disposables);
+
+        input.OnEnd.Subscribe(e =>
+        {
+            launcher.EndFire();
+        }).AddTo(disposables);
+    }
+
+    void setupMoveOnly(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
+    {
         input.Any().Where(e => e.type != InputEventType.End).Subscribe(e =>
         {
-            var ray = Camera.main.ScreenPointToRay(e.position);
-            var hits = Physics.RaycastAll(ray, 100);
-            var highestY = 0f;
-            Vector3? result = null;
-            foreach(var hit in hits)
-            {
-                if (hit.collider.gameObject.CompareTag(Hedwig.Runtime.Collision.EnvironmentTag))
-                {
-                    // setCursor(hit.point);
-                    var y = hit.point.y;
-                    if (result==null || y > highestY)
-                    {
-                        result = hit.point;
-                        highestY = y;
-                    }
-                }
-            }
-            if(result.HasValue) {
-                setCursor(result.Value);
-            }
-        }).AddTo(this);
-        input.OnEnd.Subscribe(_ =>
+            cursorManager.Move(e.position);
+        }).AddTo(disposables);
+        input.OnEnd.Subscribe(e =>
         {
-            setCursor(null);
-        }).AddTo(this);
+            cursorManager.Reset();
+        }).AddTo(disposables);
+    }
+
+    enum InputStyle
+    {
+        Normal,
+        MoveOnly
+    };
+    void setupMouse(Launcher launcher, SimpleCursorManager cursorManager, InputStyle style)
+    {
+        if(context==null) {
+            Debug.LogError("No Input Context");
+            return;
+        }
+        var input = context.GetObservable(0);
+        disposables.Clear();
+        if (style == InputStyle.Normal)
+        {
+            setupNormalShotStyle(input, launcher, cursorManager);
+            launcher.ShowTrajectory(false);
+        }
+        setupLongPressStyle(input, launcher, cursorManager);
+        if (style == InputStyle.MoveOnly)
+        {
+            setupMoveOnly(input, launcher, cursorManager);
+            launcher.ShowTrajectory(true);
+        }
+    }
+    void disableMouse() {
+        disposables.Clear();
     }
 }

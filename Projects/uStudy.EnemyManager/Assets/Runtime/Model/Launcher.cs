@@ -3,7 +3,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Cysharp.Threading.Tasks;
 using UniRx;
+using UniRx.Triggers;
 
 namespace Hedwig.Runtime
 {
@@ -20,13 +22,31 @@ namespace Hedwig.Runtime
         ProjectileConfig? _config;
         CompositeDisposable disposable = new CompositeDisposable();
 
-        public bool CanLaunch { get => launcherController?.CanLaunch ?? false && config != null; }
+        bool recasting = false;
+
+        public bool CanFire {
+            get
+            {
+                var v = (launcherController?.CanLaunch ?? false) &&
+                    config != null &&
+                    !recasting;
+                return v;
+            }
+        }
 
         public ProjectileConfig? config { get => _config; }
 
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
 
         public ISubject<ProjectileConfig?> OnConfigChanged { get => onConfigChanged; }
+
+        Subject<bool> onCanFireChanged = new Subject<bool>();
+
+        public ISubject<bool> OnCanFireChanged { get => onCanFireChanged; }
+
+        Subject<float> onRecastTimeUpdated = new Subject<float>();
+
+        public ISubject<float> OnRecastTimeUpdated { get => onRecastTimeUpdated; }
 
         public void SetProjectileConfig(ProjectileConfig? config)
         {
@@ -55,16 +75,54 @@ namespace Hedwig.Runtime
             }
         }
 
-        public void Launch()
+        void changeRecastState(bool v) {
+            recasting = v;
+            OnCanFireChanged.OnNext(this.CanFire);
+        }
+
+        async UniTask stepRecast(int recast, int step, int index)
+        {
+            await UniTask.Delay(step);
+            var elapsed = index * step;
+            onRecastTimeUpdated.OnNext((float)elapsed / (float)recast);
+        }
+
+        public async UniTask Fire()
         {
             if(launcherController==null || launcherController.target==null)
                 return;
             if(config==null)
                 return;
-            var projectile = projectileFactory.Create(
-                launcherController.mazzle.Position,
-                this.config);
-            projectile?.Go(launcherController.target);
+            if(!CanFire)
+                return;
+            changeRecastState(true);
+            for (var i = 0; i < config.successionCount; i++)
+            {
+                var projectile = projectileFactory.Create(
+                    launcherController.mazzle.Position,
+                    this.config);
+                Debug.Log($"[{i}] {launcherController.target.transform.Position}");
+                projectile?.Go(launcherController.target);
+
+                if (config.successionCount > 1)
+                {
+                    await UniTask.Delay(config.successionInterval);
+                }
+            }
+            for (var i = 0; i < config.recastTime; i += 100)
+            {
+                await stepRecast(config.recastTime, 100, i);
+            }
+            changeRecastState(false);
+        }
+
+        public void StartFire()
+        {
+            // Debug.Log("StartFire");
+        }
+        public void EndFire()
+        {
+            // Debug.Log("EndFire");
         }
 
         void IDisposable.Dispose()

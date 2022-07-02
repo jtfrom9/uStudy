@@ -6,11 +6,25 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
+    public enum ProjectileType
+    {
+        Fire,
+        Burst
+    };
+
     [CreateAssetMenu(menuName = "Hedwig/ProjectileConfig", fileName = "ProjectileConfig")]
     public class ProjectileConfig : ScriptableObject
     {
         [SerializeField] public Projectile.EndType endType = Projectile.EndType.Destroy;
         [SerializeField] GameObject? endEffectPrefab;
+
+        [SerializeField] public ProjectileType type;
+        [SerializeField] public bool chargable;
+
+        [SerializeField] public int successionCount = 1;
+        [SerializeField] public int successionInterval = 0;
+        [SerializeField] public int recastTime = 500;
+        [SerializeField] public float shake = 0f;
 
         [SerializeField] public float speed = 10f;
         [SerializeField] public float distance = 10;
@@ -22,11 +36,7 @@ namespace Hedwig.Runtime
         public float? adjustPeriod { get => (!adjust) ? null : period; }
         public float? adjustMaxAngle { get => (!adjust) ? null : maxAngle; }
 
-        [SerializeField] bool random;
-        [SerializeField] Vector2 range;
         [SerializeField] public TrajectoryBase? trajectory;
-
-        public Vector2? randomRange { get => (random) ? range : Vector2.zero; }
 
         public float Duration { get => distance / speed; }
         public int NumAdjust { get => (!adjustPeriod.HasValue) ? 1 : (int)(Duration / adjustPeriod); }
@@ -35,12 +45,12 @@ namespace Hedwig.Runtime
 
         public Vector3 MakeRandom(ITransform target)
         {
-            if (!randomRange.HasValue) return Vector3.zero;
-            else
+            if(shake==0f) {
+                return Vector3.zero;
+            } else
             {
-                var v = randomRange.Value;
-                var _r = UnityEngine.Random.Range(-v.x, v.x);
-                var _u = UnityEngine.Random.Range(-v.y, v.y);
+                var _r = UnityEngine.Random.Range(-shake, shake);
+                var _u = UnityEngine.Random.Range(-shake, shake);
                 return target.Right * _r + target.Up * _u;
             }
         }
@@ -49,8 +59,7 @@ namespace Hedwig.Runtime
         {
             var adjust = adjustPeriod.HasValue ? adjustPeriod.ToString() : "n/a";
             var angle = adjustMaxAngle.HasValue ? adjustMaxAngle.ToString() : "n/a";
-            var random = randomRange.HasValue ? $"{randomRange.Value.x}:{randomRange.Value.y}" : "n/a";
-            return $"(speed: {speed}, distance: {distance}, adjust: {adjust}, angle: {angle}, rand: {random}, duration: {Duration}, Num: {NumAdjust})";
+            return $"(speed: {speed}, distance: {distance}, adjust: {adjust}, angle: {angle}, duration: {Duration}, Num: {NumAdjust})";
         }
     }
 }

@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
+  m_Name: Grenade1
+  m_EditorClassIdentifier: 
+  endType: 0
+  endEffectPrefab: {fileID: 0}
+  type: 1
+  chargable: 0
+  successionCount: 1
+  successionInterval: 0
+  recastTime: 1000
+  shake: 0
+  speed: 10
+  distance: 10
+  adjust: 0
+  period: 0
+  maxAngle: 0
+  trajectory: {fileID: 11400000, guid: 307df50450f1d4a1293943ff72fceb52, type: 2}

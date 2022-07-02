@@ -2,6 +2,7 @@
 
 using System;
 using UnityEngine;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -26,5 +27,10 @@ namespace Hedwig.Runtime
     {
         ITargetCursor? CreateTargetCusor(ICharactor charactor);
         IFreeCursor? CreateFreeCusor();
+    }
+
+    public interface ICursorManager
+    {
+        ISubject<IFreeCursor?> OnCursorCreated { get; }
     }
 }
