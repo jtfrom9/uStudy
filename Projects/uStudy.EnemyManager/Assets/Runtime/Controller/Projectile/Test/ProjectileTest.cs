@@ -30,14 +30,14 @@ namespace Hedwig.Runtime
         Button? moveButton;
 
         [Inject] IEnemyManager? enemyManager;
-        [Inject] Launcher? launcher;
+        [Inject] ILauncherManager? launcher;
 
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterInstance<Setting>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-            builder.Register<Launcher>(Lifetime.Singleton);
+            builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
         }
 
         void setupUI(IEnemyManager enemyManager)
@@ -87,7 +87,7 @@ namespace Hedwig.Runtime
             launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
         }
 
-        void _update(Launcher launcher, IEnemy enemy, SingleSelection selection)
+        void _update(ILauncherManager launcher, IEnemy enemy, SingleSelection selection)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {

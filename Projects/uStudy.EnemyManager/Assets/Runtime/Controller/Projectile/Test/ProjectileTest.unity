@@ -731,7 +731,7 @@ MonoBehaviour:
   - {fileID: 1209448252}
   setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   projectileConfigs:
-  - {fileID: 11400000, guid: 4eee44c5d3f634faf9e2dfa581e3ba3f, type: 2}
+  - {fileID: 11400000, guid: 02efc6f2200a540d5937f2fa09b8b362, type: 2}
   moveButton: {fileID: 338217855}
 --- !u!4 &1209448254
 Transform:

@@ -3,6 +3,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
+
 using Cysharp.Threading.Tasks;
 using VContainer;
 using VContainer.Unity;
@@ -14,12 +17,16 @@ using Hedwig.Runtime;
 
 public class TowerAim : LifetimeScope
 {
+    // UI
+    [SerializeField] TextMeshProUGUI? textMesh;
+
+    // Inject
     [SerializeField] Setting? setting;
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] SimpleCursorManager? cursorManager;
-    [Inject] Launcher? launcher;
+    [Inject] ILauncherManager? launcher;
 
     CompositeDisposable disposables = new CompositeDisposable();
     InputObservableContext? context;
@@ -30,8 +37,8 @@ public class TowerAim : LifetimeScope
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
         builder.Register<SimpleCursorManager>(Lifetime.Singleton);
-        builder.Register<Launcher>(Lifetime.Singleton);
-
+        builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
+        builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         context = this.DefaultInputContext();
     }
 
@@ -55,25 +62,30 @@ public class TowerAim : LifetimeScope
         }).AddTo(this);
         selection.SelectExclusive(0);
 
-        launcher.OnConfigChanged.Subscribe(config => {
-            Debug.Log($"config changed: {config?.name ?? "n/a"}");
-            var style = InputStyle.Normal;
-            if (config != null)
-            {
-                switch (config.type)
-                {
-                    case ProjectileType.Fire:
-                        style = InputStyle.Normal;
-                        break;
-                    case ProjectileType.Burst:
-                        style = InputStyle.MoveOnly;
-                        break;
-                }
-                setupMouse(launcher, cursorManager, style);
-            }else {
-                disableMouse();
-            }
+        launcher.OnConfigChanged.Subscribe(config =>
+        {
+            showConfigInfo(config);
         }).AddTo(this);
+        // launcher.OnConfigChanged.Subscribe(config => {
+        //     Debug.Log($"config changed: {config?.name ?? "n/a"}");
+        //     var style = InputStyle.Normal;
+        //     if (config != null)
+        //     {
+        //         switch (config.type)
+        //         {
+        //             case ProjectileType.Fire:
+        //                 style = InputStyle.Normal;
+        //                 break;
+        //             case ProjectileType.Burst:
+        //                 style = InputStyle.MoveOnly;
+        //                 break;
+        //         }
+        //         setupMouse(launcher, cursorManager, style);
+        //     }else {
+        //         disableMouse();
+        //     }
+        // }).AddTo(this);
+        setupMouse(launcher, cursorManager);
 
         launcher.OnCanFireChanged.Subscribe(v => {
             Debug.Log($"CanLaunch: {v}");
@@ -98,7 +110,23 @@ public class TowerAim : LifetimeScope
         disposables.Dispose();
     }
 
-    void setupKey(SingleSelection selection, Launcher launcher) {
+    void showConfigInfo(ProjectileConfig? config)
+    {
+        if(textMesh==null) return;
+        if (config != null)
+        {
+            textMesh.text = @$"
+Name: {config.name}
+Type: {config.type}
+Speed: {config.speed}
+Distance: {config.distance}
+";
+        } else {
+            textMesh.text = "";
+        }
+    }
+
+    void setupKey(SingleSelection selection, ILauncherManager launcher) {
         this.UpdateAsObservable().Subscribe(_ => {
             if(Input.GetKeyDown(KeyCode.LeftArrow)) {
                 selection.Prev();
@@ -126,15 +154,14 @@ public class TowerAim : LifetimeScope
         }).AddTo(this);
     }
 
-    void setupNormalShotStyle(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
+    void setupNormalShotStyle(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
     {
-        input.OnBegin.Subscribe(async e =>
+        input.OnBegin.Subscribe(e =>
         {
             cursorManager.Move(e.position);
             if (launcher.CanFire)
             {
-                await launcher.Fire();
-                cursorManager.Reset();
+                launcher.Fire();
             }
             else
             {
@@ -143,11 +170,17 @@ public class TowerAim : LifetimeScope
         }).AddTo(disposables);
     }
 
-    void setupLongPressStyle(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
+    void setupLongPressStyle(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
     {
-        input.Keep(100, () => true).Subscribe(e =>
+        input.Keep(100, () => true).First().TakeUntil(input.OnEnd)
+            .Repeat().Subscribe(e =>
         {
             launcher.StartFire();
+        }).AddTo(disposables);
+
+        input.OnMove.Subscribe(e =>
+        {
+            cursorManager.Move(e.position);
         }).AddTo(disposables);
 
         input.OnEnd.Subscribe(e =>
@@ -156,7 +189,7 @@ public class TowerAim : LifetimeScope
         }).AddTo(disposables);
     }
 
-    void setupMoveOnly(IInputObservable input, Launcher launcher, SimpleCursorManager cursorManager)
+    void setupMoveOnly(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
     {
         input.Any().Where(e => e.type != InputEventType.End).Subscribe(e =>
         {
@@ -168,32 +201,45 @@ public class TowerAim : LifetimeScope
         }).AddTo(disposables);
     }
 
-    enum InputStyle
+    void setupMouse(ILauncherManager launcher, SimpleCursorManager cursorManager)
     {
-        Normal,
-        MoveOnly
-    };
-    void setupMouse(Launcher launcher, SimpleCursorManager cursorManager, InputStyle style)
-    {
-        if(context==null) {
+        if (context == null)
+        {
             Debug.LogError("No Input Context");
             return;
         }
         var input = context.GetObservable(0);
-        disposables.Clear();
-        if (style == InputStyle.Normal)
-        {
-            setupNormalShotStyle(input, launcher, cursorManager);
-            launcher.ShowTrajectory(false);
-        }
+        setupNormalShotStyle(input, launcher, cursorManager);
         setupLongPressStyle(input, launcher, cursorManager);
-        if (style == InputStyle.MoveOnly)
-        {
-            setupMoveOnly(input, launcher, cursorManager);
-            launcher.ShowTrajectory(true);
-        }
     }
-    void disableMouse() {
-        disposables.Clear();
-    }
+
+
+    // enum InputStyle
+    // {
+    //     Normal,
+    //     MoveOnly
+    // };
+    // void setupMouse(ILauncherManager launcher, SimpleCursorManager cursorManager, InputStyle style)
+    // {
+    //     if(context==null) {
+    //         Debug.LogError("No Input Context");
+    //         return;
+    //     }
+    //     var input = context.GetObservable(0);
+    //     disposables.Clear();
+    //     if (style == InputStyle.Normal)
+    //     {
+    //         setupNormalShotStyle(input, launcher, cursorManager);
+    //         launcher.ShowTrajectory(false);
+    //     }
+    //     setupLongPressStyle(input, launcher, cursorManager);
+    //     if (style == InputStyle.MoveOnly)
+    //     {
+    //         setupMoveOnly(input, launcher, cursorManager);
+    //         launcher.ShowTrajectory(true);
+    //     }
+    // }
+    // void disableMouse() {
+    //     disposables.Clear();
+    // }
 }

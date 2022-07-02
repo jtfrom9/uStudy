@@ -9,7 +9,8 @@ namespace Hedwig.Runtime
     public enum ProjectileType
     {
         Fire,
-        Burst
+        Burst,
+        Grenade
     };
 
     [CreateAssetMenu(menuName = "Hedwig/ProjectileConfig", fileName = "ProjectileConfig")]
