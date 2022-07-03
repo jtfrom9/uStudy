@@ -16,40 +16,36 @@ namespace Hedwig.Runtime
 
         CancellationTokenSource cts = new CancellationTokenSource();
 
-        ILauncherController launcherController;
-        ITrajectoryVisualizer? trajectoryVisualizer;
-
-
-        public UniTask Fire()
+        public void Fire(ITransform start, ITransform target)
         {
-            if (launcherController.target == null)
-                return UniTask.CompletedTask;
-
-            launcherManager.OnBeforeLaunched();
-            return UniTask.Create(async () =>
+            UniTask.Create(async () =>
             {
-                while(true) {
+                launcherManager.OnBeforeLaunched();
+                while (true)
+                {
                     var projectile = projectileFactory.Create(
-                        launcherController.mazzle.Position,
+                        start.Position,
                         config);
-                    projectile?.Go(launcherController.target);
+                    projectile?.Go(target);
                     try
                     {
                         await UniTask.Delay(100, cancellationToken: cts.Token);
-                    }catch{
+                    }
+                    catch
+                    {
                         break;
                     }
                 }
                 launcherManager.OnLaunched();
-            });
+            }).Forget();
         }
 
-        public void StartFire()
+        public void StartFire(ITransform start, ITransform target)
         {
             Debug.Log("StartFire");
         }
 
-        public void EndFire()
+        public void EndFire(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
             cts.Cancel();
@@ -64,16 +60,11 @@ namespace Hedwig.Runtime
         public BurstLauncher(
             ILauncherManager launcherManager,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config,
-            ILauncherController launcherController,
-            ITrajectoryVisualizer? trajectoryVisualizer)
+            ProjectileConfig config)
         {
             this.launcherManager = launcherManager;
             this.projectileFactory = projectileFactory;
             this.config = config;
-
-            this.launcherController = launcherController;
-            this.trajectoryVisualizer = trajectoryVisualizer;
         }
     }
 }

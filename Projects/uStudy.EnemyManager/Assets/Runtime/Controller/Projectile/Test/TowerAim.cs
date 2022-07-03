@@ -29,7 +29,6 @@ public class TowerAim : LifetimeScope
     [Inject] ILauncherManager? launcher;
 
     CompositeDisposable disposables = new CompositeDisposable();
-    InputObservableContext? context;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -39,13 +38,10 @@ public class TowerAim : LifetimeScope
         builder.Register<SimpleCursorManager>(Lifetime.Singleton);
         builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
-        context = this.DefaultInputContext();
     }
 
     void Start()
     {
-        if (configs.Count == 0) { return; }
-        var config = configs[0];
         if (enemyManager == null) return;
         enemyManager.Setup();
 
@@ -55,37 +51,18 @@ public class TowerAim : LifetimeScope
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
 
-         var selection = new SingleSelection(enemyManager.Enemies);
-        selection.onCurrentChanged.Subscribe(selectable =>
+        var configSelection = new Selection<ProjectileConfig>(configs);
+        configSelection.OnCurrentChanged.Subscribe(config =>
         {
-            launcher.SetTarget(selectable as IEnemy);
+            launcher.SetProjectileConfig(config);
         }).AddTo(this);
-        selection.SelectExclusive(0);
+
+        setupKey(configSelection, launcher);
 
         launcher.OnConfigChanged.Subscribe(config =>
         {
             showConfigInfo(config);
         }).AddTo(this);
-        // launcher.OnConfigChanged.Subscribe(config => {
-        //     Debug.Log($"config changed: {config?.name ?? "n/a"}");
-        //     var style = InputStyle.Normal;
-        //     if (config != null)
-        //     {
-        //         switch (config.type)
-        //         {
-        //             case ProjectileType.Fire:
-        //                 style = InputStyle.Normal;
-        //                 break;
-        //             case ProjectileType.Burst:
-        //                 style = InputStyle.MoveOnly;
-        //                 break;
-        //         }
-        //         setupMouse(launcher, cursorManager, style);
-        //     }else {
-        //         disableMouse();
-        //     }
-        // }).AddTo(this);
-        setupMouse(launcher, cursorManager);
 
         launcher.OnCanFireChanged.Subscribe(v => {
             Debug.Log($"CanLaunch: {v}");
@@ -95,13 +72,13 @@ public class TowerAim : LifetimeScope
             Debug.Log($"Recast: {v}");
         }).AddTo(this);
 
-        setupKey(selection,launcher);
+        setupMouse(cursorManager, launcher);
 
         (cursorManager as ICursorManager).OnCursorCreated.Subscribe(cursor => {
             launcher.SetTarget(cursor);
         }).AddTo(this);
 
-        launcher.SetProjectileConfig(config);
+        configSelection.Select(configSelection.Index);
     }
 
     protected override void OnDestroy()
@@ -126,31 +103,18 @@ Distance: {config.distance}
         }
     }
 
-    void setupKey(SingleSelection selection, ILauncherManager launcher) {
-        this.UpdateAsObservable().Subscribe(_ => {
-            if(Input.GetKeyDown(KeyCode.LeftArrow)) {
-                selection.Prev();
-            }
-            if (Input.GetKeyDown(KeyCode.RightArrow))
+    void setupKey(Selection<ProjectileConfig> configSelection, ILauncherManager launcher)
+    {
+        this.UpdateAsObservable().Subscribe(_ =>
+        {
+            if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                selection.Next();
+                configSelection.Next();
             }
-            if(Input.GetKeyDown(KeyCode.DownArrow)) {
-                var cur = configs.FindIndex(0, configs.Count, (config) => config == launcher.config);
-                var next = cur == configs.Count - 1 ? 0 : cur + 1;
-                launcher.SetProjectileConfig(configs[next]);
+            if (Input.GetKeyDown(KeyCode.UpArrow))
+            {
+                configSelection.Prev();
             }
-            if (Input.GetKeyDown(KeyCode.UpArrow)) {
-                var cur = configs.FindIndex(0, configs.Count, (config) => config == launcher.config);
-                var prev = cur == 0 ? configs.Count - 1 : cur - 1;
-                launcher.SetProjectileConfig(configs[prev]);
-            }
-            // if(Input.GetKeyDown(KeyCode.Space))
-            // {
-            //     if (launcher.CanLaunch)
-            //         launcher.Launch();
-            //     // launcher.ShowTrajectory(!launcher.trajectory);
-            // }
         }).AddTo(this);
     }
 
@@ -201,45 +165,11 @@ Distance: {config.distance}
         }).AddTo(disposables);
     }
 
-    void setupMouse(ILauncherManager launcher, SimpleCursorManager cursorManager)
+    void setupMouse(SimpleCursorManager cursorManager,ILauncherManager launcher)
     {
-        if (context == null)
-        {
-            Debug.LogError("No Input Context");
-            return;
-        }
+        var context = this.DefaultInputContext();
         var input = context.GetObservable(0);
         setupNormalShotStyle(input, launcher, cursorManager);
         setupLongPressStyle(input, launcher, cursorManager);
     }
-
-
-    // enum InputStyle
-    // {
-    //     Normal,
-    //     MoveOnly
-    // };
-    // void setupMouse(ILauncherManager launcher, SimpleCursorManager cursorManager, InputStyle style)
-    // {
-    //     if(context==null) {
-    //         Debug.LogError("No Input Context");
-    //         return;
-    //     }
-    //     var input = context.GetObservable(0);
-    //     disposables.Clear();
-    //     if (style == InputStyle.Normal)
-    //     {
-    //         setupNormalShotStyle(input, launcher, cursorManager);
-    //         launcher.ShowTrajectory(false);
-    //     }
-    //     setupLongPressStyle(input, launcher, cursorManager);
-    //     if (style == InputStyle.MoveOnly)
-    //     {
-    //         setupMoveOnly(input, launcher, cursorManager);
-    //         launcher.ShowTrajectory(true);
-    //     }
-    // }
-    // void disableMouse() {
-    //     disposables.Clear();
-    // }
 }

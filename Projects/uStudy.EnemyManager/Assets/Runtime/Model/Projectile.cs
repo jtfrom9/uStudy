@@ -35,8 +35,7 @@ namespace Hedwig.Runtime
         Projectile.Status status { get; }
         Projectile.EndReason endRegion { get; }
         void Initialize(Vector3 initial, ProjectileConfig config);
-        void Go(IMobileObject target);
-        void Go(Vector3 target);
+        void Go(ITransform target);
     }
 
     public interface IProjectileFactory

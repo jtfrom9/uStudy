@@ -40,12 +40,13 @@ namespace Hedwig.Runtime
             }
         }
 
-        void setupMazzle()
+        void initializeController()
         {
             if (trajectoryVisualizer != null)
             {
                 trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
             }
+            launcherController.Initialize(this);
         }
 
         void changeRecastState(bool v)
@@ -66,26 +67,25 @@ namespace Hedwig.Runtime
             this._config = config;
             this.trajectoryVisualizer?.SetConfig(config);
 
-            if(config==null) {
-                this.launcher?.Dispose();
-                this.launcher = null;
-            }
-            else
+            // reset laouncher handler
+            this.launcher?.Dispose();
+            this.launcher = null;
+
+            if (config != null)
             {
                 switch (config.type)
                 {
                     case ProjectileType.Fire:
-                        this.launcher = new ShotLauncher(this, projectileFactory, config, launcherController, trajectoryVisualizer);
+                        this.launcher = new ShotLauncher(this, projectileFactory, config);
                         break;
                     case ProjectileType.Burst:
-                        this.launcher = new BurstLauncher(this, projectileFactory, config, launcherController, trajectoryVisualizer);
+                        this.launcher = new BurstLauncher(this, projectileFactory, config);
                         break;
                     case ProjectileType.Grenade:
-                        this.launcher = new GrenadeLauncher(this, projectileFactory, config, launcherController, trajectoryVisualizer);
+                        this.launcher = new GrenadeLauncher(this, projectileFactory, config);
                         break;
                 }
             }
-
             onConfigChanged.OnNext(config);
         }
 
@@ -99,25 +99,28 @@ namespace Hedwig.Runtime
                 return;
             if (!canFire)
                 return;
-            launcher.Fire().Forget();
+            launcher.Fire(launcherController.mazzle,
+                launcherController.target.transform);
         }
 
         void startFire()
         {
+            if (launcherController.target == null)
+                return;
             if (launcher == null)
                 return;
-            // if (!canFire)
-            //     return;
-            launcher.StartFire();
+            launcher.StartFire(launcherController.mazzle,
+                launcherController.target.transform);
         }
 
         void endFire()
         {
+            if (launcherController.target == null)
+                return;
             if (launcher == null)
                 return;
-            // if (!canFire)
-            //     return;
-            launcher.EndFire();
+            launcher.EndFire(launcherController.mazzle,
+                launcherController.target.transform);
         }
 
         void onBeforeLaunched()
@@ -153,7 +156,6 @@ namespace Hedwig.Runtime
         }
 
         bool ILauncherManager.CanFire { get => canFire; }
-
         void ILauncherManager.Fire() => fire();
         void ILauncherManager.StartFire() => startFire();
         void ILauncherManager.EndFire() => endFire();
@@ -164,10 +166,6 @@ namespace Hedwig.Runtime
 
         void ILauncherManager.OnBeforeLaunched() => onBeforeLaunched();
         void ILauncherManager.OnLaunched() => onLaunched();
-        #endregion
-
-        #region ILauncher
-
         #endregion
 
         #region IDisposable
@@ -186,7 +184,7 @@ namespace Hedwig.Runtime
             this.projectileFactory = projectileFactory;
             this.launcherController = launcherController;
             this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
-            this.setupMazzle();
+            this.initializeController();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
         Grenade
     };
 
-    [CreateAssetMenu(menuName = "Hedwig/ProjectileConfig", fileName = "ProjectileConfig")]
+    [CreateAssetMenu(menuName = "Hedwig/Projectile", fileName = "Projectile")]
     public class ProjectileConfig : ScriptableObject
     {
         [SerializeField] public Projectile.EndType endType = Projectile.EndType.Destroy;

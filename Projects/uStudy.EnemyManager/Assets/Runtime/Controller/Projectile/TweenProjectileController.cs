@@ -77,16 +77,16 @@ namespace Hedwig.Runtime
             }
         }
 
-        async UniTask mainLoop(ProjectileConfig config, IMobileObject target)
+        async UniTask mainLoop(ProjectileConfig config, ITransform target)
         {
             var prevDir = Vector3.zero;
             var distance = config.distance;
             for (var i = 0; i < config.NumAdjust; i++)
             {
                 var start = transform.position;
-                var rand = config.MakeRandom(target.transform);
+                var rand = config.MakeRandom(target);
                 // Debug.Log($"rand: {rand}");
-                var end = target.transform.Position + rand;
+                var end = target.Position + rand;
                 var dir = end - start;
 
                 if (i > 0 && config.adjustMaxAngle.HasValue)
@@ -132,7 +132,7 @@ namespace Hedwig.Runtime
             // }
         }
 
-        async UniTaskVoid go(ProjectileConfig config, IMobileObject target)
+        async UniTaskVoid go(ProjectileConfig config, ITransform target)
         {
             // var stopwatch = new System.Diagnostics.Stopwatch();
             // stopwatch.Start();
@@ -173,7 +173,7 @@ namespace Hedwig.Runtime
             this.config = config;
         }
 
-        void IProjectile.Go(IMobileObject target)
+        void IProjectile.Go(ITransform target)
         {
             if (config == null)
             {
@@ -186,8 +186,6 @@ namespace Hedwig.Runtime
             go(config, target).Forget();
         }
 
-        void IProjectile.Go(Vector3 target)
-        {}
         #endregion
     }
 }

@@ -12,6 +12,8 @@ namespace Hedwig.Runtime
         [SerializeField]
         Transform? mazzle;
 
+        MeshRenderer? mazzleMeshRenderer;
+
         CachedTransform _tranform = new CachedTransform();
         IMobileObject? _target;
         IDisposable? _disposable;
@@ -21,11 +23,7 @@ namespace Hedwig.Runtime
             if (mazzle != null)
             {
                 _tranform.Initialize(mazzle);
-
-                // (_tranform as ITransform).OnPositionChanged.Subscribe(pos =>
-                // {
-                //     Debug.Log($"muzzle: {pos}");
-                // });
+                mazzleMeshRenderer = mazzle.GetComponent<MeshRenderer>();
             }
         }
 
@@ -67,6 +65,15 @@ namespace Hedwig.Runtime
             this.clearHandler();
             this._target = target;
             this.setupHandler();
+        }
+
+        void ILauncherController.Initialize(ILauncherManager launcherManager)
+        {
+            launcherManager.OnCanFireChanged.Subscribe(v => { 
+                if(mazzleMeshRenderer!=null) {
+                    mazzleMeshRenderer.material.color = (!v) ? Color.red : Color.white;
+                }
+            }).AddTo(this);
         }
 
         #endregion

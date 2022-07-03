@@ -24,11 +24,6 @@ namespace Hedwig.Runtime
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
-        int projectileConfigIndex = -1;
-
-        [SerializeField]
-        Button? moveButton;
-
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncherManager? launcher;
 
@@ -38,56 +33,40 @@ namespace Hedwig.Runtime
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
-        }
-
-        void setupUI(IEnemyManager enemyManager)
-        {
-            var tmp = moveButton?.GetComponentInChildren<TextMeshProUGUI>();
-            var move = false;
-            // var token = this.GetCancellationTokenOnDestroy();
-            var cts = new CancellationTokenSource();
-            moveButton?.OnClickAsObservable().Subscribe(_ => {
-                move = !move;
-                tmp!.text = (move) ? "Stop" : "Move";
-                if (move)
-                {
-                    enemyManager.RandomWalk(-30, 30, 3000, cts.Token).Forget();
-                } else {
-                    cts.Cancel();
-                    cts = new CancellationTokenSource();
-                }
-            }).AddTo(this);
+            builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         }
 
         void Start()
         {
             if (enemyManager == null) return;
+            enemyManager.Setup();
             if (launcher == null) return;
 
-            enemyManager.Setup();
-            setupUI(enemyManager);
-
-            var selection = new SingleSelection(enemyManager.Enemies);
-            selection.onCurrentChanged.Subscribe(selectable =>
+            var enemySelection = new SelectiveSelection(enemyManager.Enemies);
+            enemySelection.OnCurrentChanged.Subscribe(selectable =>
             {
                 launcher.SetTarget(selectable as IEnemy);
                 launcher.ShowTrajectory(true);
             }).AddTo(this);
 
-            selection.SelectExclusive(0);
+            enemySelection.SelectExclusive(0);
+
+            var configSelection = new Selection<ProjectileConfig>(projectileConfigs);
+            configSelection.OnCurrentChanged.Subscribe(config =>
+            {
+                launcher.SetProjectileConfig(config);
+            }).AddTo(this);
+            configSelection.Select(0);
 
             this.UpdateAsObservable().Subscribe(_ =>
             {
-                var enemy = selection.Current as IEnemy;
+                var enemy = enemySelection.Current as IEnemy;
                 if (enemy == null) return;
-                _update(launcher, enemy, selection);
+                _update(launcher, enemy, enemySelection, configSelection);
             }).AddTo(this);
-
-            this.projectileConfigIndex = projectileConfigs.Count - 1;
-            launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
         }
 
-        void _update(ILauncherManager launcher, IEnemy enemy, SingleSelection selection)
+        void _update(ILauncherManager launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
@@ -98,49 +77,20 @@ namespace Hedwig.Runtime
             }
             if(Input.GetKeyDown(KeyCode.RightArrow))
             {
-                selection.Next();
+                enemySelection.Next();
             }
             if (Input.GetKeyDown(KeyCode.LeftArrow))
             {
-                selection.Prev();
+                enemySelection.Prev();
             }
             if (Input.GetKeyDown(KeyCode.DownArrow))
             {
-                if (projectileConfigIndex < 0) return;
-                projectileConfigIndex++;
-                if (projectileConfigIndex == projectileConfigs.Count - 1) projectileConfigIndex = 0;
-                launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
+                configSelection.Next();
             }
             if(Input.GetKeyDown(KeyCode.UpArrow))
             {
-                if (projectileConfigIndex < 0) return;
-                projectileConfigIndex--;
-                if (projectileConfigIndex < 0) projectileConfigIndex = projectileConfigs.Count - 1;
-                launcher.SetProjectileConfig(projectileConfigs[projectileConfigIndex]);
+                configSelection.Prev();
             }
         }
-
-        // async void Stop() 
-        // {
-        //     if(tweener==null) return;
-        //     var x = tweener.Pause();
-        //     Debug.Log(tweener.IsPlaying());
-        //     await UniTask.Delay(1000);
-        //     x = tweener.Play();
-        //     Debug.Log(tweener.IsPlaying());
-        // }
-
-        // void Update()
-        // {
-        //     if (Input.GetKeyDown(KeyCode.Space))
-        //     {
-        //         Shot();
-        //     }
-        //     if(Input.GetKeyDown(KeyCode.LeftShift))
-        //     {
-        //         Stop();
-        //     }
-        // }
     }
-
 }

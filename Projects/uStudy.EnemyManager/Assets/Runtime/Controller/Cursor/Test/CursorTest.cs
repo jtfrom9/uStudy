@@ -54,7 +54,7 @@ namespace Hedwig.Runtime
             }
             enemyManager.Setup();
 
-            var selection = new SingleSelection(enemyManager.Enemies);
+            var selection = new SelectiveSelection(enemyManager.Enemies);
             selection.SelectExclusive(0);
 
             setupUI(selection, enemyManager);
@@ -102,19 +102,19 @@ namespace Hedwig.Runtime
         bool birdView { get => dropdown!.options[dropdown.value].text == "Bird"; }
         bool towerView { get => dropdown!.options[dropdown.value].text == "Tower"; }
 
-        void selectNext(SingleSelection selection, IEnemyManager enemyManager)
+        void selectNext(SelectiveSelection selection, IEnemyManager enemyManager)
         {
             selection.Next();
             if(tracking) trackCam(selection.Current);
         }
 
-        void selectPrev(SingleSelection selection, IEnemyManager enemyManager)
+        void selectPrev(SelectiveSelection selection, IEnemyManager enemyManager)
         {
             selection.Prev();
             if (tracking) trackCam(selection.Current);
         }
 
-        void setupUI(SingleSelection selection, IEnemyManager enemyManager)
+        void setupUI(SelectiveSelection selection, IEnemyManager enemyManager)
         {
             bool go = false;
             var tmp = goButton!.GetComponentInChildren<TextMeshProUGUI>();
@@ -164,7 +164,7 @@ namespace Hedwig.Runtime
             }).AddTo(this);
         }
 
-        void shot(SingleSelection selection)
+        void shot(SelectiveSelection selection)
         {
             if (!towerView) return;
             if (bulletPrefab == null) return;
@@ -190,7 +190,7 @@ namespace Hedwig.Runtime
             }, 3, PathType.CatmullRom).SetEase(Ease.InQuart);
         }
 
-        void aim(SingleSelection selection)
+        void aim(SelectiveSelection selection)
         {
             if (!towerView) return;
             var e = selection.Current as IEnemy;
@@ -198,7 +198,7 @@ namespace Hedwig.Runtime
             Debug.DrawLine(tower, e.transform.Position, Color.red, 100);
         }
 
-        void update(SingleSelection selection, IEnemyManager enemyManager)
+        void update(SelectiveSelection selection, IEnemyManager enemyManager)
         {
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {

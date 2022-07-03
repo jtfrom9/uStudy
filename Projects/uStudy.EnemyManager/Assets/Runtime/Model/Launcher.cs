@@ -15,13 +15,14 @@ namespace Hedwig.Runtime
         IMobileObject? target { get; }
         bool CanLaunch { get; }
         void SetTarget(IMobileObject? target);
+        void Initialize(ILauncherManager launcherManager);
     }
 
     public interface ILauncherHandler : IDisposable
     {
-        UniTask Fire();
-        void StartFire();
-        void EndFire();
+        void Fire(ITransform start, ITransform target);
+        void StartFire(ITransform start, ITransform target);
+        void EndFire(ITransform start, ITransform target);
     }
 
     public interface ILauncherManager

@@ -13,29 +13,23 @@ namespace Hedwig.Runtime
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
-        ILauncherController launcherController;
-        ITrajectoryVisualizer? trajectoryVisualizer;
-
-        public UniTask Fire()
+        public void Fire(ITransform start, ITransform target)
         {
-            trajectoryVisualizer?.Show(true);
-            return UniTask.CompletedTask;
+            launcherManager.ShowTrajectory(true);
         }
 
-        public void StartFire()
+        public void StartFire(ITransform start, ITransform target)
         {
         }
 
-        public void EndFire()
+        public void EndFire(ITransform start, ITransform target)
         {
-            if (launcherController.target == null)
-                return;
             launcherManager.OnBeforeLaunched();
             var projectile = projectileFactory.Create(
-                launcherController.mazzle.Position,
+                start.Position,
                 config);
-            projectile?.Go(launcherController.target);
-            trajectoryVisualizer?.Show(false);
+            projectile?.Go(target);
+            launcherManager.ShowTrajectory(false);
             launcherManager.OnLaunched();
         }
 
@@ -46,16 +40,11 @@ namespace Hedwig.Runtime
         public GrenadeLauncher(
             ILauncherManager launcherManager,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config,
-            ILauncherController launcherController,
-            ITrajectoryVisualizer? trajectoryVisualizer)
+            ProjectileConfig config)
         {
             this.launcherManager = launcherManager;
             this.projectileFactory = projectileFactory;
             this.config = config;
-
-            this.launcherController = launcherController;
-            this.trajectoryVisualizer = trajectoryVisualizer;
         }
     }
 }

@@ -13,45 +13,42 @@ namespace Hedwig.Runtime
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
-        ILauncherController launcherController;
-        ITrajectoryVisualizer? trajectoryVisualizer;
-
-        public async UniTask Fire()
+        public void Fire(ITransform start, ITransform target)
         {
-            if(launcherController.target==null)
-                return;
-            launcherManager.OnBeforeLaunched();
-            for (var i = 0; i < config.successionCount; i++)
+            UniTask.Create(async () =>
             {
-                var projectile = projectileFactory.Create(
-                    launcherController.mazzle.Position,
-                    config);
-                Debug.Log($"[{i}] {launcherController.target.transform.Position}");
-                projectile?.Go(launcherController.target);
-
-                if (config.successionCount > 1)
+                launcherManager.OnBeforeLaunched();
+                for (var i = 0; i < config.successionCount; i++)
                 {
-                    await UniTask.Delay(config.successionInterval);
+                    var projectile = projectileFactory.Create(
+                        start.Position,
+                        config);
+                    projectile?.Go(target);
+
+                    if (config.successionCount > 1)
+                    {
+                        await UniTask.Delay(config.successionInterval);
+                    }
                 }
-            }
-            launcherManager.OnLaunched();
+                launcherManager.OnLaunched();
+            }).Forget();
         }
 
-        public void StartFire()
+        public void StartFire(ITransform start, ITransform target)
         {
             Debug.Log($"StartFire: {config.chargable}");
             if (config.chargable)
             {
-                trajectoryVisualizer?.Show(true);
+                launcherManager.ShowTrajectory(true);
             }
         }
 
-        public void EndFire()
+        public void EndFire(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
             if (config.chargable)
             {
-                trajectoryVisualizer?.Show(false);
+                launcherManager.ShowTrajectory(false);
             }
         }
 
@@ -62,16 +59,11 @@ namespace Hedwig.Runtime
         public ShotLauncher(
             ILauncherManager  launcherManager,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config,
-            ILauncherController launcherController,
-            ITrajectoryVisualizer? trajectoryVisualizer)
+            ProjectileConfig config)
         {
             this.launcherManager = launcherManager;
             this.projectileFactory = projectileFactory;
             this.config = config;
-
-            this.launcherController = launcherController;
-            this.trajectoryVisualizer = trajectoryVisualizer;
         }
     }
 }
