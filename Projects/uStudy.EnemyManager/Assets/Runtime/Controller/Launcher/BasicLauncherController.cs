@@ -69,7 +69,7 @@ namespace Hedwig.Runtime
 
         void ILauncherController.Initialize(ILauncherManager launcherManager)
         {
-            launcherManager.OnCanFireChanged.Subscribe(v => { 
+            launcherManager.CanFire.Subscribe(v => { 
                 if(mazzleMeshRenderer!=null) {
                     mazzleMeshRenderer.material.color = (!v) ? Color.red : Color.white;
                 }

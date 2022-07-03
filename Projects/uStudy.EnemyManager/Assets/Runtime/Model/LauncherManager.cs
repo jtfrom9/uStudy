@@ -16,8 +16,8 @@ namespace Hedwig.Runtime
 
         bool recasting = false;
 
+        ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
-        Subject<bool> onCanFireChanged = new Subject<bool>();
         Subject<float> onRecastTimeUpdated = new Subject<float>();
 
         // injected
@@ -29,15 +29,22 @@ namespace Hedwig.Runtime
 
         ILauncherHandler? launcher;
 
-        bool canFire
+        // bool canFire
+        // {
+        //     get
+        //     {
+        //         var v = launcherController.CanLaunch &&
+        //             _config != null &&
+        //             !recasting;
+        //         return v;
+        //     }
+        // }
+        void setCanFire()
         {
-            get
-            {
-                var v = launcherController.CanLaunch &&
-                    _config != null &&
-                    !recasting;
-                return v;
-            }
+            var v = launcherController.CanLaunch &&
+                _config != null &&
+                !recasting;
+            canFire.Value = v;
         }
 
         void initializeController()
@@ -52,7 +59,8 @@ namespace Hedwig.Runtime
         void changeRecastState(bool v)
         {
             recasting = v;
-            onCanFireChanged.OnNext(canFire);
+            // onCanFireChanged.OnNext(canFire);
+            setCanFire();
         }
 
         async UniTask stepRecast(int recast, int step, int index)
@@ -87,6 +95,13 @@ namespace Hedwig.Runtime
                 }
             }
             onConfigChanged.OnNext(config);
+            setCanFire();
+        }
+
+        void setTarget(IMobileObject? target) {
+            launcherController.SetTarget(target);
+            trajectoryVisualizer?.SetEndTarget(target?.transform);
+            setCanFire();
         }
 
         void fire()
@@ -97,7 +112,7 @@ namespace Hedwig.Runtime
                 return;
             if (_config == null)
                 return;
-            if (!canFire)
+            if (!canFire.Value)
                 return;
             launcher.Fire(launcherController.mazzle,
                 launcherController.target.transform);
@@ -143,25 +158,19 @@ namespace Hedwig.Runtime
         #region ILauncherManager
         ProjectileConfig? ILauncherManager.config { get => _config; }
         void ILauncherManager.SetProjectileConfig(ProjectileConfig? config) => setConfig(config);
-
-        void ILauncherManager.SetTarget(IMobileObject? target)
-        {
-            launcherController.SetTarget(target);
-            trajectoryVisualizer?.SetEndTarget(target?.transform);
-        }
+        void ILauncherManager.SetTarget(IMobileObject? target) => setTarget(target);
 
         void ILauncherManager.ShowTrajectory(bool v)
         {
             this.trajectoryVisualizer?.Show(v);
         }
 
-        bool ILauncherManager.CanFire { get => canFire; }
+        IReadOnlyReactiveProperty<bool> ILauncherManager.CanFire { get => canFire; }
         void ILauncherManager.Fire() => fire();
         void ILauncherManager.StartFire() => startFire();
         void ILauncherManager.EndFire() => endFire();
 
         ISubject<ProjectileConfig?> ILauncherManager.OnConfigChanged { get => onConfigChanged; }
-        ISubject<bool> ILauncherManager.OnCanFireChanged { get => onCanFireChanged; }
         ISubject<float> ILauncherManager.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
 
         void ILauncherManager.OnBeforeLaunched() => onBeforeLaunched();
@@ -173,7 +182,7 @@ namespace Hedwig.Runtime
         {
             launcher?.Dispose();
             onConfigChanged.OnCompleted();
-            onCanFireChanged.OnCompleted();
+            canFire.Dispose();
             onRecastTimeUpdated.OnCompleted();
             disposable.Dispose();
         }

@@ -44,22 +44,22 @@ namespace Hedwig.Runtime
             }
         }
 
-        // void hitTest(Vector3 pos, Vector3 dir, float speed) {
-        //     var hit = new RaycastHit();
-        //     if(Physics.Raycast(pos, dir, out hit, speed *Time.deltaTime)) {
-        //         if(hit.collider.gameObject.CompareTag(Collision.CharacterTag)) {
-        //             Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
-        //             Debug.Break();
-        //             lastHit = hit.collider.gameObject;
-        //             cts.Cancel();
-        //         }
-        //         if (hit.collider.gameObject.CompareTag(Collision.EnvironmentTag))
-        //         {
-        //             Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
-        //             Debug.Break();
-        //         }
-        //     }
-        // }
+        void hitTest(Vector3 pos, Vector3 dir, float speed) {
+            var hit = new RaycastHit();
+            if(Physics.Raycast(pos, dir, out hit, speed *Time.deltaTime)) {
+                if(hit.collider.gameObject.CompareTag(Collision.CharacterTag)) {
+                    Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
+                    // Debug.Break();
+                    lastHit = hit.collider.gameObject;
+                    cts.Cancel();
+                }
+                if (hit.collider.gameObject.CompareTag(Collision.EnvironmentTag))
+                {
+                    Debug.Log($"would hit {hit.collider.gameObject.name} at next frame");
+                    // Debug.Break();
+                }
+            }
+        }
 
         async UniTask<bool> move(Vector3 destRelative, float duration) {
             var dir = destRelative.normalized;
@@ -69,7 +69,7 @@ namespace Hedwig.Runtime
                 await transform.DOMove(destRelative, duration)
                     .SetRelative(true)
                     .SetEase(Ease.Linear)
-                    // .OnUpdate(() => hitTest(transform.position, dir, speed))
+                    .OnUpdate(() => hitTest(transform.position, dir, speed))
                     .ToUniTask(cancellationToken: cts.Token);
                 return true;
             } catch (OperationCanceledException) {

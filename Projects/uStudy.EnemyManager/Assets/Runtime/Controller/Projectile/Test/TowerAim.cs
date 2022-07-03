@@ -64,7 +64,7 @@ public class TowerAim : LifetimeScope
             showConfigInfo(config);
         }).AddTo(this);
 
-        launcher.OnCanFireChanged.Subscribe(v => {
+        launcher.CanFire.Subscribe(v => {
             Debug.Log($"CanLaunch: {v}");
         }).AddTo(this);
 
@@ -123,7 +123,7 @@ Distance: {config.distance}
         input.OnBegin.Subscribe(e =>
         {
             cursorManager.Move(e.position);
-            if (launcher.CanFire)
+            if (launcher.CanFire.Value)
             {
                 launcher.Fire();
             }

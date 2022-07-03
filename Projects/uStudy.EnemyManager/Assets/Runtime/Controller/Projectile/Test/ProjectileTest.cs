@@ -64,17 +64,29 @@ namespace Hedwig.Runtime
                 if (enemy == null) return;
                 _update(launcher, enemy, enemySelection, configSelection);
             }).AddTo(this);
+
+            launcher.CanFire.Subscribe(can =>
+            {
+                Debug.Log($"can: {can}");
+                if (can)
+                {
+                    if (launcher.config!.type == ProjectileType.Fire)
+                    {
+                        launcher.Fire();
+                    }
+                }
+            }).AddTo(this);
         }
 
         void _update(ILauncherManager launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                if (launcher.CanFire)
-                {
-                    launcher.Fire();
-                }
-            }
+            // if (Input.GetKeyDown(KeyCode.Space))
+            // {
+            //     if (launcher.CanFire)
+            //     {
+            //         launcher.Fire();
+            //     }
+            // }
             if(Input.GetKeyDown(KeyCode.RightArrow))
             {
                 enemySelection.Next();

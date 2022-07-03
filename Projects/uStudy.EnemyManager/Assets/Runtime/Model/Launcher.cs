@@ -32,13 +32,12 @@ namespace Hedwig.Runtime
         void SetTarget(IMobileObject? target);
         void ShowTrajectory(bool v);
 
-        bool CanFire { get; }
+        IReadOnlyReactiveProperty<bool> CanFire { get; }
         void Fire();
         void StartFire();
         void EndFire();
 
         ISubject<ProjectileConfig?> OnConfigChanged { get; }
-        ISubject<bool> OnCanFireChanged { get; }
         ISubject<float> OnRecastTimeUpdated { get; }
 
         void OnBeforeLaunched();
