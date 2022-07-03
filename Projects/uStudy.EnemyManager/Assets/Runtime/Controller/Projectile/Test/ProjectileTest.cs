@@ -26,6 +26,7 @@ namespace Hedwig.Runtime
 
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncherManager? launcher;
+        [Inject] IHitManager? hitManager;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -33,6 +34,7 @@ namespace Hedwig.Runtime
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
+            builder.Register<IHitManager, HitManager>(Lifetime.Singleton);
             builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         }
 
@@ -41,6 +43,8 @@ namespace Hedwig.Runtime
             if (enemyManager == null) return;
             enemyManager.Setup();
             if (launcher == null) return;
+            if (hitManager ==null)return;
+            hitManager.Setup(this);
 
             var enemySelection = new SelectiveSelection(enemyManager.Enemies);
             enemySelection.OnCurrentChanged.Subscribe(selectable =>
@@ -67,7 +71,6 @@ namespace Hedwig.Runtime
 
             launcher.CanFire.Subscribe(can =>
             {
-                Debug.Log($"can: {can}");
                 if (can)
                 {
                     if (launcher.config!.type == ProjectileType.Fire)

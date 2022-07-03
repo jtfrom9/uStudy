@@ -71,6 +71,10 @@ public class EffectTest : LifetimeScope
     {
         CachedTransform _transform = new CachedTransform();
         ITransform IMobileObject.transform { get => _transform; }
+        Vector3 IMobileObject.diretion { get => Vector3.zero; }
+        float IMobileObject.speed { get => 0; }
+        void IMobileObject.OnHit(IMobileObject other, Vector3 position) { }
+
         public void Dispose() { Destroy(gameObject); }
         void Awake()
         {

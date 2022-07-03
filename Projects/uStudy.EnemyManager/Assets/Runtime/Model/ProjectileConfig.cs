@@ -24,7 +24,11 @@ namespace Hedwig.Runtime
 
         [SerializeField] public int successionCount = 1;
         [SerializeField] public int successionInterval = 0;
-        [SerializeField] public int recastTime = 500;
+
+        [SerializeField]
+        [Range(10, 10000)]
+        public int recastTime = 500;
+
         [SerializeField] public float shake = 0f;
 
         [SerializeField] public float speed = 10f;

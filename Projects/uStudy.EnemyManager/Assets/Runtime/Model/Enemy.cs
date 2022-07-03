@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IEnemy: ICharactor, ISelectable
+    public interface IEnemy : ICharactor, ISelectable
     {
         string Name { get; }
         int Health { get; }
@@ -50,11 +50,13 @@ namespace Hedwig.Runtime
         IEnemy[] GetEnemies();
     }
 
-    public interface IEnemyManager: IDisposable
+    public interface IEnemyManager : IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }
         void Setup();
         void AddEnemy(IEnemy eney);
+
+        ISubject<IEnemy> OnCreated { get; }
     }
 
     public static class EnemyManagerExtension

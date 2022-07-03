@@ -2,6 +2,7 @@
 
 using System;
 using UnityEngine;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -24,10 +25,6 @@ namespace Hedwig.Runtime
             OtherHit,
             Expired
         }
-
-        public struct eHistory
-        {
-        }
     }
 
     public interface IProjectile : IMobileObject
@@ -36,10 +33,13 @@ namespace Hedwig.Runtime
         Projectile.EndReason endRegion { get; }
         void Initialize(Vector3 initial, ProjectileConfig config);
         void Go(ITransform target);
+
+        ISubject<IProjectile> OnUpdate { get; }
     }
 
     public interface IProjectileFactory
     {
         IProjectile? Create(Vector3 start, ProjectileConfig config);
+        ISubject<IProjectile> OnCreated { get; }
     }
 }

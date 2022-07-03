@@ -48,7 +48,7 @@ namespace Hedwig.Runtime
             Vector3? result = null;
             foreach (var hit in hits)
             {
-                if (hit.collider.gameObject.CompareTag(Hedwig.Runtime.Collision.EnvironmentTag))
+                if (hit.collider.gameObject.CompareTag(Hedwig.Runtime.HitTag.Environment))
                 {
                     var y = hit.point.y;
                     if (result == null || y > highestY)

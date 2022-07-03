@@ -40,20 +40,35 @@ namespace Hedwig.Runtime
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.gameObject.CompareTag(Collision.ProjectileTag))
+            if (other.gameObject.CompareTag(HitTag.Projectile))
             {
                 var projectile = other.gameObject.GetComponent<IProjectile>();
-                var pos = other.ClosestPointOnBounds(this.transform.position);
-                var damage = new DamageEvent(this, 10, pos);
-                this.onAttcked.OnNext(damage);
+                var posision = other.ClosestPointOnBounds(this.transform.position);
+                onHit(projectile, posision);
             }
         }
+
+        // void OnTriggerStay(Collider other)
+        // {
+        //     if (other.gameObject.CompareTag(Collision.ProjectileTag))
+        //     {
+        //         var projectile = other.gameObject.GetComponent<IProjectile>();
+        //         var posision = other.ClosestPointOnBounds(this.transform.position);
+        //         onTrigger(projectile, posision);
+        //     }
+        // }
 
         void OnDestroy()
         {
             onAttcked.OnCompleted();
             onDeath.OnCompleted();
             selector?.Dispose();
+        }
+
+        void onHit(IMobileObject target, Vector3 position)
+        {
+            var damage = new DamageEvent(this, 10, position);
+            this.onAttcked.OnNext(damage);
         }
 
         #region ISelectable
@@ -74,6 +89,10 @@ namespace Hedwig.Runtime
 
         #region IMobileObject
         ITransform IMobileObject.transform { get => _transform; }
+        Vector3 IMobileObject.diretion { get => _agent?.velocity.normalized ?? Vector3.zero; }
+        float IMobileObject.speed { get => _agent?.velocity.magnitude ?? 0; }
+
+        void IMobileObject.OnHit(IMobileObject target, Vector3 position) => onHit(target, position);
         #endregion
 
         #region ICharactor

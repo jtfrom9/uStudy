@@ -1,6 +1,7 @@
 #nullable enable
 
 using UnityEngine;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -11,12 +12,19 @@ namespace Hedwig.Runtime
         [SerializeField, InterfaceType(typeof(IProjectile))]
         Component? projectilePrefab;
 
+        Subject<IProjectile> onCreated = new Subject<IProjectile>();
+
+        ISubject<IProjectile> IProjectileFactory.OnCreated { get => onCreated; }
+
         IProjectile? IProjectileFactory.Create(Vector3 start,ProjectileConfig config)
         {
             if (projectilePrefab == null) return null;
-            // var projectile = Instantiate(projectilePrefab, start, Quaternion.identity) as IProjectile;
             var projectile = Instantiate(projectilePrefab) as IProjectile;
-            projectile?.Initialize(start, config);
+            if (projectile != null)
+            {
+                projectile.Initialize(start, config);
+                onCreated.OnNext(projectile);
+            }
             return projectile;
         }
         #endregion

@@ -13,13 +13,14 @@ namespace Hedwig.Runtime
     {
         List<IEnemy> _enemies = new List<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
+        Subject<IEnemy> onCreated = new Subject<IEnemy>();
 
         IEffectFactory effectFactory;
         ICursorFactory selectorFactory;
 
         void OnEnemyAttacked(DamageEvent e)
         {
-            Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}");
+            // Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}");
             // var effect = effectFactory.CreateDamageEffect(
             //     e.enemy.transform,
             //     e.damage);
@@ -57,6 +58,8 @@ namespace Hedwig.Runtime
             var ctrl = enemy.GetControl();
             ctrl.SetHealth(100);
             ctrl.SetSelector(selectorFactory.CreateTargetCusor(enemy));
+
+            onCreated.OnNext(enemy);
         }
 
         // ctor
@@ -64,7 +67,6 @@ namespace Hedwig.Runtime
         {
             this.effectFactory = effectFactory;
             this.selectorFactory = selectorFactory;
-
         }
 
         #region IEnemyManager
@@ -84,6 +86,8 @@ namespace Hedwig.Runtime
         }
 
         void IEnemyManager.AddEnemy(IEnemy enemy) => addEnemy(enemy);
+
+        ISubject<IEnemy> IEnemyManager.OnCreated { get => onCreated; }
         #endregion
 
         #region IDisposable
