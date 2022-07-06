@@ -67,6 +67,7 @@ namespace Hedwig.Runtime
 
         void onHit(IMobileObject target, Vector3 position)
         {
+            Debug.Log($"[{target.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
             var damage = new DamageEvent(this, 10, position);
             this.onAttcked.OnNext(damage);
         }
@@ -88,11 +89,8 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
+        string  IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
-        Vector3 IMobileObject.diretion { get => _agent?.velocity.normalized ?? Vector3.zero; }
-        float IMobileObject.speed { get => _agent?.velocity.magnitude ?? 0; }
-
-        void IMobileObject.OnHit(IMobileObject target, Vector3 position) => onHit(target, position);
         #endregion
 
         #region ICharactor
@@ -108,7 +106,6 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IEnemy
-        public string Name { get => gameObject.name; }
         public int Health { get; private set; }
         ICursor? selector;
 

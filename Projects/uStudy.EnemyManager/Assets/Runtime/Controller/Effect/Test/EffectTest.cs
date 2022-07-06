@@ -70,10 +70,8 @@ public class EffectTest : LifetimeScope
     class DummyMobileObject : MonoBehaviour, IMobileObject
     {
         CachedTransform _transform = new CachedTransform();
+        string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
-        Vector3 IMobileObject.diretion { get => Vector3.zero; }
-        float IMobileObject.speed { get => 0; }
-        void IMobileObject.OnHit(IMobileObject other, Vector3 position) { }
 
         public void Dispose() { Destroy(gameObject); }
         void Awake()

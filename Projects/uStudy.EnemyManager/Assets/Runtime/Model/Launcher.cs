@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
         void EndFire(ITransform start, ITransform target);
     }
 
-    public interface ILauncherManager
+    public interface ILauncherManager: IDisposable
     {
         ProjectileConfig? config { get; }
         void SetProjectileConfig(ProjectileConfig? config);

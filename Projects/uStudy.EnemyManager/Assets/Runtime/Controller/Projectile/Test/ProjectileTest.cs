@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
 
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncherManager? launcher;
-        [Inject] IHitManager? hitManager;
+        [Inject] IProjectileFactory? projectileFactory;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -34,7 +34,6 @@ namespace Hedwig.Runtime
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
-            builder.Register<IHitManager, HitManager>(Lifetime.Singleton);
             builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         }
 
@@ -43,8 +42,9 @@ namespace Hedwig.Runtime
             if (enemyManager == null) return;
             enemyManager.Setup();
             if (launcher == null) return;
-            if (hitManager ==null)return;
-            hitManager.Setup(this);
+            if(projectileFactory==null) return;
+
+            setupDebug(projectileFactory);
 
             var enemySelection = new SelectiveSelection(enemyManager.Enemies);
             enemySelection.OnCurrentChanged.Subscribe(selectable =>
@@ -79,17 +79,16 @@ namespace Hedwig.Runtime
                     }
                 }
             }).AddTo(this);
+
+        }
+
+        void OnApplicationQuit() {
+            Debug.Log($"Quit: frame:{Time.frameCount}");
+            launcher?.Dispose();
         }
 
         void _update(ILauncherManager launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
         {
-            // if (Input.GetKeyDown(KeyCode.Space))
-            // {
-            //     if (launcher.CanFire)
-            //     {
-            //         launcher.Fire();
-            //     }
-            // }
             if(Input.GetKeyDown(KeyCode.RightArrow))
             {
                 enemySelection.Next();
@@ -106,6 +105,69 @@ namespace Hedwig.Runtime
             {
                 configSelection.Prev();
             }
+        }
+
+        void setupDebug(IProjectileFactory projectileFactory)
+        {
+            projectileFactory.OnCreated.Subscribe(projectile =>
+            {
+                int willHitFrame = 0;
+                projectile.OnEvent.Subscribe(e => {
+                    var lateCount = (willHitFrame == 0) ? "-" : (Time.frameCount - willHitFrame).ToString();
+                    var stopwatch = new System.Diagnostics.Stopwatch();
+                    switch(e.type) {
+                        case Projectile.EventType.BeforeLoop:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeLoop");
+                            stopwatch.Start();
+                            break;
+                        case Projectile.EventType.AfterLoop:
+                            stopwatch.Stop();
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterLoop @({projectile.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
+                            break;
+                        case Projectile.EventType.Destroy:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Destroy reson:{projectile.EndReason}");
+                            break;
+                        case Projectile.EventType.BeforeMove:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{projectile.transform.Position}");
+                            break;
+                        case Projectile.EventType.AfterMove:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterMove @{projectile.transform.Position} (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.BeforeLastMove:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeLastMove @{projectile.transform.Position} -> {e.willHit!.Value.point} (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.AfterLastMove:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterLastMove @{projectile.transform.Position} (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.WillHit:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} WillHit @{projectile.transform.Position} ray: {e.ray}, maxDist: {e.maxDistance!.Value} point: {e.willHit!.Value.point} distance: {e.willHit!.Value.distance}");
+                            willHitFrame = Time.frameCount;
+                            break;
+                        case Projectile.EventType.Trigger:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Trigger with <{e.collider!.gameObject.name}> @{projectile.transform.Position} (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.OnKill:
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} OnKill (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.OnComplete:
+                            Debug.Log($"[{GetHashCode():x}] frame:{Time.frameCount} OnComplete (late:{lateCount})");
+                            break;
+                        case Projectile.EventType.OnPause:
+                            Debug.Log($"[{GetHashCode():x}] frame:{Time.frameCount} OnPause (late:{lateCount})");
+                            break;
+                    }
+                }).AddTo(this);
+
+                projectile.transform.OnPositionChanged.Subscribe(pos => {
+                    if (pos.z > 1)
+                    {
+                        Debug.LogWarning($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} {pos}");
+                        // Debug.Break();
+                        projectile.Dispose();
+                    }
+                }).AddTo(this);
+
+            }).AddTo(this);
         }
     }
 }

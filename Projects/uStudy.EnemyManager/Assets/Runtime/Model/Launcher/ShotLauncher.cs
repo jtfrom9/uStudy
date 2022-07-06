@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -12,6 +13,8 @@ namespace Hedwig.Runtime
         ILauncherManager launcherManager;
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
+
+        CancellationTokenSource cts = new CancellationTokenSource();
 
         public void Fire(ITransform start, ITransform target)
         {
@@ -27,7 +30,7 @@ namespace Hedwig.Runtime
 
                     if (config.successionCount > 1)
                     {
-                        await UniTask.Delay(config.successionInterval);
+                        await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
                     }
                 }
                 launcherManager.OnLaunched();
@@ -54,6 +57,7 @@ namespace Hedwig.Runtime
 
         public void Dispose()
         {
+            cts.Cancel();
         }
 
         public ShotLauncher(

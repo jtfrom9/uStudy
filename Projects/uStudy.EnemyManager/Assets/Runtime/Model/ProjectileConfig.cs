@@ -29,7 +29,9 @@ namespace Hedwig.Runtime
         [Range(10, 10000)]
         public int recastTime = 500;
 
-        [SerializeField] public float shake = 0f;
+        [SerializeField]
+        [Range(0, 2.0f)]
+        public float shake = 0f;
 
         [SerializeField] public float speed = 10f;
         [SerializeField] public float distance = 10;

@@ -12,12 +12,7 @@ namespace Hedwig.Runtime
     public class HitTag
     {
         public const string Environment = "Environment";
-        public const string CharacterT = "Character";
+        public const string Character = "Character";
         public const string Projectile = "Projectile";
-    }
-
-    public interface IHitManager: IDisposable
-    {
-        void Setup(MonoBehaviour monoBehaviour);
     }
 }

@@ -15,9 +15,18 @@ namespace Hedwig.Runtime
         TextMeshPro? tmp;
         ITransform? cameraTransform;
 
+        bool _disposed = false;
+
         void Awake() {
             tmp = GetComponentInChildren<TextMeshPro>();
             cameraTransform = CameraTransform.Find();
+        }
+
+        void OnDestroy() {
+            if(DOTween.IsTweening(transform)) {
+                transform.DOKill();
+            }
+            _disposed = true;
         }
 
         UniTask _play()
@@ -54,6 +63,7 @@ namespace Hedwig.Runtime
         #region IDisposable
         void IDisposable.Dispose()
         {
+            if(_disposed) return;
             Destroy(gameObject);
         }
         #endregion

@@ -23,18 +23,54 @@ namespace Hedwig.Runtime
         {
             TargetHit,
             OtherHit,
-            Expired
+            Expired,
+            Disposed
+        }
+
+        public enum EventType
+        {
+            BeforeLoop,
+            AfterLoop,
+            BeforeMove,
+            AfterMove,
+            Trigger,
+            WillHit,
+            BeforeLastMove,
+            AfterLastMove,
+            OnKill,
+            OnComplete,
+            OnPause,
+            Destroy
+        }
+
+        public struct EventArg {
+            public EventType type;
+            public IProjectile projectile;
+            public Collider? collider;
+            public RaycastHit? willHit;
+            public Ray? ray;
+            public float? maxDistance;
+
+            public EventArg(IProjectile projectile, EventType type)
+            {
+                this.projectile = projectile;
+                this.type = type;
+                this.collider = null;
+                this.willHit = null;
+                this.ray = null;
+                this.maxDistance = null;
+            }
         }
     }
 
     public interface IProjectile : IMobileObject
     {
-        Projectile.Status status { get; }
-        Projectile.EndReason endRegion { get; }
+        Projectile.Status Status { get; }
+        Projectile.EndReason EndReason { get; }
         void Initialize(Vector3 initial, ProjectileConfig config);
         void Go(ITransform target);
 
-        ISubject<IProjectile> OnUpdate { get; }
+        ISubject<Projectile.EventArg> OnEvent { get; }
     }
 
     public interface IProjectileFactory

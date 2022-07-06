@@ -10,6 +10,18 @@ namespace Hedwig.Runtime
 {
     public class SphereHitEffectController : MonoBehaviour, IHitEffect
     {
+        bool _disposed = false;
+
+        void OnDestroy()
+        {
+            if (DOTween.IsTweening(transform))
+            {
+                transform.DOKill();
+            }
+            _disposed = true;
+        }
+
+
         #region IEffect
         UniTask IEffect.Play()
         {
@@ -24,7 +36,9 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        void IDisposable.Dispose() {
+        void IDisposable.Dispose()
+        {
+            if (_disposed) return;
             Destroy(gameObject);
         }
     }

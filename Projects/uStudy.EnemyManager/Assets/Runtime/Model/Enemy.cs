@@ -26,7 +26,6 @@ namespace Hedwig.Runtime
 
     public interface IEnemy : ICharactor, ISelectable
     {
-        string Name { get; }
         int Health { get; }
         void SetDestination(Vector3 pos);
         void Stop();

@@ -1,6 +1,5 @@
 #nullable enable
 
-using System;
 using System.Threading;
 using UnityEngine;
 
@@ -8,21 +7,23 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using UniRx;
 
-using Hedwig.Runtime.Projectile;
-
 namespace Hedwig.Runtime
 {
+    using Projectile;
+
     public class TweenProjectileController : MonoBehaviour, IProjectile
     {
         CachedTransform _transform = new CachedTransform();
         bool _disposed = false;
         ProjectileConfig? config;
-        Status _status = Status.Init;
-        EndReason _endReson = EndReason.Expired;
+        Status status = Status.Init;
+        EndReason endReson = EndReason.Expired;
         Vector3 _direction = Vector3.zero;
-        float _speed = 0;
-        Subject<IProjectile> _onUpdate = new Subject<IProjectile>();
 
+        bool _willHit = false;
+        RaycastHit? willRaycastHit = null;
+
+        Subject<Projectile.EventArg> onEvent = new Subject<EventArg>();
         CancellationTokenSource cts = new CancellationTokenSource();
 
         void Awake() {
@@ -31,114 +32,130 @@ namespace Hedwig.Runtime
 
         void OnDestroy()
         {
-            _onUpdate.OnCompleted();
+            Debug.Log($"[{GetHashCode():x}] frame:{Time.frameCount} {gameObject.name} OnDestroy");
+
+            _disposed = true;
+            onEvent.OnNext(new EventArg(this, Projectile.EventType.Destroy));
+            onEvent.OnCompleted();
         }
 
         void OnTriggerEnter(Collider other)
         {
-            var hit = false;
-            if (other.gameObject.CompareTag(HitTag.CharacterT))
+            var _hit = false;
+            if (other.gameObject.CompareTag(HitTag.Character))
             {
-                _endReson = EndReason.TargetHit;
-                hit = true;
+                endReson = EndReason.TargetHit;
+                _hit = true;
             }
             if (other.gameObject.CompareTag(HitTag.Environment))
             {
-                _endReson = EndReason.OtherHit;
-                hit = true;
+                endReson = EndReason.OtherHit;
+                _hit = true;
             }
-            if (hit)
+            if (_hit)
             {
+                onEvent.OnNext(new EventArg(this, Projectile.EventType.Trigger)
+                {
+                    collider = other,
+                    willHit = willRaycastHit
+                });
+                // request cancel
                 cts.Cancel();
             }
         }
 
-        // void hitHandler(RaycastHit hit)
-        // {
-        //     if (hit.collider.gameObject.CompareTag(Collision.CharacterTag))
-        //     {
-        //         _endReson = EndReason.TargetHit;
-        //         var handler = hit.collider.gameObject.GetComponent<ICollisionHandler>();
-        //         if (handler != null)
-        //         {
-        //             onTriggerInNextFrame.OnNext(new CollisionEvent()
-        //             {
-        //                 handler = handler,
-        //                 pos = hit.point,
-        //                 projectile = this
-        //             });
-        //             cts.Cancel();
-        //         }
-        //     }
-        //     if (hit.collider.gameObject.CompareTag(Collision.EnvironmentTag))
-        //     {
-        //         _endReson = EndReason.OtherHit;
-        //         var handler = hit.collider.gameObject.GetComponent<ICollisionHandler>();
-        //         if (handler != null)
-        //         {
-        //             onTriggerInNextFrame.OnNext(new CollisionEvent()
-        //             {
-        //                 handler = handler,
-        //                 pos = hit.point,
-        //                 projectile = this
-        //             });
-        //             cts.Cancel();
-        //         }
-        //     }
-        // }
-
-        // void hitTest(Vector3 pos, Vector3 dir, float speed) {
-        //     // var hits = Physics.RaycastAll(pos, dir, speed * Time.deltaTime );
-        //     // if(hits.Length > 0) {
-        //     //     Debug.Log($"hits: {hits.Length}");
-        //     //     RaycastHit? nearest = null;
-        //     //     foreach(var hit in hits) {
-        //     //         if (!nearest.HasValue) { nearest = hit; }
-        //     //         else {
-        //     //             if(nearest.Value.distance > hit.distance)
-        //     //                 nearest = hit;
-        //     //         }
-        //     //     }
-        //     //     hitHandler(nearest!.Value);
-        //     // }
-
-        //     var hit = new RaycastHit();
-        //     if (Physics.Raycast(pos, dir, out hit, speed * Time.deltaTime))
-        //     {
-        //         hitHandler(hit);
-        //     }
-        // }
-
-        void _update(Vector3 direction, float speed) {
-            this._direction = direction;
-            this._speed = speed;
-            this._onUpdate.OnNext(this);
+        void willHit(GameObject gameObject, Ray ray, float distance, RaycastHit hit)
+        {
+            var mobileObject = gameObject.GetComponent<IMobileObject>();
+            if (mobileObject != null)
+            {
+                // immediately stop tweening without cancel
+                _willHit = true;
+                transform.DOKill();
+                onEvent.OnNext(new EventArg(this, Projectile.EventType.WillHit)
+                {
+                    willHit = hit,
+                    ray = ray,
+                    maxDistance = distance
+                });
+            }
         }
 
-        async UniTask<bool> move(Vector3 destRelative, float duration)
+        void hitHandler(Ray ray, float distance, RaycastHit hit)
         {
+            var gameObject = hit.collider.gameObject;
+            if (gameObject.CompareTag(HitTag.Character) ||
+                gameObject.CompareTag(HitTag.Environment))
+            {
+                willHit(gameObject, ray, distance, hit);
+            }
+        }
+
+        void hitTest(Vector3 pos, Vector3 dir, float speed) {
+            // var hits = Physics.RaycastAll(pos, dir, speed * Time.deltaTime );
+            // if(hits.Length > 0) {
+            //     Debug.Log($"hits: {hits.Length}");
+            //     RaycastHit? nearest = null;
+            //     foreach(var hit in hits) {
+            //         if (!nearest.HasValue) { nearest = hit; }
+            //         else {
+            //             if(nearest.Value.distance > hit.distance)
+            //                 nearest = hit;
+            //         }
+            //     }
+            //     hitHandler(nearest!.Value);
+            // }
+
+            var hit = new RaycastHit();
+            var ray = new Ray(pos, dir);
+            var distance = speed * Time.deltaTime;
+            if (Physics.Raycast(ray, out hit, distance))
+            {
+                this.willRaycastHit = hit;
+                hitHandler(ray, distance, hit);
+            }
+        }
+
+        async UniTask move(Vector3 destRelative, float duration, bool raycastEveryFrame)
+        {
+            onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeMove));
+
             var dir = destRelative.normalized;
             var speed = destRelative.magnitude / duration;
-            try
+            var tween = transform.DOMove(destRelative, duration)
+                .SetRelative(true)
+                .SetUpdate(UpdateType.Fixed)
+                .SetEase(Ease.Linear)
+                .OnKill(() =>
+                {
+                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnKill));
+                })
+                .OnComplete(() =>
+                {
+                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnComplete));
+                })
+                .OnPause(() =>
+                {
+                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnPause));
+                });
+
+            if (raycastEveryFrame)
             {
-                var tween = transform.DOMove(destRelative, duration)
-                    .SetRelative(true)
-                    .SetUpdate(UpdateType.Fixed)
-                    .SetEase(Ease.Linear);
-                tween = tween.OnUpdate(() => _update(dir, speed));
-                await tween.ToUniTask(cancellationToken: cts.Token);
-                return true;
+                tween = tween.OnUpdate(() => hitTest(transform.position, dir, speed));
             }
-            catch (OperationCanceledException)
-            {
-                return false;
-            }
+
+            await tween.ToUniTask(cancellationToken: cts.Token);
+
+            onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterMove));
         }
 
         async UniTask mainLoop(ProjectileConfig config, ITransform target)
         {
             var prevDir = Vector3.zero;
-            var distance = config.distance;
+
+            //
+            // do move step loop
+            //
             for (var i = 0; i < config.NumAdjust; i++)
             {
                 var start = transform.position;
@@ -157,82 +174,107 @@ namespace Hedwig.Runtime
                 }
 
                 var destRelative = dir.normalized * config.speed * config.EachDuration;
-                var result = await move(destRelative, config.EachDuration);
-                distance -= destRelative.magnitude;
 
-                if (!result)
+                //
+                // move advance by destRelative in EachDuration time, raycastEveryFrame is enabled if fast speed
+                //
+                await move(destRelative, config.EachDuration,
+                    config.speed > 50);
+
+                if (_willHit || cts.IsCancellationRequested)
                     break;
 
                 prevDir = dir;
+            }
+
+            //
+            // last one step move to the object will hit
+            //
+            if(willRaycastHit.HasValue && !cts.IsCancellationRequested) {
+                onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeLastMove)
+                {
+                    willHit = willRaycastHit
+                });
+
+                // move to will hit point
+                await transform.DOMove(willRaycastHit.Value.point, config.speed)
+                    .SetSpeedBased(true)
+                    .SetEase(Ease.Linear)
+                    .SetUpdate(UpdateType.Fixed);
+                // at this timing, onTrigger caused because hit will be supporsed,
+                // one more frame wait is needed to update last move
+                await UniTask.NextFrame(PlayerLoopTiming.LastFixedUpdate);
+
+                onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterLastMove));
             }
         }
 
         async UniTaskVoid go(ProjectileConfig config, ITransform target)
         {
-            // var stopwatch = new System.Diagnostics.Stopwatch();
-            // stopwatch.Start();
+            onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeLoop));
             await mainLoop(config, target);
-            // stopwatch.Stop();
-            // Debug.Log($"elapsed: {stopwatch.ElapsedMilliseconds}");
+            onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterLoop));
 
-            _status = Status.End;
+            status = Status.End;
             if (config.endType == EndType.Destroy)
             {
-                Dispose();
+                dispose();
             }
+        }
+
+        void dispose() {
+            if (_disposed) return;
+            // _disposed = true;
+
+            if (DOTween.IsTweening(transform))
+            {
+                cts.Cancel();
+                transform.DOKill();
+            }
+            _transform.Dispose();
+            Destroy(gameObject);
         }
 
         #region IDisposable
         public void Dispose()
         {
-            if (_disposed) return;
-            _disposed = true;
-
-            if (DOTween.IsTweening(transform))
-            {
-                transform.DOKill();
-            }
-            Destroy(gameObject);
+            endReson = EndReason.Disposed;
+            dispose();
         }
         #endregion
 
         #region IMobileObject
+        string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
-        Vector3 IMobileObject.diretion { get => _direction; }
-        float IMobileObject.speed { get => _speed; }
-
-        void IMobileObject.OnHit(IMobileObject target, Vector3 posision)
-        {
-            if (target is IEnemy)
-                _endReson = EndReason.TargetHit;
-            else
-                _endReson = EndReason.OtherHit;
-            cts.Cancel();
-        }
         #endregion
 
         #region IProjectile
 
-        Status IProjectile.status { get=> _status; }
-        EndReason IProjectile.endRegion { get => _endReson; }
+        Status IProjectile.Status { get=> status; }
+        EndReason IProjectile.EndReason { get => endReson; }
+        ISubject<EventArg> IProjectile.OnEvent { get => onEvent; }
 
-        ISubject<IProjectile> IProjectile.OnUpdate { get => _onUpdate; }
+        static int count = 0;
 
         void IProjectile.Initialize(Vector3 initial, ProjectileConfig config)
         {
+            gameObject.name = $"TweenProjectile({count})";
+            count++;
+            Debug.Log($"[{GetHashCode():x}] {gameObject.name} created");
             transform.position = initial;
             this.config = config;
         }
 
         void IProjectile.Go(ITransform target)
         {
+            Debug.Log($"[{GetHashCode():x}] frame: {Time.frameCount} {gameObject.name} Go");
             if (config == null)
             {
                 throw new InvalidConditionException($"config: ${config}");
             }
-            if (_status != Status.Init)
+            if (status != Status.Init)
             {
-                throw new InvalidConditionException($"status: ${_status}");
+                throw new InvalidConditionException($"status: ${status}");
             }
             go(config, target).Forget();
         }
