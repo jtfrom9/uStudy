@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
 {
     public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
     {
-        CachedTransform _transform = new CachedTransform();
+        ITransform _transform = new CachedTransform();
         NavMeshAgent? _agent;
 
         Vector3 initialPosition;
@@ -43,7 +43,7 @@ namespace Hedwig.Runtime
             if (other.gameObject.CompareTag(HitTag.Projectile))
             {
                 var projectile = other.gameObject.GetComponent<IProjectile>();
-                var posision = other.ClosestPointOnBounds(this.transform.position);
+                var posision = other.ClosestPointOnBounds(_transform.Position);
                 onHit(projectile, posision);
             }
         }
@@ -118,7 +118,7 @@ namespace Hedwig.Runtime
         void IEnemy.Stop()
         {
             _agent!.isStopped = true;
-            _agent?.SetDestination(transform.position);
+            _agent?.SetDestination(_transform.Position);
         }
 
         Subject<DamageEvent> onAttcked = new Subject<DamageEvent>();
@@ -132,7 +132,7 @@ namespace Hedwig.Runtime
             Health -= damage;
             if (Health > 0)
             {
-                onAttcked.OnNext(new DamageEvent(this, damage, transform.position));
+                onAttcked.OnNext(new DamageEvent(this, damage, _transform.Position));
             }
             else
             {

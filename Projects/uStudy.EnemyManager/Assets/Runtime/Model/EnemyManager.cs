@@ -73,7 +73,7 @@ namespace Hedwig.Runtime
 
         IReadOnlyList<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
-        void IEnemyManager.Setup()
+        void IEnemyManager.Initialize()
         {
             var enemyRepository = Controller.Find<IEnemyRepository>();
             if (enemyRepository != null)

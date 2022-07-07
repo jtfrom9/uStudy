@@ -8,7 +8,7 @@ namespace Hedwig.Runtime
 {
     public class QuadCursorController : MonoBehaviour, ITargetCursor, IFreeCursor
     {
-        CachedTransform _transform = new CachedTransform();
+        ITransform _transform = new CachedTransform();
 
         void Awake() {
             _transform.Initialize(transform);

@@ -43,7 +43,7 @@ public class TowerAim : LifetimeScope
     void Start()
     {
         if (enemyManager == null) return;
-        enemyManager.Setup();
+        enemyManager.Initialize();
 
         if(cursorManager==null) return;
         if(launcher==null) return;

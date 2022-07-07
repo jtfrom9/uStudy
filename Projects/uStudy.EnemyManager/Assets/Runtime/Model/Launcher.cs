@@ -24,6 +24,8 @@ namespace Hedwig.Runtime
 
     public interface ILauncher : IDisposable
     {
+        void Initialize();
+
         ProjectileConfig? config { get; }
         void SetProjectileConfig(ProjectileConfig? config);
 

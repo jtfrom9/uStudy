@@ -52,7 +52,7 @@ namespace Hedwig.Runtime
                 Debug.LogError($"enemyManager: {enemyManager}");
                 return;
             }
-            enemyManager.Setup();
+            enemyManager.Initialize();
 
             var selection = new SelectiveSelection(enemyManager.Enemies);
             selection.SelectExclusive(0);

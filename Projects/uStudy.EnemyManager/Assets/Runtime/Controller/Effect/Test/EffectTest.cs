@@ -69,7 +69,7 @@ public class EffectTest : LifetimeScope
 
     class DummyMobileObject : MonoBehaviour, IMobileObject
     {
-        CachedTransform _transform = new CachedTransform();
+        ITransform _transform = new CachedTransform();
         string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
 

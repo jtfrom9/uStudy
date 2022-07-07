@@ -19,15 +19,17 @@ namespace Hedwig.Runtime
         ISubject<Vector3> OnPositionChanged { get; }
         ISubject<Quaternion> OnRotationChanged { get; }
 
-        Transform? Raw { get; }
+        Transform Raw { get; }
+
+        void Initialize(Transform transform);
     }
 
     public class CachedTransform : ITransform
     {
         Transform? _transform;
 
-        Subject<Vector3> onPositionChanged = new Subject<Vector3>();
-        Subject<Quaternion> onRotationChanged = new Subject<Quaternion>();
+        Subject<Vector3>? onPositionChanged = null;
+        Subject<Quaternion>? onRotationChanged = null;
 
         CompositeDisposable disposable = new CompositeDisposable();
 
@@ -39,33 +41,66 @@ namespace Hedwig.Runtime
         Vector3 ITransform.Up { get => (_transform!=null) ? _transform.up : Vector3.up; }
         Vector3 ITransform.Forward { get => (_transform != null) ? _transform.forward : Vector3.forward; }
 
-        ISubject<Vector3> ITransform.OnPositionChanged { get => onPositionChanged; }
-        ISubject<Quaternion> ITransform.OnRotationChanged { get => onRotationChanged; }
+        ISubject<Vector3> ITransform.OnPositionChanged {
+            get
+            {
+                if (_transform == null)
+                {
+                    throw new InvalidConditionException("CachedTransform not Initialized");
+                }
+                if (onPositionChanged == null)
+                {
+                    onPositionChanged = new Subject<Vector3>();
+                    _transform.ObserveEveryValueChanged(t => t.position).Subscribe(pos =>
+                    {
+                        onPositionChanged.OnNext(pos);
+                    }).AddTo(disposable);
+                }
+                return onPositionChanged;
+            }
+        }
 
-        Transform? ITransform.Raw { get => _transform; }
+        ISubject<Quaternion> ITransform.OnRotationChanged {
+            get
+            {
+                if (_transform == null)
+                {
+                    throw new InvalidConditionException("CachedTransform not Initialized");
+                }
+                if (onRotationChanged == null)
+                {
+                    onRotationChanged = new Subject<Quaternion>();
+                    _transform.ObserveEveryValueChanged(t => t.rotation).Subscribe(rot =>
+                    {
+                        onRotationChanged.OnNext(rot);
+                    }).AddTo(disposable);
+                }
+                return onRotationChanged;
+            }
+        }
+
+        Transform ITransform.Raw {
+            get
+            {
+                if (_transform == null)
+                {
+                    throw new InvalidConditionException("CachedTransform not Initialized");
+                }
+                return _transform;
+            }
+        }
         #endregion
 
         public void Dispose()
         {
+            onPositionChanged?.OnCompleted();
+            onRotationChanged?.OnCompleted();
             disposable.Dispose();
-            onPositionChanged.OnCompleted();
-            onRotationChanged.OnCompleted();
         }
 
         public void Initialize(Transform transform)
         {
             _transform = transform;
-
-            _transform.ObserveEveryValueChanged(t => t.position).Subscribe(pos =>
-            {
-                onPositionChanged.OnNext(pos);
-            }).AddTo(disposable);
-
-            _transform.ObserveEveryValueChanged(t => t.rotation).Subscribe(rot =>
-            {
-                onRotationChanged.OnNext(rot);
-            }).AddTo(disposable);
-
             _transform.OnDestroyAsObservable().Subscribe(_ =>
             {
                 this.Dispose();

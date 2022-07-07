@@ -31,21 +31,21 @@ namespace Hedwig.Runtime
 
         ILauncherHandler? launcherHandler;
 
-        void setCanFire()
-        {
-            var v = _config != null &&
-                _target != null &&
-                !recasting;
-            canFire.Value = v;
-        }
-
-        void initializeController()
+        void initialize()
         {
             if (trajectoryVisualizer != null)
             {
                 trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
             }
             launcherController.Initialize(this);
+        }
+
+        void setCanFire()
+        {
+            var v = _config != null &&
+                _target != null &&
+                !recasting;
+            canFire.Value = v;
         }
 
         void changeRecastState(bool v)
@@ -145,6 +145,7 @@ namespace Hedwig.Runtime
         }
 
         #region ILauncher
+        void ILauncher.Initialize() => initialize();
         ProjectileConfig? ILauncher.config { get => _config; }
         void ILauncher.SetProjectileConfig(ProjectileConfig? config) => setConfig(config);
         IMobileObject? ILauncher.target { get => _target; }
@@ -184,7 +185,6 @@ namespace Hedwig.Runtime
             this.projectileFactory = projectileFactory;
             this.launcherController = launcherController;
             this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
-            this.initializeController();
         }
     }
 }

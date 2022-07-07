@@ -14,14 +14,14 @@ namespace Hedwig.Runtime
 
         MeshRenderer? mazzleMeshRenderer;
 
-        CachedTransform _tranform = new CachedTransform();
+        ITransform _mazzleTranform = new CachedTransform();
         IDisposable? _disposable;
 
         void Awake()
         {
             if (mazzle != null)
             {
-                _tranform.Initialize(mazzle);
+                _mazzleTranform.Initialize(mazzle);
                 mazzleMeshRenderer = mazzle.GetComponent<MeshRenderer>();
             }
         }
@@ -53,7 +53,7 @@ namespace Hedwig.Runtime
 
         #region ILauncher
 
-        ITransform ILauncherController.mazzle { get => _tranform; }
+        ITransform ILauncherController.mazzle { get => _mazzleTranform; }
 
          void ILauncherController.Initialize(ILauncherManager launcherManager)
         {

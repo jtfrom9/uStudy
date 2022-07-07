@@ -40,8 +40,9 @@ namespace Hedwig.Runtime
         void Start()
         {
             if (enemyManager == null) return;
-            enemyManager.Setup();
+            enemyManager.Initialize();
             if (launcher == null) return;
+            launcher.Initialize();
             if(projectileFactory==null) return;
 
             setupDebug(projectileFactory);
