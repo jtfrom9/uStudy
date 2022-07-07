@@ -15,7 +15,6 @@ namespace Hedwig.Runtime
         MeshRenderer? mazzleMeshRenderer;
 
         CachedTransform _tranform = new CachedTransform();
-        IMobileObject? _target;
         IDisposable? _disposable;
 
         void Awake()
@@ -41,11 +40,11 @@ namespace Hedwig.Runtime
             }
         }
 
-        void setupHandler()
+        void setupHandler(IMobileObject? target)
         {
-            if (this._target != null)
+            if (target != null)
             {
-                _disposable = this._target.transform.OnPositionChanged.Subscribe(pos =>
+                _disposable = target.transform.OnPositionChanged.Subscribe(pos =>
                 {
                     transform.LookAt(pos);
                 }).AddTo(this);
@@ -56,24 +55,19 @@ namespace Hedwig.Runtime
 
         ITransform ILauncherController.mazzle { get => _tranform; }
 
-        IMobileObject? ILauncherController.target { get => this._target; }
-
-        bool ILauncherController.CanLaunch { get => this._target != null && this.mazzle != null; }
-
-        void ILauncherController.SetTarget(IMobileObject? target)
+         void ILauncherController.Initialize(ILauncherManager launcherManager)
         {
-            this.clearHandler();
-            this._target = target;
-            this.setupHandler();
-        }
-
-        void ILauncherController.Initialize(ILauncherManager launcherManager)
-        {
-            launcherManager.CanFire.Subscribe(v => { 
+            launcherManager.launcher.CanFire.Subscribe(v => {
                 if(mazzleMeshRenderer!=null) {
                     mazzleMeshRenderer.material.color = (!v) ? Color.red : Color.white;
                 }
             }).AddTo(this);
+
+            launcherManager.launcher.OnTargetChanged.Subscribe(v =>
+            {
+                this.clearHandler();
+                this.setupHandler(v);
+            });
         }
 
         #endregion

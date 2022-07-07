@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
         [Inject] IEnemyManager? enemyManager;
-        [Inject] ILauncherManager? launcher;
+        [Inject] ILauncher? launcher;
         [Inject] IProjectileFactory? projectileFactory;
 
         protected override void Configure(IContainerBuilder builder)
@@ -33,7 +33,7 @@ namespace Hedwig.Runtime
             builder.RegisterInstance<Setting>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-            builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
+            builder.Register<LauncherManager>(Lifetime.Singleton).AsImplementedInterfaces();
             builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         }
 
@@ -50,7 +50,7 @@ namespace Hedwig.Runtime
             enemySelection.OnCurrentChanged.Subscribe(selectable =>
             {
                 launcher.SetTarget(selectable as IEnemy);
-                launcher.ShowTrajectory(true);
+                // launcher.ShowTrajectory(true);
             }).AddTo(this);
 
             enemySelection.SelectExclusive(0);
@@ -87,7 +87,7 @@ namespace Hedwig.Runtime
             launcher?.Dispose();
         }
 
-        void _update(ILauncherManager launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
+        void _update(ILauncher launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
         {
             if(Input.GetKeyDown(KeyCode.RightArrow))
             {

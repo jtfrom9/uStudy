@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class ShotLauncher: ILauncherHandler
+    public class BurstLauncherHandler : ILauncherHandler
     {
         ILauncherManager launcherManager;
         IProjectileFactory projectileFactory;
@@ -21,16 +21,19 @@ namespace Hedwig.Runtime
             UniTask.Create(async () =>
             {
                 launcherManager.OnBeforeLaunched();
-                for (var i = 0; i < config.successionCount; i++)
+                while (true)
                 {
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
                     projectile?.Go(target);
-
-                    if (config.successionCount > 1)
+                    try
                     {
-                        await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
+                        await UniTask.Delay(100, cancellationToken: cts.Token);
+                    }
+                    catch
+                    {
+                        break;
                     }
                 }
                 launcherManager.OnLaunched();
@@ -39,29 +42,23 @@ namespace Hedwig.Runtime
 
         public void StartFire(ITransform start, ITransform target)
         {
-            Debug.Log($"StartFire: {config.chargable}");
-            if (config.chargable)
-            {
-                launcherManager.ShowTrajectory(true);
-            }
+            Debug.Log("StartFire");
         }
 
         public void EndFire(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
-            if (config.chargable)
-            {
-                launcherManager.ShowTrajectory(false);
-            }
+            cts.Cancel();
+            cts.Dispose();
+            cts = new CancellationTokenSource();
         }
 
         public void Dispose()
         {
-            cts.Cancel();
         }
 
-        public ShotLauncher(
-            ILauncherManager  launcherManager,
+        public BurstLauncherHandler(
+            ILauncherManager launcherManager,
             IProjectileFactory projectileFactory,
             ProjectileConfig config)
         {

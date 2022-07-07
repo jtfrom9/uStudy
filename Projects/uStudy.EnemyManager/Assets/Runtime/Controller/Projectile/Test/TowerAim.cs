@@ -26,7 +26,7 @@ public class TowerAim : LifetimeScope
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] SimpleCursorManager? cursorManager;
-    [Inject] ILauncherManager? launcher;
+    [Inject] ILauncher? launcher;
 
     CompositeDisposable disposables = new CompositeDisposable();
 
@@ -36,7 +36,7 @@ public class TowerAim : LifetimeScope
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
         builder.Register<SimpleCursorManager>(Lifetime.Singleton);
-        builder.Register<ILauncherManager, LauncherManager>(Lifetime.Singleton);
+        builder.Register<LauncherManager>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
     }
 
@@ -103,7 +103,7 @@ Distance: {config.distance}
         }
     }
 
-    void setupKey(Selection<ProjectileConfig> configSelection, ILauncherManager launcher)
+    void setupKey(Selection<ProjectileConfig> configSelection, ILauncher launcher)
     {
         this.UpdateAsObservable().Subscribe(_ =>
         {
@@ -118,7 +118,7 @@ Distance: {config.distance}
         }).AddTo(this);
     }
 
-    void setupNormalShotStyle(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
+    void setupNormalShotStyle(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
     {
         input.OnBegin.Subscribe(e =>
         {
@@ -134,7 +134,7 @@ Distance: {config.distance}
         }).AddTo(disposables);
     }
 
-    void setupLongPressStyle(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
+    void setupLongPressStyle(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
     {
         input.Keep(100, () => true).First().TakeUntil(input.OnEnd)
             .Repeat().Subscribe(e =>
@@ -153,7 +153,7 @@ Distance: {config.distance}
         }).AddTo(disposables);
     }
 
-    void setupMoveOnly(IInputObservable input, ILauncherManager launcher, SimpleCursorManager cursorManager)
+    void setupMoveOnly(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
     {
         input.Any().Where(e => e.type != InputEventType.End).Subscribe(e =>
         {
@@ -165,7 +165,7 @@ Distance: {config.distance}
         }).AddTo(disposables);
     }
 
-    void setupMouse(SimpleCursorManager cursorManager,ILauncherManager launcher)
+    void setupMouse(SimpleCursorManager cursorManager,ILauncher launcher)
     {
         var context = this.DefaultInputContext();
         var input = context.GetObservable(0);

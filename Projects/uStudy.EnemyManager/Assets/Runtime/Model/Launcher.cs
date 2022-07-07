@@ -12,9 +12,6 @@ namespace Hedwig.Runtime
     public interface ILauncherController
     {
         ITransform mazzle { get; }
-        IMobileObject? target { get; }
-        bool CanLaunch { get; }
-        void SetTarget(IMobileObject? target);
         void Initialize(ILauncherManager launcherManager);
     }
 
@@ -25,12 +22,13 @@ namespace Hedwig.Runtime
         void EndFire(ITransform start, ITransform target);
     }
 
-    public interface ILauncherManager: IDisposable
+    public interface ILauncher : IDisposable
     {
         ProjectileConfig? config { get; }
         void SetProjectileConfig(ProjectileConfig? config);
+
+        IMobileObject? target { get; }
         void SetTarget(IMobileObject? target);
-        void ShowTrajectory(bool v);
 
         IReadOnlyReactiveProperty<bool> CanFire { get; }
         void Fire();
@@ -38,8 +36,14 @@ namespace Hedwig.Runtime
         void EndFire();
 
         ISubject<ProjectileConfig?> OnConfigChanged { get; }
+        ISubject<IMobileObject?> OnTargetChanged { get; }
         ISubject<float> OnRecastTimeUpdated { get; }
+    }
 
+    public interface ILauncherManager
+    {
+        ILauncher launcher { get; }
+        void ShowTrajectory(bool v);
         void OnBeforeLaunched();
         void OnLaunched();
     }

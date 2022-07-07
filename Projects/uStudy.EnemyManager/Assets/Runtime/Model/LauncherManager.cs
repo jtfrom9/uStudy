@@ -9,15 +9,17 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class LauncherManager : ILauncherManager, IDisposable
+    public class LauncherManager : ILauncher, ILauncherManager
     {
         ProjectileConfig? _config;
+        IMobileObject? _target;
         CompositeDisposable disposable = new CompositeDisposable();
 
         bool recasting = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
+        Subject<IMobileObject?> onTargetChanged = new Subject<IMobileObject?>();
         Subject<float> onRecastTimeUpdated = new Subject<float>();
 
         // injected
@@ -27,22 +29,12 @@ namespace Hedwig.Runtime
         // find
         ITrajectoryVisualizer? trajectoryVisualizer;
 
-        ILauncherHandler? launcher;
+        ILauncherHandler? launcherHandler;
 
-        // bool canFire
-        // {
-        //     get
-        //     {
-        //         var v = launcherController.CanLaunch &&
-        //             _config != null &&
-        //             !recasting;
-        //         return v;
-        //     }
-        // }
         void setCanFire()
         {
-            var v = launcherController.CanLaunch &&
-                _config != null &&
+            var v = _config != null &&
+                _target != null &&
                 !recasting;
             canFire.Value = v;
         }
@@ -59,7 +51,6 @@ namespace Hedwig.Runtime
         void changeRecastState(bool v)
         {
             recasting = v;
-            // onCanFireChanged.OnNext(canFire);
             setCanFire();
         }
 
@@ -76,21 +67,21 @@ namespace Hedwig.Runtime
             this.trajectoryVisualizer?.SetConfig(config);
 
             // reset laouncher handler
-            this.launcher?.Dispose();
-            this.launcher = null;
+            this.launcherHandler?.Dispose();
+            this.launcherHandler = null;
 
             if (config != null)
             {
                 switch (config.type)
                 {
                     case ProjectileType.Fire:
-                        this.launcher = new ShotLauncher(this, projectileFactory, config);
+                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, config);
                         break;
                     case ProjectileType.Burst:
-                        this.launcher = new BurstLauncher(this, projectileFactory, config);
+                        this.launcherHandler = new BurstLauncherHandler(this, projectileFactory, config);
                         break;
                     case ProjectileType.Grenade:
-                        this.launcher = new GrenadeLauncher(this, projectileFactory, config);
+                        this.launcherHandler = new GrenadeLauncherHandler(this, projectileFactory, config);
                         break;
                 }
             }
@@ -99,43 +90,41 @@ namespace Hedwig.Runtime
         }
 
         void setTarget(IMobileObject? target) {
-            launcherController.SetTarget(target);
+            _target = target;
             trajectoryVisualizer?.SetEndTarget(target?.transform);
             setCanFire();
+            onTargetChanged.OnNext(_target);
         }
 
         void fire()
         {
-            if (launcherController.target == null)
+            if (_target == null)
                 return;
-            if (launcher == null)
+            if (launcherHandler == null)
                 return;
             if (_config == null)
                 return;
             if (!canFire.Value)
                 return;
-            launcher.Fire(launcherController.mazzle,
-                launcherController.target.transform);
+            launcherHandler.Fire(launcherController.mazzle, _target.transform);
         }
 
         void startFire()
         {
-            if (launcherController.target == null)
+            if (_target == null)
                 return;
-            if (launcher == null)
+            if (launcherHandler == null)
                 return;
-            launcher.StartFire(launcherController.mazzle,
-                launcherController.target.transform);
+            launcherHandler.StartFire(launcherController.mazzle, _target.transform);
         }
 
         void endFire()
         {
-            if (launcherController.target == null)
+            if (_target == null)
                 return;
-            if (launcher == null)
+            if (launcherHandler == null)
                 return;
-            launcher.EndFire(launcherController.mazzle,
-                launcherController.target.transform);
+            launcherHandler.EndFire(launcherController.mazzle,_target.transform);
         }
 
         void onBeforeLaunched()
@@ -155,24 +144,25 @@ namespace Hedwig.Runtime
             }).Forget();
         }
 
+        #region ILauncher
+        ProjectileConfig? ILauncher.config { get => _config; }
+        void ILauncher.SetProjectileConfig(ProjectileConfig? config) => setConfig(config);
+        IMobileObject? ILauncher.target { get => _target; }
+        void ILauncher.SetTarget(IMobileObject? target) => setTarget(target);
+
+        IReadOnlyReactiveProperty<bool> ILauncher.CanFire { get => canFire; }
+        void ILauncher.Fire() => fire();
+        void ILauncher.StartFire() => startFire();
+        void ILauncher.EndFire() => endFire();
+
+        ISubject<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
+        ISubject<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
+        ISubject<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
+        #endregion
+
         #region ILauncherManager
-        ProjectileConfig? ILauncherManager.config { get => _config; }
-        void ILauncherManager.SetProjectileConfig(ProjectileConfig? config) => setConfig(config);
-        void ILauncherManager.SetTarget(IMobileObject? target) => setTarget(target);
-
-        void ILauncherManager.ShowTrajectory(bool v)
-        {
-            this.trajectoryVisualizer?.Show(v);
-        }
-
-        IReadOnlyReactiveProperty<bool> ILauncherManager.CanFire { get => canFire; }
-        void ILauncherManager.Fire() => fire();
-        void ILauncherManager.StartFire() => startFire();
-        void ILauncherManager.EndFire() => endFire();
-
-        ISubject<ProjectileConfig?> ILauncherManager.OnConfigChanged { get => onConfigChanged; }
-        ISubject<float> ILauncherManager.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
-
+        ILauncher ILauncherManager.launcher { get => this; }
+        void ILauncherManager.ShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
         void ILauncherManager.OnBeforeLaunched() => onBeforeLaunched();
         void ILauncherManager.OnLaunched() => onLaunched();
         #endregion
@@ -180,10 +170,11 @@ namespace Hedwig.Runtime
         #region IDisposable
         void IDisposable.Dispose()
         {
-            launcher?.Dispose();
             onConfigChanged.OnCompleted();
-            canFire.Dispose();
+            onTargetChanged.OnCompleted();
             onRecastTimeUpdated.OnCompleted();
+            launcherHandler?.Dispose();
+            canFire.Dispose();
             disposable.Dispose();
         }
         #endregion

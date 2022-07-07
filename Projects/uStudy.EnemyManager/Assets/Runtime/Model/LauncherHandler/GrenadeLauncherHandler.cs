@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class GrenadeLauncher : ILauncherHandler
+    public class GrenadeLauncherHandler : ILauncherHandler
     {
         ILauncherManager launcherManager;
         IProjectileFactory projectileFactory;
@@ -37,7 +37,7 @@ namespace Hedwig.Runtime
         {
         }
 
-        public GrenadeLauncher(
+        public GrenadeLauncherHandler(
             ILauncherManager launcherManager,
             IProjectileFactory projectileFactory,
             ProjectileConfig config)

@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class BurstLauncher : ILauncherHandler
+    public class ShotLauncherHandler: ILauncherHandler
     {
         ILauncherManager launcherManager;
         IProjectileFactory projectileFactory;
@@ -21,19 +21,16 @@ namespace Hedwig.Runtime
             UniTask.Create(async () =>
             {
                 launcherManager.OnBeforeLaunched();
-                while (true)
+                for (var i = 0; i < config.successionCount; i++)
                 {
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
                     projectile?.Go(target);
-                    try
+
+                    if (config.successionCount > 1)
                     {
-                        await UniTask.Delay(100, cancellationToken: cts.Token);
-                    }
-                    catch
-                    {
-                        break;
+                        await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
                     }
                 }
                 launcherManager.OnLaunched();
@@ -42,23 +39,29 @@ namespace Hedwig.Runtime
 
         public void StartFire(ITransform start, ITransform target)
         {
-            Debug.Log("StartFire");
+            Debug.Log($"StartFire: {config.chargable}");
+            if (config.chargable)
+            {
+                launcherManager.ShowTrajectory(true);
+            }
         }
 
         public void EndFire(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
-            cts.Cancel();
-            cts.Dispose();
-            cts = new CancellationTokenSource();
+            if (config.chargable)
+            {
+                launcherManager.ShowTrajectory(false);
+            }
         }
 
         public void Dispose()
         {
+            cts.Cancel();
         }
 
-        public BurstLauncher(
-            ILauncherManager launcherManager,
+        public ShotLauncherHandler(
+            ILauncherManager  launcherManager,
             IProjectileFactory projectileFactory,
             ProjectileConfig config)
         {
