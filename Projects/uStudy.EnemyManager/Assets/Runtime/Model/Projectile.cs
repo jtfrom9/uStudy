@@ -3,6 +3,7 @@
 using System;
 using UnityEngine;
 using UniRx;
+using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
@@ -29,8 +30,6 @@ namespace Hedwig.Runtime
 
         public enum EventType
         {
-            BeforeLoop,
-            AfterLoop,
             BeforeMove,
             AfterMove,
             Trigger,
@@ -45,32 +44,41 @@ namespace Hedwig.Runtime
 
         public struct EventArg {
             public EventType type;
-            public IProjectile projectile;
             public Collider? collider;
             public RaycastHit? willHit;
+            public EndReason? endReason;
             public Ray? ray;
             public float? maxDistance;
 
-            public EventArg(IProjectile projectile, EventType type)
+            public EventArg(EventType type)
             {
-                this.projectile = projectile;
                 this.type = type;
                 this.collider = null;
                 this.willHit = null;
+                this.endReason = null;
                 this.ray = null;
                 this.maxDistance = null;
             }
         }
     }
 
+    public interface IProjectileController : IMobileObject
+    {
+        UniTask<bool> Move(Vector3 destRelative, float duration, bool raycastEveryFrame);
+        UniTask LastMove(float speed);
+        ISubject<Projectile.EventArg> OnEvent { get; }
+
+        void Initialize(Vector3 initial);
+    }
+
     public interface IProjectile : IMobileObject
     {
-        Projectile.Status Status { get; }
+        IProjectileController controller { get; }
         Projectile.EndReason EndReason { get; }
-        void Initialize(Vector3 initial, ProjectileConfig config);
-        void Go(ITransform target);
 
-        ISubject<Projectile.EventArg> OnEvent { get; }
+        ISubject<Unit> OnStarted { get; }
+        ISubject<Unit> OnEnded { get; }
+        void Go(ITransform target);
     }
 
     public interface IProjectileFactory

@@ -42,7 +42,7 @@ namespace Hedwig.Runtime
         {
             if (other.gameObject.CompareTag(HitTag.Projectile))
             {
-                var projectile = other.gameObject.GetComponent<IProjectile>();
+                var projectile = other.gameObject.GetComponent<IProjectileController>();
                 var posision = other.ClosestPointOnBounds(_transform.Position);
                 onHit(projectile, posision);
             }

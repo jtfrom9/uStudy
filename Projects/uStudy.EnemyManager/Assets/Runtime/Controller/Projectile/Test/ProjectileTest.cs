@@ -113,18 +113,23 @@ namespace Hedwig.Runtime
             projectileFactory.OnCreated.Subscribe(projectile =>
             {
                 int willHitFrame = 0;
-                projectile.OnEvent.Subscribe(e => {
+                var stopwatch = new System.Diagnostics.Stopwatch();
+
+                projectile.OnStarted.Subscribe(_ =>
+                {
+                    Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Started");
+                    stopwatch.Start();
+                }).AddTo(this);
+
+                projectile.OnEnded.Subscribe(_ =>
+                {
+                    stopwatch.Stop();
+                    Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Ended @({projectile.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
+                }).AddTo(this);
+
+                projectile.controller.OnEvent.Subscribe(e => {
                     var lateCount = (willHitFrame == 0) ? "-" : (Time.frameCount - willHitFrame).ToString();
-                    var stopwatch = new System.Diagnostics.Stopwatch();
                     switch(e.type) {
-                        case Projectile.EventType.BeforeLoop:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeLoop");
-                            stopwatch.Start();
-                            break;
-                        case Projectile.EventType.AfterLoop:
-                            stopwatch.Stop();
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterLoop @({projectile.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
-                            break;
                         case Projectile.EventType.Destroy:
                             Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Destroy reson:{projectile.EndReason}");
                             break;

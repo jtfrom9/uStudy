@@ -48,6 +48,7 @@ namespace Hedwig.Runtime
                 {
                     transform.LookAt(pos);
                 }).AddTo(this);
+                transform.LookAt(target.transform.Position);
             }
         }
 

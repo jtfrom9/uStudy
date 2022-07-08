@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Threading;
 using UnityEngine;
 
@@ -11,17 +12,13 @@ namespace Hedwig.Runtime
 {
     using Projectile;
 
-    public class TweenProjectileController : MonoBehaviour, IProjectile
+    public class TweenProjectileController : MonoBehaviour, IProjectileController
     {
-        CachedTransform _transform = new CachedTransform();
+        ITransform _transform = new CachedTransform();
         bool _disposed = false;
-        ProjectileConfig? config;
-        Status status = Status.Init;
-        EndReason endReson = EndReason.Expired;
-        Vector3 _direction = Vector3.zero;
 
         bool _willHit = false;
-        RaycastHit? willRaycastHit = null;
+        RaycastHit? willCastHit = null;
 
         Subject<Projectile.EventArg> onEvent = new Subject<EventArg>();
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -32,32 +29,32 @@ namespace Hedwig.Runtime
 
         void OnDestroy()
         {
-            Debug.Log($"[{GetHashCode():x}] frame:{Time.frameCount} {gameObject.name} OnDestroy");
-
             _disposed = true;
-            onEvent.OnNext(new EventArg(this, Projectile.EventType.Destroy));
+            onEvent.OnNext(new EventArg(Projectile.EventType.Destroy));
             onEvent.OnCompleted();
         }
 
         void OnTriggerEnter(Collider other)
         {
             var _hit = false;
+            EndReason? endReason = null;
             if (other.gameObject.CompareTag(HitTag.Character))
             {
-                endReson = EndReason.TargetHit;
+                endReason = EndReason.TargetHit;
                 _hit = true;
             }
             if (other.gameObject.CompareTag(HitTag.Environment))
             {
-                endReson = EndReason.OtherHit;
+                endReason = EndReason.OtherHit;
                 _hit = true;
             }
             if (_hit)
             {
-                onEvent.OnNext(new EventArg(this, Projectile.EventType.Trigger)
+                onEvent.OnNext(new EventArg(Projectile.EventType.Trigger)
                 {
                     collider = other,
-                    willHit = willRaycastHit
+                    willHit = willCastHit,
+                    endReason = endReason
                 });
                 // request cancel
                 cts.Cancel();
@@ -71,8 +68,8 @@ namespace Hedwig.Runtime
             {
                 // immediately stop tweening without cancel
                 _willHit = true;
-                transform.DOKill();
-                onEvent.OnNext(new EventArg(this, Projectile.EventType.WillHit)
+                _transform.Raw.DOKill();
+                onEvent.OnNext(new EventArg(Projectile.EventType.WillHit)
                 {
                     willHit = hit,
                     ray = ray,
@@ -111,93 +108,60 @@ namespace Hedwig.Runtime
             var distance = speed * Time.deltaTime;
             if (Physics.Raycast(ray, out hit, distance))
             {
-                this.willRaycastHit = hit;
+                this.willCastHit = hit;
                 hitHandler(ray, distance, hit);
             }
         }
 
-        async UniTask move(Vector3 destRelative, float duration, bool raycastEveryFrame)
+        async UniTask<bool> move(Vector3 destRelative, float duration, bool raycastEveryFrame)
         {
-            onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeMove));
+            onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove));
 
             var dir = destRelative.normalized;
             var speed = destRelative.magnitude / duration;
-            var tween = transform.DOMove(destRelative, duration)
+            var tween = _transform.Raw.DOMove(destRelative, duration)
                 .SetRelative(true)
                 .SetUpdate(UpdateType.Fixed)
                 .SetEase(Ease.Linear)
                 .OnKill(() =>
                 {
-                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnKill));
+                    onEvent.OnNext(new EventArg(Projectile.EventType.OnKill));
                 })
                 .OnComplete(() =>
                 {
-                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnComplete));
+                    onEvent.OnNext(new EventArg(Projectile.EventType.OnComplete));
                 })
                 .OnPause(() =>
                 {
-                    onEvent.OnNext(new EventArg(this, Projectile.EventType.OnPause));
+                    onEvent.OnNext(new EventArg(Projectile.EventType.OnPause));
                 });
 
             if (raycastEveryFrame)
             {
-                tween = tween.OnUpdate(() => hitTest(transform.position, dir, speed));
+                tween = tween.OnUpdate(() => hitTest(_transform.Position, dir, speed));
             }
 
             await tween.ToUniTask(cancellationToken: cts.Token);
 
-            onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterMove));
+            onEvent.OnNext(new EventArg(Projectile.EventType.AfterMove));
+
+            return _willHit || cts.IsCancellationRequested;
         }
 
-        async UniTask mainLoop(ProjectileConfig config, ITransform target)
+        async UniTask lastMove(float speed)
         {
-            var prevDir = Vector3.zero;
-
-            //
-            // do move step loop
-            //
-            for (var i = 0; i < config.NumAdjust; i++)
-            {
-                var start = transform.position;
-                var rand = config.MakeRandom(target);
-                var end = target.Position + rand;
-                var dir = end - start;
-
-                if (i > 0 && config.adjustMaxAngle.HasValue)
-                {
-                    var angle = Vector3.Angle(dir, prevDir);
-                    if (config.adjustMaxAngle.Value < angle)
-                    {
-                        var cross = Vector3.Cross(dir, prevDir);
-                        dir = Quaternion.AngleAxis(-config.adjustMaxAngle.Value, cross) * prevDir;
-                    }
-                }
-
-                var destRelative = dir.normalized * config.speed * config.EachDuration;
-
-                //
-                // move advance by destRelative in EachDuration time, raycastEveryFrame is enabled if fast speed
-                //
-                await move(destRelative, config.EachDuration,
-                    config.speed > 50);
-
-                if (_willHit || cts.IsCancellationRequested)
-                    break;
-
-                prevDir = dir;
-            }
-
             //
             // last one step move to the object will hit
             //
-            if(willRaycastHit.HasValue && !cts.IsCancellationRequested) {
-                onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeLastMove)
+            if (willCastHit.HasValue && !cts.IsCancellationRequested)
+            {
+                onEvent.OnNext(new EventArg(Projectile.EventType.BeforeLastMove)
                 {
-                    willHit = willRaycastHit
+                    willHit = willCastHit
                 });
 
                 // move to will hit point
-                await transform.DOMove(willRaycastHit.Value.point, config.speed)
+                await _transform.Raw.DOMove(willCastHit.Value.point, speed)
                     .SetSpeedBased(true)
                     .SetEase(Ease.Linear)
                     .SetUpdate(UpdateType.Fixed);
@@ -205,20 +169,7 @@ namespace Hedwig.Runtime
                 // one more frame wait is needed to update last move
                 await UniTask.NextFrame(PlayerLoopTiming.LastFixedUpdate);
 
-                onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterLastMove));
-            }
-        }
-
-        async UniTaskVoid go(ProjectileConfig config, ITransform target)
-        {
-            onEvent.OnNext(new EventArg(this, Projectile.EventType.BeforeLoop));
-            await mainLoop(config, target);
-            onEvent.OnNext(new EventArg(this, Projectile.EventType.AfterLoop));
-
-            status = Status.End;
-            if (config.endType == EndType.Destroy)
-            {
-                dispose();
+                onEvent.OnNext(new EventArg(Projectile.EventType.AfterLastMove));
             }
         }
 
@@ -229,16 +180,15 @@ namespace Hedwig.Runtime
             if (DOTween.IsTweening(transform))
             {
                 cts.Cancel();
-                transform.DOKill();
+                _transform.Raw.DOKill();
             }
             _transform.Dispose();
             Destroy(gameObject);
         }
 
         #region IDisposable
-        public void Dispose()
+        void IDisposable.Dispose()
         {
-            endReson = EndReason.Disposed;
             dispose();
         }
         #endregion
@@ -248,37 +198,30 @@ namespace Hedwig.Runtime
         ITransform IMobileObject.transform { get => _transform; }
         #endregion
 
-        #region IProjectile
+        #region IProjectileController
 
-        Status IProjectile.Status { get=> status; }
-        EndReason IProjectile.EndReason { get => endReson; }
-        ISubject<EventArg> IProjectile.OnEvent { get => onEvent; }
+        UniTask<bool> IProjectileController.Move(Vector3 destRelative, float duration, bool raycastEveryFrame)
+           => move(destRelative, duration, raycastEveryFrame);
+
+        UniTask IProjectileController.LastMove(float speed) => lastMove(speed);
+
+        ISubject<Projectile.EventArg> IProjectileController.OnEvent { get => onEvent; }
 
         static int count = 0;
 
-        void IProjectile.Initialize(Vector3 initial, ProjectileConfig config)
+        [RuntimeInitializeOnLoadMethod]
+        void _InitializeOnEnterPlayMode()
+        {
+            count = 0;
+        }
+
+        void IProjectileController.Initialize(Vector3 initial)
         {
             gameObject.name = $"TweenProjectile({count})";
             count++;
-            Debug.Log($"[{GetHashCode():x}] {gameObject.name} created");
             transform.position = initial;
-            this.config = config;
         }
-
-        void IProjectile.Go(ITransform target)
-        {
-            Debug.Log($"[{GetHashCode():x}] frame: {Time.frameCount} {gameObject.name} Go");
-            if (config == null)
-            {
-                throw new InvalidConditionException($"config: ${config}");
-            }
-            if (status != Status.Init)
-            {
-                throw new InvalidConditionException($"status: ${status}");
-            }
-            go(config, target).Forget();
-        }
-
         #endregion
+
     }
 }

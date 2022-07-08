@@ -9,7 +9,7 @@ namespace Hedwig.Runtime
     public class Setting : ScriptableObject, IProjectileFactory, IEffectFactory, ICursorFactory
     {
         #region  IProjectileFactory
-        [SerializeField, InterfaceType(typeof(IProjectile))]
+        [SerializeField, InterfaceType(typeof(IProjectileController))]
         Component? projectilePrefab;
 
         Subject<IProjectile> onCreated = new Subject<IProjectile>();
@@ -19,10 +19,12 @@ namespace Hedwig.Runtime
         IProjectile? IProjectileFactory.Create(Vector3 start,ProjectileConfig config)
         {
             if (projectilePrefab == null) return null;
-            var projectile = Instantiate(projectilePrefab) as IProjectile;
-            if (projectile != null)
+            IProjectile? projectile = null;
+            var projectileController = Instantiate(projectilePrefab) as IProjectileController;
+            if (projectileController != null)
             {
-                projectile.Initialize(start, config);
+                projectileController.Initialize(start);
+                projectile = new ProjectileManager(projectileController, config);
                 onCreated.OnNext(projectile);
             }
             return projectile;
