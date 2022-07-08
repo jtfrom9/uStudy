@@ -16,11 +16,11 @@ MonoBehaviour:
   endEffectPrefab: {fileID: 0}
   type: 0
   chargable: 0
-  successionCount: 100
+  successionCount: 1
   successionInterval: 0
-  recastTime: 10
-  shake: 0.4
-  speed: 100
+  recastTime: 2000
+  shake: 0
+  speed: 5
   distance: 30
   adjust: 0
   period: 0

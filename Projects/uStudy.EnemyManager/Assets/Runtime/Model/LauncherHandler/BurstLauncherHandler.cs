@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
-                    projectile?.Go(target);
+                    projectile?.Start(target);
                     try
                     {
                         await UniTask.Delay(100, cancellationToken: cts.Token);

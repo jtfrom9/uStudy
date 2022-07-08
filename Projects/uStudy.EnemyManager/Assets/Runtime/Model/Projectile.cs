@@ -78,7 +78,8 @@ namespace Hedwig.Runtime
 
         ISubject<Unit> OnStarted { get; }
         ISubject<Unit> OnEnded { get; }
-        void Go(ITransform target);
+        ISubject<Unit> OnDestroy { get; }
+        void Start(ITransform target);
     }
 
     public interface IProjectileFactory

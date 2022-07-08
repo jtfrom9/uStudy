@@ -173,7 +173,8 @@ namespace Hedwig.Runtime
             }
         }
 
-        void dispose() {
+        void dispose()
+        {
             if (_disposed) return;
             // _disposed = true;
 
@@ -182,7 +183,6 @@ namespace Hedwig.Runtime
                 cts.Cancel();
                 _transform.Raw.DOKill();
             }
-            _transform.Dispose();
             Destroy(gameObject);
         }
 

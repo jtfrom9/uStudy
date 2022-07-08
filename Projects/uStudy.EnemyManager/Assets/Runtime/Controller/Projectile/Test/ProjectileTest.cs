@@ -24,6 +24,8 @@ namespace Hedwig.Runtime
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
+        List<IProjectile> liveProjectiles = new List<IProjectile>();
+
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncher? launcher;
         [Inject] IProjectileFactory? projectileFactory;
@@ -106,6 +108,12 @@ namespace Hedwig.Runtime
             {
                 configSelection.Prev();
             }
+            if(Input.GetKeyDown(KeyCode.Escape))
+            {
+                foreach(var projectile in liveProjectiles) {
+                    projectile.Dispose();
+                }
+            }
         }
 
         void setupDebug(IProjectileFactory projectileFactory)
@@ -114,6 +122,8 @@ namespace Hedwig.Runtime
             {
                 int willHitFrame = 0;
                 var stopwatch = new System.Diagnostics.Stopwatch();
+
+                liveProjectiles.Add(projectile);
 
                 projectile.OnStarted.Subscribe(_ =>
                 {
@@ -127,12 +137,15 @@ namespace Hedwig.Runtime
                     Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Ended @({projectile.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
                 }).AddTo(this);
 
+                projectile.OnDestroy.Subscribe(_ =>
+                {
+                    Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Destroy reson:{projectile.EndReason}");
+                    liveProjectiles.Remove(projectile);
+                }).AddTo(this);
+
                 projectile.controller.OnEvent.Subscribe(e => {
                     var lateCount = (willHitFrame == 0) ? "-" : (Time.frameCount - willHitFrame).ToString();
                     switch(e.type) {
-                        case Projectile.EventType.Destroy:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Destroy reson:{projectile.EndReason}");
-                            break;
                         case Projectile.EventType.BeforeMove:
                             Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{projectile.transform.Position}");
                             break;

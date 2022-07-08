@@ -28,7 +28,7 @@ namespace Hedwig.Runtime
             var projectile = projectileFactory.Create(
                 start.Position,
                 config);
-            projectile?.Go(target);
+            projectile?.Start(target);
             launcherManager.ShowTrajectory(false);
             launcherManager.OnLaunched();
         }

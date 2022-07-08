@@ -19,6 +19,7 @@ namespace Hedwig.Runtime
         CompositeDisposable disposables = new CompositeDisposable();
         Subject<Unit> onStarted = new Subject<Unit>();
         Subject<Unit> onEnded = new Subject<Unit>();
+        Subject<Unit> onDestroy = new Subject<Unit>();
 
         async UniTask mainLoop(ProjectileConfig config, ITransform target)
         {
@@ -64,13 +65,21 @@ namespace Hedwig.Runtime
             await projectileController.LastMove(config.speed);
         }
 
+        void destroy()
+        {
+            disposables.Clear();
+            onStarted.OnCompleted();
+            onEnded.OnCompleted();
+            onDestroy.OnNext(Unit.Default);
+            onDestroy.OnCompleted();
+        }
+
         void dispose()
         {
             projectileController.Dispose();
-            disposables.Clear();
         }
 
-        async UniTaskVoid go(ProjectileConfig config, ITransform target)
+        async UniTaskVoid start(ProjectileConfig config, ITransform target)
         {
             onStarted.OnNext(Unit.Default);
             await mainLoop(config, target);
@@ -92,10 +101,11 @@ namespace Hedwig.Runtime
 
         ISubject<Unit> IProjectile.OnStarted { get => onStarted; }
         ISubject<Unit> IProjectile.OnEnded { get => onEnded; }
+        ISubject<Unit> IProjectile.OnDestroy { get => onDestroy; }
 
-        void IProjectile.Go(ITransform target)
+        void IProjectile.Start(ITransform target)
         {
-            go(config, target).Forget();
+            start(config, target).Forget();
         }
         #endregion
 
@@ -120,6 +130,9 @@ namespace Hedwig.Runtime
                     case Projectile.EventType.Trigger:
                         if (e.endReason.HasValue)
                             this.endReason = e.endReason.Value;
+                        break;
+                    case Projectile.EventType.Destroy:
+                        destroy();
                         break;
                 }
             }).AddTo(disposables);
