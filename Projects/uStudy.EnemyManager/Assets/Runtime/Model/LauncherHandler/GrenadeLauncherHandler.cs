@@ -28,6 +28,11 @@ namespace Hedwig.Runtime
             var projectile = projectileFactory.Create(
                 start.Position,
                 config);
+            if (projectile == null)
+            {
+                Debug.LogError($"fiail to create projectile");
+                return;
+            }
             projectile?.Start(target);
             launcherManager.ShowTrajectory(false);
             launcherManager.OnLaunched();

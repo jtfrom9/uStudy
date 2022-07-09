@@ -1,10 +1,12 @@
 #nullable enable
 
+using System;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -14,8 +16,6 @@ namespace Hedwig.Runtime
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
-        CancellationTokenSource cts = new CancellationTokenSource();
-
         public void Fire(ITransform start, ITransform target)
         {
             UniTask.Create(async () =>
@@ -23,14 +23,31 @@ namespace Hedwig.Runtime
                 launcherManager.OnBeforeLaunched();
                 for (var i = 0; i < config.successionCount; i++)
                 {
+                    var cts = new CancellationTokenSource();
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
-                    projectile?.Start(target);
+                    if(projectile==null) {
+                        Debug.LogError($"fiail to create projectile");
+                        break;
+                    }
+                    var disposable = projectile.OnDestroy.Subscribe(_ =>
+                    {
+                        cts.Cancel();
+                    });
+                    projectile.Start(target);
 
                     if (config.successionCount > 1)
                     {
-                        await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
+                        try
+                        {
+                            await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
+                        }catch(OperationCanceledException) {
+                            break;
+                        }finally {
+                            disposable.Dispose();
+                            cts.Dispose();
+                        }
                     }
                 }
                 launcherManager.OnLaunched();
@@ -57,7 +74,6 @@ namespace Hedwig.Runtime
 
         public void Dispose()
         {
-            cts.Cancel();
         }
 
         public ShotLauncherHandler(

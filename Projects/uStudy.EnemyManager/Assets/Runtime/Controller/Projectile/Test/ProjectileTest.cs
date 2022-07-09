@@ -24,6 +24,9 @@ namespace Hedwig.Runtime
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
+        [SerializeField]
+        TextMeshProUGUI? textMesh;
+
         List<IProjectile> liveProjectiles = new List<IProjectile>();
 
         [Inject] IEnemyManager? enemyManager;
@@ -45,9 +48,11 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
             if (launcher == null) return;
             launcher.Initialize();
-            if(projectileFactory==null) return;
+            if (projectileFactory == null) return;
+            if (textMesh == null) return;
 
             setupDebug(projectileFactory);
+            setupUI(textMesh, launcher);
 
             var enemySelection = new SelectiveSelection(enemyManager.Enemies);
             enemySelection.OnCurrentChanged.Subscribe(selectable =>
@@ -72,12 +77,13 @@ namespace Hedwig.Runtime
                 _update(launcher, enemy, enemySelection, configSelection);
             }).AddTo(this);
 
-            launcher.CanFire.Subscribe(can =>
+            launcher.CanFire.Subscribe(async can =>
             {
                 if (can)
                 {
                     if (launcher.config!.type == ProjectileType.Fire)
                     {
+                        await UniTask.Delay(2000);
                         launcher.Fire();
                     }
                 }
@@ -186,6 +192,54 @@ namespace Hedwig.Runtime
                     }
                 }).AddTo(this);
 
+            }).AddTo(this);
+        }
+
+        struct Info {
+            public string config;
+            public IMobileObject? target;
+            public bool canfire;
+            public float recastRatio;
+            public int elapsed;
+            public int maxTime;
+        }
+        Info info;
+
+        void updateText()
+        {
+            if(textMesh==null) return;
+
+            string status = (info.canfire) ? " ** Ready **" :
+            $" ** Recasting: {info.recastRatio} ({info.elapsed} / {info.maxTime}) ** ";
+
+            textMesh.text = @$"
+Weapon: {info.config}
+Target: {info.target?.Name ?? ""}
+{status}
+            ";
+        }
+
+        void setupUI(TextMeshProUGUI textMesh, ILauncher launcher)
+        {
+            launcher.OnConfigChanged.Where(config => config!=null).Subscribe(config => {
+                info.config = config!.name;
+                updateText();
+            }).AddTo(this);
+            launcher.OnTargetChanged.Where(target => target != null).Subscribe(target => {
+                info.target = target!;
+                updateText();
+            }).AddTo(this);
+            launcher.CanFire.Subscribe(can =>
+            {
+                info.canfire = can;
+                updateText();
+            }).AddTo(this);
+            launcher.OnRecastTimeUpdated.Subscribe(ratio =>
+            {
+                info.recastRatio = ratio;
+                info.elapsed = (int)(ratio * launcher.config!.recastTime /(float)100);
+                info.maxTime = launcher.config!.recastTime;
+                updateText();
             }).AddTo(this);
         }
     }

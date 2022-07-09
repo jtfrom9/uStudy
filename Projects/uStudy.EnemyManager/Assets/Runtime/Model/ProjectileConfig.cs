@@ -22,8 +22,13 @@ namespace Hedwig.Runtime
         [SerializeField] public ProjectileType type;
         [SerializeField] public bool chargable;
 
-        [SerializeField] public int successionCount = 1;
-        [SerializeField] public int successionInterval = 0;
+        [SerializeField]
+        [Range(0, 256)]
+        public int successionCount = 1;
+
+        [SerializeField]
+        [Range(10, 1000)]
+        public int successionInterval = 0;
 
         [SerializeField]
         [Range(10, 10000)]

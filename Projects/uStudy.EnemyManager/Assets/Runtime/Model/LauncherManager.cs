@@ -63,6 +63,9 @@ namespace Hedwig.Runtime
 
         void setConfig(ProjectileConfig? config)
         {
+            if(recasting) {
+                throw new InvalidConditionException("LauncherManager is Recasting");
+            }
             this._config = config;
             this.trajectoryVisualizer?.SetConfig(config);
 
@@ -89,7 +92,12 @@ namespace Hedwig.Runtime
             setCanFire();
         }
 
-        void setTarget(IMobileObject? target) {
+        void setTarget(IMobileObject? target)
+        {
+            if (recasting)
+            {
+                throw new InvalidConditionException("LauncherManager is Recasting");
+            }
             _target = target;
             trajectoryVisualizer?.SetEndTarget(target?.transform);
             setCanFire();
@@ -134,7 +142,9 @@ namespace Hedwig.Runtime
 
         void onLaunched()
         {
-            if(_config==null) return;
+            if(_config==null) {
+                throw new InvalidConditionException("ProjectileConfig was modified unexpectedly");
+            }
             UniTask.Create(async () => {
                 for (var i = 0; i < _config.recastTime; i += 100)
                 {

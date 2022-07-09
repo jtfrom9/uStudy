@@ -26,6 +26,10 @@ namespace Hedwig.Runtime
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
+                    if(projectile==null) {
+                        Debug.LogError($"fail to create projectile");
+                        break;
+                    }
                     projectile?.Start(target);
                     try
                     {
