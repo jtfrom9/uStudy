@@ -49,6 +49,7 @@ namespace Hedwig.Runtime
             public EndReason? endReason;
             public Ray? ray;
             public float? maxDistance;
+            public Vector3? to;
 
             public EventArg(EventType type)
             {
@@ -58,6 +59,7 @@ namespace Hedwig.Runtime
                 this.endReason = null;
                 this.ray = null;
                 this.maxDistance = null;
+                this.to = null;
             }
         }
     }

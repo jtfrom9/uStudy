@@ -14,12 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   endType: 0
   endEffectPrefab: {fileID: 0}
+  type: 0
+  chargable: 0
   successionCount: 3
   successionInterval: 100
   recastTime: 600
   shake: 0.5
   speed: 250
-  distance: 30
+  range: 30
   adjust: 0
   period: 0
   maxAngle: 0

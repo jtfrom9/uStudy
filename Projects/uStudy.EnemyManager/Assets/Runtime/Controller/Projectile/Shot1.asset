@@ -21,7 +21,7 @@ MonoBehaviour:
   recastTime: 100
   shake: 0
   speed: 250
-  distance: 30
+  range: 30
   adjust: 0
   period: 0
   maxAngle: 0

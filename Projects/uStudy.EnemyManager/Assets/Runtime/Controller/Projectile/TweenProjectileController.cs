@@ -115,7 +115,10 @@ namespace Hedwig.Runtime
 
         async UniTask<bool> move(Vector3 destRelative, float duration, bool raycastEveryFrame)
         {
-            onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove));
+            onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove)
+            {
+                to = _transform.Raw.position + destRelative
+            });
 
             var dir = destRelative.normalized;
             var speed = destRelative.magnitude / duration;

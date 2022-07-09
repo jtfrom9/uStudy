@@ -153,7 +153,7 @@ namespace Hedwig.Runtime
                     var lateCount = (willHitFrame == 0) ? "-" : (Time.frameCount - willHitFrame).ToString();
                     switch(e.type) {
                         case Projectile.EventType.BeforeMove:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{projectile.transform.Position}");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{projectile.transform.Position} to {e.to}");
                             break;
                         case Projectile.EventType.AfterMove:
                             Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterMove @{projectile.transform.Position} (late:{lateCount})");
