@@ -88,7 +88,7 @@ public class TowerAim : LifetimeScope
             textMesh.text = @$"
 Name: {config.name}
 Type: {config.type}
-Speed: {config.speed}
+Speed: {config.baseSpeed}
 Distance: {config.range}
 ";
         } else {

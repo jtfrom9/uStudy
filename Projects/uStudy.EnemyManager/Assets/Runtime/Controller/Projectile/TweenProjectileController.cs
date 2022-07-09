@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using UnityEngine;
 
@@ -14,6 +15,10 @@ namespace Hedwig.Runtime
 
     public class TweenProjectileController : MonoBehaviour, IProjectileController
     {
+        [SerializeField]
+        [Min(1)]
+        float castingEveryFrameSpeed = 50;
+
         ITransform _transform = new CachedTransform();
         bool _disposed = false;
 
@@ -113,19 +118,20 @@ namespace Hedwig.Runtime
             }
         }
 
-        async UniTask<bool> move(Vector3 destRelative, float duration, bool raycastEveryFrame)
+
+        async UniTask<bool> move(Vector3 to, float speed)
         {
+            var castEveryFrame = speed > castingEveryFrameSpeed;
             onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove)
             {
-                to = _transform.Raw.position + destRelative
+                to = to
             });
 
-            var dir = destRelative.normalized;
-            var speed = destRelative.magnitude / duration;
-            var tween = _transform.Raw.DOMove(destRelative, duration)
-                .SetRelative(true)
+            var dir = (to - _transform.Position).normalized;
+            var tween = _transform.Raw.DOMove(to, speed)
                 .SetUpdate(UpdateType.Fixed)
                 .SetEase(Ease.Linear)
+                .SetSpeedBased(true)
                 .OnKill(() =>
                 {
                     onEvent.OnNext(new EventArg(Projectile.EventType.OnKill));
@@ -139,7 +145,7 @@ namespace Hedwig.Runtime
                     onEvent.OnNext(new EventArg(Projectile.EventType.OnPause));
                 });
 
-            if (raycastEveryFrame)
+            if (castEveryFrame)
             {
                 tween = tween.OnUpdate(() => hitTest(_transform.Position, dir, speed));
             }
@@ -203,8 +209,7 @@ namespace Hedwig.Runtime
 
         #region IProjectileController
 
-        UniTask<bool> IProjectileController.Move(Vector3 destRelative, float duration, bool raycastEveryFrame)
-           => move(destRelative, duration, raycastEveryFrame);
+        UniTask<bool> IProjectileController.Move(Vector3 destRelative, float duration) => move(destRelative, duration);
 
         UniTask IProjectileController.LastMove(float speed) => lastMove(speed);
 

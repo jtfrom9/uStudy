@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
-  m_Name: Grenede1
+  m_Name: Grenade0
   m_EditorClassIdentifier: 
   endType: 0
   endEffectPrefab: {fileID: 0}
@@ -18,11 +18,11 @@ MonoBehaviour:
   chargable: 0
   successionCount: 1
   successionInterval: 0
-  recastTime: 3000
+  recastTime: 2300
   shake: 0
-  speed: 5
-  range: 30
-  adjust: 0
-  period: 0
+  speed: 10
+  range: 10
+  adjust: 1
+  period: 0.05
   maxAngle: 0
-  trajectory: {fileID: 11400000, guid: 307df50450f1d4a1293943ff72fceb52, type: 2}
+  trajectory: {fileID: 11400000, guid: 796514916e38d4a6baacc6c62082d894, type: 2}

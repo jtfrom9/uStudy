@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,48 +22,121 @@ namespace Hedwig.Runtime
         Subject<Unit> onEnded = new Subject<Unit>();
         Subject<Unit> onDestroy = new Subject<Unit>();
 
-        async UniTask mainLoop(ProjectileConfig config, ITransform target)
+        Vector3 toSpearPoint(Vector3 from, Vector3 to, float range) {
+            return from + ((to - from).normalized * range);
+        }
+
+        Vector3 toPoint(TrajectoryLineMap line, float range, bool spear)
+        {
+            if (spear)
+            {
+                var (from, to) = line.GetPoints();
+                return toSpearPoint(from, to, range);
+            }
+            else
+            {
+                return line.GetToPoint();
+            }
+        }
+
+        async UniTask<bool> curveMainLoop(TrajectorySectionMap section)
+        {
+            //
+            // Move to the pont which premaild by trajectory setting
+            //
+            foreach (var line in section.Lines)
+            {
+                var exitLoop = await projectileController.Move(
+                    line.GetToPoint(),
+                    line.GetAccelatedSpeed());
+                // section.speed);
+                if (exitLoop)
+                    return true;
+            }
+            return false;
+        }
+
+        async UniTask<bool> homingMainLoop(TrajectorySectionMap section, ITransform target)
         {
             var prevDir = Vector3.zero;
-
-            //
-            // do move step loop
-            //
-            for (var i = 0; i < config.NumAdjust; i++)
+            var from = section.Lines.First().GetFromPoint();
+            var lines = section.Lines.ToArray();
+            foreach (var (line, index) in lines.Select((line, index) => (line, index)))
             {
-                var start = projectileController.transform.Position;
-                var rand = config.MakeRandom(target);
-                var end = target.Position + rand;
-                var dir = end - start;
-
-                if (i > 0 && config.adjustMaxAngle.HasValue)
+                var to = Vector3.Lerp(from, target.Position, (float)1 / (float)(lines.Length - index));
+                var dir = to - from;
+                if (!line.IsFirst)
                 {
                     var angle = Vector3.Angle(dir, prevDir);
-                    if (config.adjustMaxAngle.Value < angle)
+                    if (section.adjustMaxAngle < angle)
                     {
                         var cross = Vector3.Cross(dir, prevDir);
-                        dir = Quaternion.AngleAxis(-config.adjustMaxAngle.Value, cross) * prevDir;
+                        var length = dir.magnitude;
+                        dir = Quaternion.AngleAxis(-section.adjustMaxAngle, cross) * prevDir;
+                        to = from + dir.normalized * length;
                     }
                 }
-
-                var destRelative = dir.normalized * config.speed * config.EachDuration;
-
-                //
-                // move advance by destRelative in EachDuration time, raycastEveryFrame is enabled if fast speed
-                //
-                var exitLoop = await projectileController.Move(destRelative, config.EachDuration,
-                    config.speed > 50);
-
+                var exitLoop = await projectileController.Move(to, line.GetAccelatedSpeed());
                 if (exitLoop)
-                    break;
-
+                    return true;
+                section.AddDynamic(new TrajectoryLineMap(section, index, line.fromFactor, line.toFactor));
+                from = to; // update next 'from' position
                 prevDir = dir;
+            }
+            return false;
+        }
+
+        async UniTask mainLoop(ProjectileConfig config, ITransform target)
+        {
+            var globalFromPoint = projectileController.transform.Position;
+            var globalToPoint = target.Position + target.ShakeRandom(config.shake);
+
+            if (config.trajectory == null) {
+                //
+                // linear Move if no trajectory
+                //
+                await projectileController.Move(
+                    toSpearPoint(globalFromPoint, globalToPoint, config.range),
+                    config.baseSpeed);
+            }
+            else
+            {
+                var map = config.trajectory.ToMap(globalFromPoint, globalToPoint, config.baseSpeed);
+                var sections = map.Sections.ToList();
+
+                //
+                // linear Move if only one line and Fire style projectile
+                //
+                if(sections.Count==1 && !sections[0].IsCurve && config.type==ProjectileType.Fire) {
+                    await projectileController.Move(
+                        toSpearPoint(globalFromPoint, globalToPoint, config.range),
+                        config.baseSpeed);
+                }
+                else
+                {
+                    //
+                    // mainloop for curved Move
+                    //
+                    foreach (var section in sections)
+                    {
+                        var exitLoop = false;
+                        Debug.Log($"{section}");
+                        if (!section.IsHoming)
+                        {
+                            exitLoop = await curveMainLoop(section);
+                        } else {
+                            exitLoop = await homingMainLoop(section, target);
+                        }
+                        if(exitLoop)
+                            break;
+                    }
+                }
             }
 
             //
             // last one step move to the object will hit
             //
-            await projectileController.LastMove(config.speed);
+            await projectileController.LastMove(config.baseSpeed);
         }
 
         void destroy()

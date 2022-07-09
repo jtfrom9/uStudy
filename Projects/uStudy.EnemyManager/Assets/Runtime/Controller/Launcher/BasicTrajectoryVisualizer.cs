@@ -56,7 +56,7 @@ namespace Hedwig.Runtime
                 lineRenderer.enabled = false;
                 return;
             }
-            var points = _config.trajectory?.MakePoints(this._start.Position, this._end.Position) ?? new Vector3[] { };
+            var points = _config.trajectory?.MakePoints(this._start.Position, this._end.Position, _config.baseSpeed) ?? new Vector3[] { };
             lineRenderer.enabled = true;
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);

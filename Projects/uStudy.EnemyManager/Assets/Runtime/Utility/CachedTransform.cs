@@ -37,11 +37,12 @@ namespace Hedwig.Runtime
         Vector3 ITransform.Position { get => (_transform != null) ? _transform.position : Vector3.zero; }
         Quaternion ITransform.Rotation { get => (_transform != null) ? _transform.rotation : Quaternion.identity; }
 
-        Vector3 ITransform.Right { get => (_transform!=null) ? _transform.right : Vector3.right; }
-        Vector3 ITransform.Up { get => (_transform!=null) ? _transform.up : Vector3.up; }
+        Vector3 ITransform.Right { get => (_transform != null) ? _transform.right : Vector3.right; }
+        Vector3 ITransform.Up { get => (_transform != null) ? _transform.up : Vector3.up; }
         Vector3 ITransform.Forward { get => (_transform != null) ? _transform.forward : Vector3.forward; }
 
-        ISubject<Vector3> ITransform.OnPositionChanged {
+        ISubject<Vector3> ITransform.OnPositionChanged
+        {
             get
             {
                 if (_transform == null)
@@ -60,7 +61,8 @@ namespace Hedwig.Runtime
             }
         }
 
-        ISubject<Quaternion> ITransform.OnRotationChanged {
+        ISubject<Quaternion> ITransform.OnRotationChanged
+        {
             get
             {
                 if (_transform == null)
@@ -79,7 +81,8 @@ namespace Hedwig.Runtime
             }
         }
 
-        Transform ITransform.Raw {
+        Transform ITransform.Raw
+        {
             get
             {
                 if (_transform == null)
@@ -156,6 +159,23 @@ namespace Hedwig.Runtime
                 Debug.LogWarning($"TransformExtension.SetParent. parent.Raw is null");
             }
             transform.SetParent(parent.Raw, worldPositionStays);
+        }
+    }
+
+    public static class ITransformExtension
+    {
+        public static Vector3 ShakeRandom(this ITransform transform, float shake)
+        {
+            if (shake == 0f)
+            {
+                return Vector3.zero;
+            }
+            else
+            {
+                var _r = UnityEngine.Random.Range(-shake, shake);
+                var _u = UnityEngine.Random.Range(-shake, shake);
+                return transform.Right * _r + transform.Up * _u;
+            }
         }
     }
 }

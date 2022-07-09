@@ -10,19 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
-  m_Name: MachineGun1
+  m_Name: MultiLine0
   m_EditorClassIdentifier: 
   endType: 0
   endEffectPrefab: {fileID: 0}
-  type: 1
+  type: 2
   chargable: 0
   successionCount: 1
   successionInterval: 0
-  recastTime: 1000
+  recastTime: 500
   shake: 0
-  speed: 20
-  range: 30
+  speed: 10
+  range: 10
   adjust: 0
   period: 0
   maxAngle: 0
-  trajectory: {fileID: 11400000, guid: 307df50450f1d4a1293943ff72fceb52, type: 2}
+  trajectory: {fileID: 11400000, guid: bd42a05a3feaa476e8719473ffb89575, type: 2}

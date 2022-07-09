@@ -83,7 +83,6 @@ namespace Hedwig.Runtime
                 {
                     if (launcher.config!.type == ProjectileType.Fire)
                     {
-                        await UniTask.Delay(2000);
                         launcher.Fire();
                     }
                 }
@@ -187,7 +186,7 @@ namespace Hedwig.Runtime
                     if (pos.z > 1)
                     {
                         Debug.LogWarning($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} {pos}");
-                        // Debug.Break();
+                        Debug.Break();
                         projectile.Dispose();
                     }
                 }).AddTo(this);

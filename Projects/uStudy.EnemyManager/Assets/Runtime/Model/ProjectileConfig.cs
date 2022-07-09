@@ -38,40 +38,14 @@ namespace Hedwig.Runtime
         [Range(0, 2.0f)]
         public float shake = 0f;
 
-        [SerializeField] public float speed = 10f;
-        [SerializeField] public float range = 10;
+        [SerializeField]
+        [Min(1)]
+        public float baseSpeed = 10f;
 
-        [SerializeField] bool adjust;
-        [SerializeField] float period;
-        [SerializeField] float maxAngle;
+        [SerializeField]
+        [Min(1)]
+        public float range = 10;
 
-        public float? adjustPeriod { get => (!adjust) ? null : period; }
-        public float? adjustMaxAngle { get => (!adjust) ? null : maxAngle; }
-
-        [SerializeField] public TrajectoryBase? trajectory;
-
-        public float Duration { get => range / speed; }
-        public int NumAdjust { get => (!adjustPeriod.HasValue) ? 1 : (int)(Duration / adjustPeriod); }
-
-        public float EachDuration { get => Duration / NumAdjust; }
-
-        public Vector3 MakeRandom(ITransform target)
-        {
-            if(shake==0f) {
-                return Vector3.zero;
-            } else
-            {
-                var _r = UnityEngine.Random.Range(-shake, shake);
-                var _u = UnityEngine.Random.Range(-shake, shake);
-                return target.Right * _r + target.Up * _u;
-            }
-        }
-
-        public override string ToString() 
-        {
-            var adjust = adjustPeriod.HasValue ? adjustPeriod.ToString() : "n/a";
-            var angle = adjustMaxAngle.HasValue ? adjustMaxAngle.ToString() : "n/a";
-            return $"(speed: {speed}, distance: {range}, adjust: {adjust}, angle: {angle}, duration: {Duration}, Num: {NumAdjust})";
-        }
+        [SerializeField] public Trajectory? trajectory;
     }
 }

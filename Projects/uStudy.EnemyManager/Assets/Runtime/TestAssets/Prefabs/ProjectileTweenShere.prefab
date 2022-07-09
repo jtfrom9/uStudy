@@ -128,6 +128,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6591fd8e13a7643daa59526d2a34a35c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  castingEveryFrameSpeed: 50
 --- !u!96 &6227263060490453551
 TrailRenderer:
   serializedVersion: 2

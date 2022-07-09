@@ -1043,6 +1043,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -6059,12 +6060,10 @@ MonoBehaviour:
   textMesh: {fileID: 1323354209}
   setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   configs:
-  - {fileID: 11400000, guid: c94bb9d2800ed4fdca747caa93078bd6, type: 2}
-  - {fileID: 11400000, guid: 65d6195aabdc54a538b09d2bd4d04b7a, type: 2}
-  - {fileID: 11400000, guid: 02efc6f2200a540d5937f2fa09b8b362, type: 2}
-  - {fileID: 11400000, guid: 4eee44c5d3f634faf9e2dfa581e3ba3f, type: 2}
-  - {fileID: 11400000, guid: fcbdd8a230c284507884c338274b6023, type: 2}
-  - {fileID: 11400000, guid: c3ad30874af9e45ed825ab27daacc176, type: 2}
+  - {fileID: 11400000, guid: 09f9630b7e66447df839eed13bead2ee, type: 2}
+  - {fileID: 11400000, guid: 8ad2d8cfeaf504911b281123842b8a50, type: 2}
+  - {fileID: 11400000, guid: 0901f092ca0de418185fb8afe4375f4a, type: 2}
+  - {fileID: 11400000, guid: 25687094086164fbc8cf9606fbac21be, type: 2}
 --- !u!4 &1780342149
 Transform:
   m_ObjectHideFlags: 0

@@ -18,11 +18,8 @@ MonoBehaviour:
   chargable: 0
   successionCount: 1
   successionInterval: 0
-  recastTime: 2000
+  recastTime: 200
   shake: 0
-  speed: 5
+  baseSpeed: 10
   range: 30
-  adjust: 0
-  period: 0
-  maxAngle: 0
-  trajectory: {fileID: 0}
+  trajectory: {fileID: 11400000, guid: 28516db52fc1042638568d637ea4cd29, type: 2}
