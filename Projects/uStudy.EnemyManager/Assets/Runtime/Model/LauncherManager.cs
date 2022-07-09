@@ -15,6 +15,7 @@ namespace Hedwig.Runtime
         IMobileObject? _target;
         CompositeDisposable disposable = new CompositeDisposable();
 
+        bool initialized = false;
         bool recasting = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
@@ -38,6 +39,7 @@ namespace Hedwig.Runtime
                 trajectoryVisualizer.SetStartTarget(launcherController.mazzle);
             }
             launcherController.Initialize(this);
+            initialized = true;
         }
 
         void setCanFire()
@@ -63,6 +65,10 @@ namespace Hedwig.Runtime
 
         void setConfig(ProjectileConfig? config)
         {
+            if (!initialized)
+            {
+                throw new InvalidConditionException("LauncherManager is not Initalized");
+            }
             if(recasting) {
                 throw new InvalidConditionException("LauncherManager is Recasting");
             }
@@ -94,6 +100,10 @@ namespace Hedwig.Runtime
 
         void setTarget(IMobileObject? target)
         {
+            if (!initialized)
+            {
+                throw new InvalidConditionException("LauncherManager is not Initalized");
+            }
             if (recasting)
             {
                 throw new InvalidConditionException("LauncherManager is Recasting");
@@ -106,6 +116,8 @@ namespace Hedwig.Runtime
 
         void fire()
         {
+            if (!initialized)
+                throw new InvalidConditionException("LauncherManager is not Initalized");
             if (_target == null)
                 return;
             if (launcherHandler == null)
@@ -119,6 +131,8 @@ namespace Hedwig.Runtime
 
         void startFire()
         {
+            if (!initialized)
+                throw new InvalidConditionException("LauncherManager is not Initalized");
             if (_target == null)
                 return;
             if (launcherHandler == null)
@@ -128,6 +142,8 @@ namespace Hedwig.Runtime
 
         void endFire()
         {
+            if (!initialized)
+                throw new InvalidConditionException("LauncherManager is not Initalized");
             if (_target == null)
                 return;
             if (launcherHandler == null)

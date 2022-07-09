@@ -39,7 +39,7 @@ namespace Hedwig.Runtime
         public float shake = 0f;
 
         [SerializeField] public float speed = 10f;
-        [SerializeField] public float distance = 10;
+        [SerializeField] public float range = 10;
 
         [SerializeField] bool adjust;
         [SerializeField] float period;
@@ -50,7 +50,7 @@ namespace Hedwig.Runtime
 
         [SerializeField] public TrajectoryBase? trajectory;
 
-        public float Duration { get => distance / speed; }
+        public float Duration { get => range / speed; }
         public int NumAdjust { get => (!adjustPeriod.HasValue) ? 1 : (int)(Duration / adjustPeriod); }
 
         public float EachDuration { get => Duration / NumAdjust; }
@@ -71,7 +71,7 @@ namespace Hedwig.Runtime
         {
             var adjust = adjustPeriod.HasValue ? adjustPeriod.ToString() : "n/a";
             var angle = adjustMaxAngle.HasValue ? adjustMaxAngle.ToString() : "n/a";
-            return $"(speed: {speed}, distance: {distance}, adjust: {adjust}, angle: {angle}, duration: {Duration}, Num: {NumAdjust})";
+            return $"(speed: {speed}, distance: {range}, adjust: {adjust}, angle: {angle}, duration: {Duration}, Num: {NumAdjust})";
         }
     }
 }

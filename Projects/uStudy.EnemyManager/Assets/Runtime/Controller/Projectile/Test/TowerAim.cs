@@ -47,6 +47,7 @@ public class TowerAim : LifetimeScope
 
         if(cursorManager==null) return;
         if(launcher==null) return;
+        launcher.Initialize();
 
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
@@ -62,14 +63,6 @@ public class TowerAim : LifetimeScope
         launcher.OnConfigChanged.Subscribe(config =>
         {
             showConfigInfo(config);
-        }).AddTo(this);
-
-        launcher.CanFire.Subscribe(v => {
-            Debug.Log($"CanLaunch: {v}");
-        }).AddTo(this);
-
-        launcher.OnRecastTimeUpdated.Subscribe(v => {
-            Debug.Log($"Recast: {v}");
         }).AddTo(this);
 
         setupMouse(cursorManager, launcher);
@@ -96,7 +89,7 @@ public class TowerAim : LifetimeScope
 Name: {config.name}
 Type: {config.type}
 Speed: {config.speed}
-Distance: {config.distance}
+Distance: {config.range}
 ";
         } else {
             textMesh.text = "";
