@@ -108,9 +108,10 @@ namespace Hedwig.Runtime
                 // linear Move if only one line and Fire style projectile
                 //
                 if(sections.Count==1 && !sections[0].IsCurve && config.type==ProjectileType.Fire) {
+                    var section = sections[0];
                     await projectileController.Move(
                         toSpearPoint(globalFromPoint, globalToPoint, config.range),
-                        config.baseSpeed);
+                        section.baseSpeed * section.speedFactor);
                 }
                 else
                 {

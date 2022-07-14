@@ -61,18 +61,26 @@ namespace Hedwig.Runtime
         public float GetAccelatedSpeed()
         {
             var factor = (float)index / (float)sectionMap.numLines;
+            int pow = 0;
             switch (sectionMap.acceleration)
             {
+                case Trajectory.AccelerationType.None:
+                default:
+                    break;
                 case Trajectory.AccelerationType.Linear:
-                    return sectionMap.baseSpeed + speedPower(1, 0);
+                    pow = 1;
+                    break;
                 case Trajectory.AccelerationType.Quad:
-                    return sectionMap.baseSpeed + speedPower(factor, 2);
+                    pow = 2;
+                    break;
                 case Trajectory.AccelerationType.Cubic:
-                    return sectionMap.baseSpeed + speedPower(factor, 3);
+                    pow = 3;
+                    break;
                 case Trajectory.AccelerationType.Quart:
-                    return sectionMap.baseSpeed + speedPower(factor, 4);
+                    pow = 4;
+                    break;
             }
-            throw new InvalidConditionException("invalid");
+            return sectionMap.baseSpeed + speedPower(factor, pow);
         }
 
         public (Vector3, Vector3) GetPoints() => (GetFromPoint(), GetToPoint());
@@ -136,7 +144,7 @@ namespace Hedwig.Runtime
 
         void makeLines()
         {
-            if (controlPoints.Count > 0 || IsHoming)
+            if (IsCurve || IsHoming || acceleration != Trajectory.AccelerationType.None)
             {
                 var pointCount = (int)getMinimumPointsPerFixedUpdate();
                 for (var i = 0; i < pointCount - 1; i++)

@@ -43,6 +43,6 @@ MonoBehaviour:
       value: 0
     controlPoints:
     - {x: 0.3, y: 2}
-    speedFactor: 2
-    acceleration: 3
+    speedFactor: 1
+    acceleration: 1
     adjustMaxAngle: 0

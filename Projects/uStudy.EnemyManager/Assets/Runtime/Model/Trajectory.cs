@@ -55,6 +55,7 @@ namespace Hedwig.Runtime
 
         public enum AccelerationType
         {
+            None,
             Linear,
             Quad,
             Cubic,
@@ -83,7 +84,7 @@ namespace Hedwig.Runtime
             public float speedFactor = 0;
 
             [SerializeField]
-            public AccelerationType acceleration = AccelerationType.Linear;
+            public AccelerationType acceleration = AccelerationType.None;
 
             [SerializeField]
             public float adjustMaxAngle = 10;
