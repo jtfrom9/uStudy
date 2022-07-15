@@ -16,7 +16,6 @@ namespace Hedwig.Runtime
     [CreateAssetMenu(menuName = "Hedwig/Projectile", fileName = "Projectile")]
     public class ProjectileConfig : ScriptableObject
     {
-        [SerializeField] public Projectile.EndType endType = Projectile.EndType.Destroy;
         [SerializeField] GameObject? endEffectPrefab;
 
         [SerializeField] public ProjectileType type;

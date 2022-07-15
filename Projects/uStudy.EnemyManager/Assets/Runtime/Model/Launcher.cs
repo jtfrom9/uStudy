@@ -27,7 +27,7 @@ namespace Hedwig.Runtime
         void Initialize();
 
         ProjectileConfig? config { get; }
-        void SetProjectileConfig(ProjectileConfig? config);
+        void SetProjectileConfig(ProjectileConfig? config, ProjectileOption? option = null);
 
         IMobileObject? target { get; }
         void SetTarget(IMobileObject? target);
@@ -40,6 +40,7 @@ namespace Hedwig.Runtime
         ISubject<ProjectileConfig?> OnConfigChanged { get; }
         ISubject<IMobileObject?> OnTargetChanged { get; }
         ISubject<float> OnRecastTimeUpdated { get; }
+        ISubject<IProjectile> OnFired { get; }
     }
 
     public interface ILauncherManager
@@ -48,5 +49,6 @@ namespace Hedwig.Runtime
         void ShowTrajectory(bool v);
         void OnBeforeLaunched();
         void OnLaunched();
+        void OnFired(IProjectile projectile);
     }
 }

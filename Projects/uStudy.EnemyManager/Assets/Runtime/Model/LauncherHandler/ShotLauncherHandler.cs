@@ -15,6 +15,7 @@ namespace Hedwig.Runtime
         ILauncherManager launcherManager;
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
+        ProjectileOption? option;
 
         public void Fire(ITransform start, ITransform target)
         {
@@ -35,7 +36,8 @@ namespace Hedwig.Runtime
                     {
                         cts.Cancel();
                     });
-                    projectile.Start(target);
+                    projectile.Start(target, in option);
+                    launcherManager.OnFired(projectile);
 
                     if (config.successionCount > 1)
                     {
@@ -79,11 +81,13 @@ namespace Hedwig.Runtime
         public ShotLauncherHandler(
             ILauncherManager  launcherManager,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config)
+            ProjectileConfig config,
+            ProjectileOption? option)
         {
             this.launcherManager = launcherManager;
             this.projectileFactory = projectileFactory;
             this.config = config;
+            this.option = option;
         }
     }
 }

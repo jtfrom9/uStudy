@@ -22,6 +22,7 @@ namespace Hedwig.Runtime
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
         Subject<IMobileObject?> onTargetChanged = new Subject<IMobileObject?>();
         Subject<float> onRecastTimeUpdated = new Subject<float>();
+        Subject<IProjectile> onFired = new Subject<IProjectile>();
 
         // injected
         IProjectileFactory projectileFactory;
@@ -63,7 +64,7 @@ namespace Hedwig.Runtime
             onRecastTimeUpdated.OnNext((float)elapsed / (float)recast);
         }
 
-        void setConfig(ProjectileConfig? config)
+        void setConfig(ProjectileConfig? config, ProjectileOption? option)
         {
             if (!initialized)
             {
@@ -84,7 +85,7 @@ namespace Hedwig.Runtime
                 switch (config.type)
                 {
                     case ProjectileType.Fire:
-                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, config);
+                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, config, option);
                         break;
                     case ProjectileType.Burst:
                         this.launcherHandler = new BurstLauncherHandler(this, projectileFactory, config);
@@ -173,7 +174,7 @@ namespace Hedwig.Runtime
         #region ILauncher
         void ILauncher.Initialize() => initialize();
         ProjectileConfig? ILauncher.config { get => _config; }
-        void ILauncher.SetProjectileConfig(ProjectileConfig? config) => setConfig(config);
+        void ILauncher.SetProjectileConfig(ProjectileConfig? config, ProjectileOption? option) => setConfig(config, option);
         IMobileObject? ILauncher.target { get => _target; }
         void ILauncher.SetTarget(IMobileObject? target) => setTarget(target);
 
@@ -185,6 +186,7 @@ namespace Hedwig.Runtime
         ISubject<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
         ISubject<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
         ISubject<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
+        ISubject<IProjectile> ILauncher.OnFired { get => onFired; }
         #endregion
 
         #region ILauncherManager
@@ -192,6 +194,7 @@ namespace Hedwig.Runtime
         void ILauncherManager.ShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
         void ILauncherManager.OnBeforeLaunched() => onBeforeLaunched();
         void ILauncherManager.OnLaunched() => onLaunched();
+        void ILauncherManager.OnFired(IProjectile projectile) => onFired.OnNext(projectile);
         #endregion
 
         #region IDisposable

@@ -77,7 +77,7 @@ namespace Hedwig.Runtime
                 _update(launcher, enemy, enemySelection, configSelection);
             }).AddTo(this);
 
-            launcher.CanFire.Subscribe(async can =>
+            launcher.CanFire.Subscribe(can =>
             {
                 if (can)
                 {

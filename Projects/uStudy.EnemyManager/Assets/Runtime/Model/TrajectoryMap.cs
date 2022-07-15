@@ -177,9 +177,10 @@ namespace Hedwig.Runtime
 
         public override string ToString()
         {
-            return @$"TrajectoryMap([section:${index}]) type: {section.type}
-factor: {minfactor} - {maxfactor}
-points: {from} - {to} (baseEnd: {baseEnd})";
+            return $"Section({index},{section.type},{minfactor} - {maxfactor})";
+            //             return @$"TrajectoryMap([section:${index}]) type: {section.type}
+            // factor: {minfactor} - {maxfactor}
+            // points: {from} - {to} (baseEnd: {baseEnd})";
         }
 
         public TrajectorySectionMap(

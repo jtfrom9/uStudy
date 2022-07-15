@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
@@ -29,9 +30,14 @@ namespace Hedwig.Runtime
         [SerializeField]
         GameObject? targetPrefab;
 
-
         [SerializeField]
         Button? shotButton;
+
+        [SerializeField]
+        TextMeshProUGUI? distanceTextMesh;
+
+        [SerializeField]
+        Slider? distanceSlider;
 
         [Inject] System.Func<Vector3, ILauncher>? launcherFactory;
         [Inject] IEnemyManager? enemyManager;
@@ -83,8 +89,24 @@ namespace Hedwig.Runtime
             var target = cube.GetComponent<IEnemy>();
             var launcher = launcherFactory.Invoke(pos);
             launcher.Initialize();
-            launcher.SetProjectileConfig(config);
+            launcher.SetProjectileConfig(config, new ProjectileOption() { destroyAtEnd = false });
             launcher.SetTarget(target);
+
+            launcher.OnFired.Subscribe(projectile => {
+                projectile.OnEnded.Subscribe(_ =>
+                {
+                    if (projectile.trajectoryMap != null)
+                    {
+                        string log = "";
+                        foreach (var section in projectile.trajectoryMap.Sections)
+                        {
+                            log += $"{section} ({section.numLines} lines), ";
+                        }
+                        Debug.Log($"{projectile} <<Ended>> {log}");
+                        projectile.Dispose();
+                    }
+                });
+            }).AddTo(this);
 
             return (launcher, target);
         }
@@ -99,6 +121,21 @@ namespace Hedwig.Runtime
                     foreach (var pair in pairs)
                     {
                         pair.launcher.Fire();
+                    }
+                }
+            }).AddTo(this);
+
+            distanceSlider?.OnValueChangedAsObservable().Subscribe(v => { 
+                if(distanceTextMesh!=null) {
+                    distanceTextMesh.text = $"Distance: {v}";
+                    foreach (var pair in pairs)
+                    {
+                        // pair.target.transform.Raw = pair.target.transform.Position.Z(v);
+                        var component = (pair.target as Component);
+                        if (component != null)
+                        {
+                            component.transform.position = pair.target.transform.Position.Z(v);
+                        }
                     }
                 }
             }).AddTo(this);

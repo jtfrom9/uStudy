@@ -15,6 +15,8 @@ namespace Hedwig.Runtime
     {
         IProjectileController projectileController;
         ProjectileConfig config;
+        ProjectileOption option = new ProjectileOption();
+        TrajectoryMap? map = null;
 
         EndReason endReason = EndReason.Expired;
         CompositeDisposable disposables = new CompositeDisposable();
@@ -101,7 +103,7 @@ namespace Hedwig.Runtime
             }
             else
             {
-                var map = config.trajectory.ToMap(globalFromPoint, globalToPoint, config.baseSpeed);
+                map = config.trajectory.ToMap(globalFromPoint, globalToPoint, config.baseSpeed);
                 var sections = map.Sections.ToList();
 
                 //
@@ -158,7 +160,7 @@ namespace Hedwig.Runtime
         {
             onStarted.OnNext(Unit.Default);
             await mainLoop(config, target);
-            if (config.endType == EndType.Destroy)
+            if (option.DestroyAtEnd)
             {
                 dispose();
             }
@@ -177,9 +179,11 @@ namespace Hedwig.Runtime
         ISubject<Unit> IProjectile.OnStarted { get => onStarted; }
         ISubject<Unit> IProjectile.OnEnded { get => onEnded; }
         ISubject<Unit> IProjectile.OnDestroy { get => onDestroy; }
+        TrajectoryMap? IProjectile.trajectoryMap { get => map; }
 
-        void IProjectile.Start(ITransform target)
+        void IProjectile.Start(ITransform target, in ProjectileOption? option)
         {
+            if (option != null) this.option = option.Value;
             start(config, target).Forget();
         }
         #endregion
@@ -192,6 +196,11 @@ namespace Hedwig.Runtime
             dispose();
         }
         #endregion
+
+        public override string ToString()
+        {
+            return $"Projectile({endReason})";
+        }
 
         public ProjectileManager(IProjectileController projectileController, ProjectileConfig config)
         {
