@@ -59,20 +59,4 @@ public class CachedTransformTest
         Assert.AreEqual(1, count);
         Assert.AreEqual(new Vector3(1, 0, 0), pos);
     });
-
-    class disposable: IDisposable {
-        public void Dispose() {
-            Debug.Log("disposable.Dispose");
-        }
-    }
-
-    [UnityTest]
-    public IEnumerator TestCachedPosition2() => UniTask.ToCoroutine(async () =>
-    {
-        var go = makeGameObject();
-        var d = new CompositeDisposable();
-        go.OnDestroyAsObservable().Subscribe(_ => { Debug.Log("destroy"); });
-        // d.Dispose();
-        // UnityEngine.Object.Destroy(go);
-    });
 }
