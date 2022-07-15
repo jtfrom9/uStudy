@@ -132,7 +132,7 @@ Distance: {config.range}
         input.Keep(100, () => true).First().TakeUntil(input.OnEnd)
             .Repeat().Subscribe(e =>
         {
-            launcher.StartFire();
+            launcher.TriggerOn();
         }).AddTo(disposables);
 
         input.OnMove.Subscribe(e =>
@@ -142,7 +142,7 @@ Distance: {config.range}
 
         input.OnEnd.Subscribe(e =>
         {
-            launcher.EndFire();
+            launcher.TriggerOff();
         }).AddTo(disposables);
     }
 

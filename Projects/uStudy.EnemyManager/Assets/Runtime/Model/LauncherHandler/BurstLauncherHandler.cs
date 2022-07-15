@@ -20,7 +20,7 @@ namespace Hedwig.Runtime
         {
             UniTask.Create(async () =>
             {
-                launcherManager.OnBeforeLaunched();
+                launcherManager.BeforeFire();
                 while (true)
                 {
                     var projectile = projectileFactory.Create(
@@ -40,16 +40,16 @@ namespace Hedwig.Runtime
                         break;
                     }
                 }
-                launcherManager.OnLaunched();
+                launcherManager.AfterFire();
             }).Forget();
         }
 
-        public void StartFire(ITransform start, ITransform target)
+        public void TriggerOn(ITransform start, ITransform target)
         {
             Debug.Log("StartFire");
         }
 
-        public void EndFire(ITransform start, ITransform target)
+        public void TriggerOff(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
             cts.Cancel();

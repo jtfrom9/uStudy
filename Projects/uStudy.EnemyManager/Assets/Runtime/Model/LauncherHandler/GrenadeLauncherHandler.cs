@@ -18,13 +18,13 @@ namespace Hedwig.Runtime
             launcherManager.ShowTrajectory(true);
         }
 
-        public void StartFire(ITransform start, ITransform target)
+        public void TriggerOn(ITransform start, ITransform target)
         {
         }
 
-        public void EndFire(ITransform start, ITransform target)
+        public void TriggerOff(ITransform start, ITransform target)
         {
-            launcherManager.OnBeforeLaunched();
+            launcherManager.BeforeFire();
             var projectile = projectileFactory.Create(
                 start.Position,
                 config);
@@ -35,7 +35,7 @@ namespace Hedwig.Runtime
             }
             projectile?.Start(target);
             launcherManager.ShowTrajectory(false);
-            launcherManager.OnLaunched();
+            launcherManager.AfterFire();
         }
 
         public void Dispose()

@@ -138,7 +138,7 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
-            launcherHandler.StartFire(launcherController.mazzle, _target.transform);
+            launcherHandler.TriggerOn(launcherController.mazzle, _target.transform);
         }
 
         void endFire()
@@ -149,7 +149,7 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
-            launcherHandler.EndFire(launcherController.mazzle,_target.transform);
+            launcherHandler.TriggerOff(launcherController.mazzle,_target.transform);
         }
 
         void onBeforeLaunched()
@@ -180,8 +180,8 @@ namespace Hedwig.Runtime
 
         IReadOnlyReactiveProperty<bool> ILauncher.CanFire { get => canFire; }
         void ILauncher.Fire() => fire();
-        void ILauncher.StartFire() => startFire();
-        void ILauncher.EndFire() => endFire();
+        void ILauncher.TriggerOn() => startFire();
+        void ILauncher.TriggerOff() => endFire();
 
         ISubject<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
         ISubject<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
@@ -192,8 +192,8 @@ namespace Hedwig.Runtime
         #region ILauncherManager
         ILauncher ILauncherManager.launcher { get => this; }
         void ILauncherManager.ShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
-        void ILauncherManager.OnBeforeLaunched() => onBeforeLaunched();
-        void ILauncherManager.OnLaunched() => onLaunched();
+        void ILauncherManager.BeforeFire() => onBeforeLaunched();
+        void ILauncherManager.AfterFire() => onLaunched();
         void ILauncherManager.OnFired(IProjectile projectile) => onFired.OnNext(projectile);
         #endregion
 

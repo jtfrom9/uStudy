@@ -10,19 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
-  m_Name: MultiLine1
+  m_Name: Grenade1Cubic
   m_EditorClassIdentifier: 
-  endType: 0
   endEffectPrefab: {fileID: 0}
   type: 2
   chargable: 0
   successionCount: 1
   successionInterval: 0
-  recastTime: 500
+  recastTime: 2300
   shake: 0
-  speed: 10
+  baseSpeed: 10
   range: 10
-  adjust: 0
-  period: 0
-  maxAngle: 0
-  trajectory: {fileID: 11400000, guid: 696a60f92bb554384aeceae088b60413, type: 2}
+  trajectory: {fileID: 11400000, guid: 58081dce50b13424087e35aa18643011, type: 2}

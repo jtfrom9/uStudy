@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
         {
             UniTask.Create(async () =>
             {
-                launcherManager.OnBeforeLaunched();
+                launcherManager.BeforeFire();
                 for (var i = 0; i < config.successionCount; i++)
                 {
                     var cts = new CancellationTokenSource();
@@ -52,11 +52,11 @@ namespace Hedwig.Runtime
                         }
                     }
                 }
-                launcherManager.OnLaunched();
+                launcherManager.AfterFire();
             }).Forget();
         }
 
-        public void StartFire(ITransform start, ITransform target)
+        public void TriggerOn(ITransform start, ITransform target)
         {
             Debug.Log($"StartFire: {config.chargable}");
             if (config.chargable)
@@ -65,7 +65,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        public void EndFire(ITransform start, ITransform target)
+        public void TriggerOff(ITransform start, ITransform target)
         {
             Debug.Log("EndFire");
             if (config.chargable)

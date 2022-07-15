@@ -18,8 +18,8 @@ namespace Hedwig.Runtime
     public interface ILauncherHandler : IDisposable
     {
         void Fire(ITransform start, ITransform target);
-        void StartFire(ITransform start, ITransform target);
-        void EndFire(ITransform start, ITransform target);
+        void TriggerOn(ITransform start, ITransform target);
+        void TriggerOff(ITransform start, ITransform target);
     }
 
     public interface ILauncher : IDisposable
@@ -34,8 +34,8 @@ namespace Hedwig.Runtime
 
         IReadOnlyReactiveProperty<bool> CanFire { get; }
         void Fire();
-        void StartFire();
-        void EndFire();
+        void TriggerOn();
+        void TriggerOff();
 
         ISubject<ProjectileConfig?> OnConfigChanged { get; }
         ISubject<IMobileObject?> OnTargetChanged { get; }
@@ -47,8 +47,8 @@ namespace Hedwig.Runtime
     {
         ILauncher launcher { get; }
         void ShowTrajectory(bool v);
-        void OnBeforeLaunched();
-        void OnLaunched();
+        void BeforeFire();
+        void AfterFire();
         void OnFired(IProjectile projectile);
     }
 }

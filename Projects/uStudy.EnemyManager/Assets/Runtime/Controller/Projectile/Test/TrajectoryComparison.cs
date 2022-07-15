@@ -31,13 +31,16 @@ namespace Hedwig.Runtime
         GameObject? targetPrefab;
 
         [SerializeField]
-        Button? shotButton;
-
-        [SerializeField]
         TextMeshProUGUI? distanceTextMesh;
 
         [SerializeField]
         Slider? distanceSlider;
+
+        [SerializeField]
+        Button? fireButton;
+
+        [SerializeField]
+        Button? triggerButton;
 
         [Inject] System.Func<Vector3, ILauncher>? launcherFactory;
         [Inject] IEnemyManager? enemyManager;
@@ -46,6 +49,9 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
+            var root = GameObject.Find("Root");
+            if (root == null) { throw new InvalidConditionException("no root"); }
+
             if (setting == null) { Debug.LogError("setting is null"); return; }
             builder.RegisterInstance<Setting>(setting!)
                 .AsImplementedInterfaces();
@@ -56,7 +62,8 @@ namespace Hedwig.Runtime
             {
                 return (pos) =>
                 {
-                    var launcherController = Instantiate(launcherPrefab, pos, Quaternion.identity).GetComponent<ILauncherController>();
+                    var go = Instantiate(launcherPrefab, pos, Quaternion.identity, root.transform);
+                    var launcherController = go.GetComponent<ILauncherController>();
                     var projectileFactory = resolver.Resolve<IProjectileFactory>();
                     return new LauncherManager(projectileFactory, launcherController);
                 };
@@ -113,16 +120,39 @@ namespace Hedwig.Runtime
 
         void setupUI()
         {
-            shotButton?.OnClickAsObservable().Subscribe(_ =>
+            var canfire = false;
+            this.ObserveEveryValueChanged(_ => this.pairs.All(pair => pair.launcher.CanFire.Value)).Subscribe(v =>
             {
-                var canFire = pairs.All(pair => pair.launcher.CanFire.Value);
-                if (canFire)
+                canfire = v;
+                if (fireButton != null) fireButton.interactable = canfire;
+                if (triggerButton != null) triggerButton.interactable = canfire;
+            }).AddTo(this);
+
+            fireButton?.OnClickAsObservable().Where(_ => canfire).Subscribe(_ =>
+            {
+                foreach (var pair in pairs)
                 {
-                    foreach (var pair in pairs)
-                    {
-                        pair.launcher.Fire();
-                    }
+                    pair.launcher.Fire();
                 }
+            }).AddTo(this);
+
+            var trigger = false;
+            triggerButton?.OnPointerDownAsObservable().Where(_ => canfire && !trigger).Subscribe(_ =>
+            {
+                foreach (var pair in pairs)
+                {
+                    pair.launcher.TriggerOn();
+                }
+                trigger = true;
+            }).AddTo(this);
+
+            triggerButton?.OnPointerUpAsObservable().Where(_ => canfire && trigger).Subscribe(_ =>
+            {
+                foreach (var pair in pairs)
+                {
+                    pair.launcher.TriggerOff();
+                }
+                trigger = false;
             }).AddTo(this);
 
             distanceSlider?.OnValueChangedAsObservable().Subscribe(v => { 
@@ -130,7 +160,6 @@ namespace Hedwig.Runtime
                     distanceTextMesh.text = $"Distance: {v}";
                     foreach (var pair in pairs)
                     {
-                        // pair.target.transform.Raw = pair.target.transform.Position.Z(v);
                         var component = (pair.target as Component);
                         if (component != null)
                         {

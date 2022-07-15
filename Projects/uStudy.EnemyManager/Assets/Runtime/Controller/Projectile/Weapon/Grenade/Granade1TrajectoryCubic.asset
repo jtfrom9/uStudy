@@ -10,27 +10,28 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 43fbf3d10a38d41038d20dc4e8f39b72, type: 3}
-  m_Name: MuiltiLine1Trajectory
+  m_Name: Granade1TrajectoryCubic
   m_EditorClassIdentifier: 
   sections:
-  - name: Rise To End Y+20
+  - name: 
     factor: 1
     type: 0
-    toY: 20
-    controls: []
+    toOffset:
+      type: 1
+      value: 5
+    controlPoints:
+    - {x: 0.3, y: 5.87}
     speedFactor: 1
-    accel: 0
-  - name: To End Y + 20
+    acceleration: 0
+    adjustMaxAngle: 10
+  - name: 
     factor: 1
     type: 0
-    toY: 20
-    controls: []
-    speedFactor: 1
-    accel: 0
-  - name: To End
-    factor: 1
-    type: 0
-    toY: 0
-    controls: []
-    speedFactor: 1
-    accel: 0
+    toOffset:
+      type: 1
+      value: 0
+    controlPoints:
+    - {x: 0.5, y: 1}
+    speedFactor: 2
+    acceleration: 3
+    adjustMaxAngle: 10
