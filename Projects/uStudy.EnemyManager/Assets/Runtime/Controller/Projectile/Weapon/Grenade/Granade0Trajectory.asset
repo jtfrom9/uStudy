@@ -17,7 +17,7 @@ MonoBehaviour:
     factor: 1
     type: 0
     toOffset:
-      type: 0
+      type: 1
       value: 0
     controlPoints:
     - {x: 0.5, y: 5}
