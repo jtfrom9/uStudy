@@ -130,7 +130,7 @@ namespace Hedwig.Runtime
             launcherHandler.Fire(launcherController.mazzle, _target.transform);
         }
 
-        void startFire()
+        void triggerOn()
         {
             if (!initialized)
                 throw new InvalidConditionException("LauncherManager is not Initalized");
@@ -141,7 +141,7 @@ namespace Hedwig.Runtime
             launcherHandler.TriggerOn(launcherController.mazzle, _target.transform);
         }
 
-        void endFire()
+        void triggerOff()
         {
             if (!initialized)
                 throw new InvalidConditionException("LauncherManager is not Initalized");
@@ -157,7 +157,7 @@ namespace Hedwig.Runtime
             changeRecastState(true);
         }
 
-        void onLaunched()
+        void onAfterFire()
         {
             if(_config==null) {
                 throw new InvalidConditionException("ProjectileConfig was modified unexpectedly");
@@ -180,8 +180,8 @@ namespace Hedwig.Runtime
 
         IReadOnlyReactiveProperty<bool> ILauncher.CanFire { get => canFire; }
         void ILauncher.Fire() => fire();
-        void ILauncher.TriggerOn() => startFire();
-        void ILauncher.TriggerOff() => endFire();
+        void ILauncher.TriggerOn() => triggerOn();
+        void ILauncher.TriggerOff() => triggerOff();
 
         ISubject<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
         ISubject<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
@@ -193,7 +193,7 @@ namespace Hedwig.Runtime
         ILauncher ILauncherManager.launcher { get => this; }
         void ILauncherManager.ShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
         void ILauncherManager.BeforeFire() => onBeforeLaunched();
-        void ILauncherManager.AfterFire() => onLaunched();
+        void ILauncherManager.AfterFire() => onAfterFire();
         void ILauncherManager.OnFired(IProjectile projectile) => onFired.OnNext(projectile);
         #endregion
 
