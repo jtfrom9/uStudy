@@ -17,6 +17,7 @@ namespace Hedwig.Runtime
 
         bool initialized = false;
         bool recasting = false;
+        bool trigger = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
@@ -138,7 +139,12 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
+            if (!canFire.Value)
+                return;
+            if(trigger)
+                return;
             launcherHandler.TriggerOn(launcherController.mazzle, _target.transform);
+            trigger = true;
         }
 
         void triggerOff()
@@ -149,7 +155,10 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
+            if (!trigger)
+                return;
             launcherHandler.TriggerOff(launcherController.mazzle,_target.transform);
+            trigger = false;
         }
 
         void onBeforeLaunched()
