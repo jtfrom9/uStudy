@@ -32,5 +32,7 @@ namespace Hedwig.Runtime
     public interface ICursorManager
     {
         ISubject<IFreeCursor?> OnCursorCreated { get; }
+        void Move(Vector2 pos);
+        void Reset();
     }
 }

@@ -106,10 +106,6 @@ namespace Hedwig.Runtime
             {
                 throw new InvalidConditionException("LauncherManager is not Initalized");
             }
-            if (recasting)
-            {
-                throw new InvalidConditionException("LauncherManager is Recasting");
-            }
             _target = target;
             trajectoryVisualizer?.SetEndTarget(target?.transform);
             setCanFire();

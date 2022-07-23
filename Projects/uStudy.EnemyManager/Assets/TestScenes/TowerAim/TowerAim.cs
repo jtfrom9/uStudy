@@ -23,9 +23,10 @@ public class TowerAim : LifetimeScope
     // Inject
     [SerializeField] Setting? setting;
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
+    [SerializeField] GameObject? groundObject;
 
     [Inject] IEnemyManager? enemyManager;
-    [Inject] SimpleCursorManager? cursorManager;
+    [Inject] ICursorManager? cursorManager;
     [Inject] ILauncher? launcher;
 
     CompositeDisposable disposables = new CompositeDisposable();
@@ -35,7 +36,7 @@ public class TowerAim : LifetimeScope
         builder.RegisterInstance<Setting>(setting!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-        builder.Register<SimpleCursorManager>(Lifetime.Singleton);
+        builder.Register<ICursorManager, SimpleCursorManager>(Lifetime.Singleton);
         builder.Register<LauncherManager>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
     }
@@ -48,6 +49,8 @@ public class TowerAim : LifetimeScope
         if(cursorManager==null) return;
         if(launcher==null) return;
         launcher.Initialize();
+
+        if(groundObject==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
@@ -65,7 +68,7 @@ public class TowerAim : LifetimeScope
             showConfigInfo(config);
         }).AddTo(this);
 
-        setupMouse(cursorManager, launcher);
+        setupMouse(cursorManager, launcher, groundObject);
 
         (cursorManager as ICursorManager).OnCursorCreated.Subscribe(cursor => {
             launcher.SetTarget(cursor);
@@ -111,11 +114,10 @@ Distance: {config.range}
         }).AddTo(this);
     }
 
-    void setupNormalShotStyle(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
+    void setupMouseClickFire(IInputObservable mbutton, ILauncher launcher)
     {
-        input.OnBegin.Subscribe(e =>
+        mbutton.OnBegin.Subscribe(e =>
         {
-            cursorManager.Move(e.position);
             if (launcher.CanFire.Value)
             {
                 launcher.Fire();
@@ -127,42 +129,39 @@ Distance: {config.range}
         }).AddTo(disposables);
     }
 
-    void setupLongPressStyle(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
+    void setupMousePressTrigger(IInputObservable mbutton, ILauncher launcher)
     {
-        input.Keep(100, () => true).First().TakeUntil(input.OnEnd)
+        mbutton.Keep(100, () => true).First().TakeUntil(mbutton.OnEnd)
             .Repeat().Subscribe(e =>
         {
             launcher.TriggerOn();
         }).AddTo(disposables);
 
-        input.OnMove.Subscribe(e =>
-        {
-            cursorManager.Move(e.position);
-        }).AddTo(disposables);
-
-        input.OnEnd.Subscribe(e =>
+        mbutton.OnEnd.Subscribe(e =>
         {
             launcher.TriggerOff();
         }).AddTo(disposables);
     }
 
-    void setupMoveOnly(IInputObservable input, ILauncher launcher, SimpleCursorManager cursorManager)
+    void setupMouseMove(GameObject groundObject, ICursorManager cursorManager)
     {
-        input.Any().Where(e => e.type != InputEventType.End).Subscribe(e =>
+        groundObject.OnMouseOverAsObservable().Subscribe(_ =>
         {
-            cursorManager.Move(e.position);
-        }).AddTo(disposables);
-        input.OnEnd.Subscribe(e =>
+            cursorManager.Move(Input.mousePosition);
+        }).AddTo(this);
+
+        groundObject.OnMouseExitAsObservable().Subscribe(_ =>
         {
             cursorManager.Reset();
-        }).AddTo(disposables);
+        }).AddTo(this);
     }
 
-    void setupMouse(SimpleCursorManager cursorManager,ILauncher launcher)
+    void setupMouse(ICursorManager cursorManager, ILauncher launcher, GameObject groundObject)
     {
         var context = this.DefaultInputContext();
-        var input = context.GetObservable(0);
-        setupNormalShotStyle(input, launcher, cursorManager);
-        setupLongPressStyle(input, launcher, cursorManager);
+        var leftButton = context.GetObservable(0);
+        setupMouseClickFire(leftButton, launcher);
+        setupMousePressTrigger(leftButton, launcher);
+        setupMouseMove(groundObject, cursorManager);
     }
 }
