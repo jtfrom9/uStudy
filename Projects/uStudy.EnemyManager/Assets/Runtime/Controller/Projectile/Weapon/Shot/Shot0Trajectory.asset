@@ -16,6 +16,10 @@ MonoBehaviour:
   - name: 
     factor: 1
     type: 0
-    toY: 0
-    controls: []
+    toOffset:
+      type: 1
+      value: 0
+    controlPoints: []
     speedFactor: 1
+    acceleration: 0
+    adjustMaxAngle: 10

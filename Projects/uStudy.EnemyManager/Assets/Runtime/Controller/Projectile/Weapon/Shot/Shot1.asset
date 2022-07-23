@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: Shot1
   m_EditorClassIdentifier: 
-  endType: 0
   endEffectPrefab: {fileID: 0}
   type: 0
   chargable: 0
@@ -22,4 +21,4 @@ MonoBehaviour:
   shake: 0
   baseSpeed: 100
   range: 30
-  trajectory: {fileID: 11400000, guid: ff4a1f1a09b264c29814342e8ed3d32f, type: 2}
+  trajectory: {fileID: 11400000, guid: ac5a7cc8c52974f4abab6fbee695b21a, type: 2}

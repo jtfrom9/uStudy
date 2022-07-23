@@ -6067,8 +6067,8 @@ MonoBehaviour:
   configs:
   - {fileID: 11400000, guid: 09f9630b7e66447df839eed13bead2ee, type: 2}
   - {fileID: 11400000, guid: 8ad2d8cfeaf504911b281123842b8a50, type: 2}
-  - {fileID: 11400000, guid: 0901f092ca0de418185fb8afe4375f4a, type: 2}
-  - {fileID: 11400000, guid: 25687094086164fbc8cf9606fbac21be, type: 2}
+  - {fileID: 11400000, guid: 5c5dcbfea5e2f4c4681f8f9c5c2a604f, type: 2}
+  - {fileID: 11400000, guid: e933b279aa5f5411ca66fb326c732c32, type: 2}
   groundObject: {fileID: 1463524940}
 --- !u!4 &1780342149
 Transform:
