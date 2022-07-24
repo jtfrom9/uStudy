@@ -65,13 +65,17 @@ namespace Hedwig.Runtime
             }
         }
 
-        public void TriggerOff(ITransform start, ITransform target)
+        public void TriggerOff()
         {
             Debug.Log("EndFire");
             if (config.chargable)
             {
                 launcherManager.ShowTrajectory(false);
             }
+        }
+
+        public void Error()
+        {
         }
 
         public void Dispose()

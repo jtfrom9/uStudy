@@ -11,9 +11,9 @@ using VContainer;
 using VContainer.Unity;
 using UniRx;
 using UniRx.Triggers;
-using InputObservable;
 
 using Hedwig.Runtime;
+using Hedwig.Runtime.InputObservable;
 
 public class TowerAim : LifetimeScope
 {
@@ -23,10 +23,11 @@ public class TowerAim : LifetimeScope
     // Inject
     [SerializeField] Setting? setting;
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
-    [SerializeField] GameObject? groundObject;
+    [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
 
     [Inject] IEnemyManager? enemyManager;
-    [Inject] ICursorManager? cursorManager;
+    [Inject] IMouseOperation? mouseOperation;
+    [Inject] ICursorFactory? cursorFactory;
     [Inject] ILauncher? launcher;
 
     CompositeDisposable disposables = new CompositeDisposable();
@@ -36,7 +37,8 @@ public class TowerAim : LifetimeScope
         builder.RegisterInstance<Setting>(setting!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-        builder.Register<ICursorManager, SimpleCursorManager>(Lifetime.Singleton);
+        builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
+            .AsImplementedInterfaces();
         builder.Register<LauncherManager>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
     }
@@ -46,11 +48,11 @@ public class TowerAim : LifetimeScope
         if (enemyManager == null) return;
         enemyManager.Initialize();
 
-        if(cursorManager==null) return;
         if(launcher==null) return;
         launcher.Initialize();
 
-        if(groundObject==null) return;
+        if(cursorFactory==null) return;
+        if(mouseOperation==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
@@ -68,11 +70,7 @@ public class TowerAim : LifetimeScope
             showConfigInfo(config);
         }).AddTo(this);
 
-        setupMouse(cursorManager, launcher, groundObject);
-
-        (cursorManager as ICursorManager).OnCursorCreated.Subscribe(cursor => {
-            launcher.SetTarget(cursor);
-        }).AddTo(this);
+        setupMouse(mouseOperation, launcher, cursorFactory);
 
         configSelection.Select(configSelection.Index);
     }
@@ -114,54 +112,53 @@ Distance: {config.range}
         }).AddTo(this);
     }
 
-    void setupMouseClickFire(IInputObservable mbutton, ILauncher launcher)
+    void setupMouse(IMouseOperation mouseOperation, ILauncher launcher, ICursorFactory cursorFactory)
     {
-        mbutton.OnBegin.Subscribe(e =>
+        IFreeCursor? cursor = null;
+        mouseOperation.OnMove.Subscribe(e =>
         {
+            switch (e.type)
+            {
+                case MouseMoveEventType.Enter:
+                    if(cursor==null) {
+                        cursor = cursorFactory.CreateFreeCusor();
+                        cursor?.Move(e.position);
+                        launcher.SetTarget(cursor);
+                    }
+                    break;
+                case MouseMoveEventType.Over:
+                    cursor?.Move(e.position);
+                    break;
+                case MouseMoveEventType.Exit:
+                    if(cursor!=null) {
+                        cursor.Dispose();
+                        cursor = null;
+                    }
+                    break;
+            }
+        }).AddTo(this);
+
+        mouseOperation.OnLeftClick.Subscribe(_ => {
             if (launcher.CanFire.Value)
             {
                 launcher.Fire();
             }
             else
             {
-                Debug.LogWarning("recasting");
+                Debug.LogWarning("Cannot Fire Now");
             }
-        }).AddTo(disposables);
-    }
-
-    void setupMousePressTrigger(IInputObservable mbutton, ILauncher launcher)
-    {
-        mbutton.Keep(100, () => true).First().TakeUntil(mbutton.OnEnd)
-            .Repeat().Subscribe(e =>
-        {
-            launcher.TriggerOn();
-        }).AddTo(disposables);
-
-        mbutton.OnEnd.Subscribe(e =>
-        {
-            launcher.TriggerOff();
-        }).AddTo(disposables);
-    }
-
-    void setupMouseMove(GameObject groundObject, ICursorManager cursorManager)
-    {
-        groundObject.OnMouseOverAsObservable().Subscribe(_ =>
-        {
-            cursorManager.Move(Input.mousePosition);
         }).AddTo(this);
 
-        groundObject.OnMouseExitAsObservable().Subscribe(_ =>
+        mouseOperation.OnLeftTrigger.Subscribe(trigger =>
         {
-            cursorManager.Reset();
+            if (trigger)
+            {
+                launcher.TriggerOn();
+            }
+            else
+            {
+                launcher.TriggerOff();
+            }
         }).AddTo(this);
-    }
-
-    void setupMouse(ICursorManager cursorManager, ILauncher launcher, GameObject groundObject)
-    {
-        var context = this.DefaultInputContext();
-        var leftButton = context.GetObservable(0);
-        setupMouseClickFire(leftButton, launcher);
-        setupMousePressTrigger(leftButton, launcher);
-        setupMouseMove(groundObject, cursorManager);
     }
 }

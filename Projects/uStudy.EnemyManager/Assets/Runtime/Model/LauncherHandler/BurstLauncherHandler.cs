@@ -18,6 +18,10 @@ namespace Hedwig.Runtime
 
         public void Fire(ITransform start, ITransform target)
         {
+        }
+
+        public void TriggerOn(ITransform start, ITransform target)
+        {
             UniTask.Create(async () =>
             {
                 launcherManager.BeforeFire();
@@ -26,7 +30,8 @@ namespace Hedwig.Runtime
                     var projectile = projectileFactory.Create(
                         start.Position,
                         config);
-                    if(projectile==null) {
+                    if (projectile == null)
+                    {
                         Debug.LogError($"fail to create projectile");
                         break;
                     }
@@ -44,17 +49,17 @@ namespace Hedwig.Runtime
             }).Forget();
         }
 
-        public void TriggerOn(ITransform start, ITransform target)
+        public void TriggerOff()
         {
-            Debug.Log("StartFire");
-        }
-
-        public void TriggerOff(ITransform start, ITransform target)
-        {
-            Debug.Log("EndFire");
             cts.Cancel();
             cts.Dispose();
             cts = new CancellationTokenSource();
+        }
+
+        public void Error()
+        {
+            Debug.Log("BurstLauncherHandler.Error. raise TriggerOff");
+            TriggerOff();
         }
 
         public void Dispose()

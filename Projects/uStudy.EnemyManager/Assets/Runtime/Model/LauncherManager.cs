@@ -17,7 +17,8 @@ namespace Hedwig.Runtime
 
         bool initialized = false;
         bool recasting = false;
-        bool trigger = false;
+        bool triggerReq = false;
+        bool triggered = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
         Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
@@ -96,8 +97,9 @@ namespace Hedwig.Runtime
                         break;
                 }
             }
-            onConfigChanged.OnNext(config);
             setCanFire();
+            handleError();
+            onConfigChanged.OnNext(config);
         }
 
         void setTarget(IMobileObject? target)
@@ -109,6 +111,12 @@ namespace Hedwig.Runtime
             _target = target;
             trajectoryVisualizer?.SetEndTarget(target?.transform);
             setCanFire();
+            if(_target!=null) {
+                handleTriggerOn();
+            } else {
+                handleError();
+            }
+            handleError();
             onTargetChanged.OnNext(_target);
         }
 
@@ -127,6 +135,31 @@ namespace Hedwig.Runtime
             launcherHandler.Fire(launcherController.mazzle, _target.transform);
         }
 
+        void handleTriggerOn()
+        {
+            Debug.Log($"handleTrigerOn. {_target}, req:{triggerReq}");
+            if (_target == null)
+                return;
+            if (launcherHandler == null)
+                return;
+            if (triggerReq && canFire.Value)
+            {
+                launcherHandler.TriggerOn(launcherController.mazzle, _target.transform);
+                triggered = true;
+            }
+        }
+
+        void handleError()
+        {
+            Debug.Log($"handleError. error:{!canFire.Value}");
+            if (launcherHandler == null)
+                return;
+            if (!canFire.Value) 
+            {
+                launcherHandler.Error();
+            }
+        }
+
         void triggerOn()
         {
             if (!initialized)
@@ -135,26 +168,30 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
-            if (!canFire.Value)
+            if(triggerReq)
                 return;
-            if(trigger)
+            triggerReq = true;
+            if(!canFire.Value) {
                 return;
+            }
             launcherHandler.TriggerOn(launcherController.mazzle, _target.transform);
-            trigger = true;
+            triggered = true;
         }
 
         void triggerOff()
         {
             if (!initialized)
                 throw new InvalidConditionException("LauncherManager is not Initalized");
-            if (_target == null)
-                return;
             if (launcherHandler == null)
                 return;
-            if (!trigger)
+            if(!triggerReq)
                 return;
-            launcherHandler.TriggerOff(launcherController.mazzle,_target.transform);
-            trigger = false;
+            triggerReq = false;
+            if (triggered)
+            {
+                launcherHandler.TriggerOff();
+                triggered = false;
+            }
         }
 
         void onBeforeLaunched()
@@ -173,6 +210,7 @@ namespace Hedwig.Runtime
                     await stepRecast(_config.recastTime, 100, i);
                 }
                 changeRecastState(false);
+                handleTriggerOn();
             }).Forget();
         }
 

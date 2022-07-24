@@ -13,29 +13,41 @@ namespace Hedwig.Runtime
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
+        ITransform? _start = null;
+        ITransform? _target = null;
+
         public void Fire(ITransform start, ITransform target)
         {
-            launcherManager.ShowTrajectory(true);
         }
 
         public void TriggerOn(ITransform start, ITransform target)
         {
+            launcherManager.ShowTrajectory(true);
+            _start = start;
+            _target = target;
         }
 
-        public void TriggerOff(ITransform start, ITransform target)
+        public void TriggerOff()
         {
+            if(_start==null || _target==null)
+                return;
+
             launcherManager.BeforeFire();
             var projectile = projectileFactory.Create(
-                start.Position,
+                _start.Position,
                 config);
             if (projectile == null)
             {
                 Debug.LogError($"fiail to create projectile");
                 return;
             }
-            projectile?.Start(target);
+            projectile?.Start(_target);
             launcherManager.ShowTrajectory(false);
             launcherManager.AfterFire();
+        }
+
+        public void Error()
+        {
         }
 
         public void Dispose()

@@ -28,11 +28,4 @@ namespace Hedwig.Runtime
         ITargetCursor? CreateTargetCusor(ICharactor charactor);
         IFreeCursor? CreateFreeCusor();
     }
-
-    public interface ICursorManager
-    {
-        ISubject<IFreeCursor?> OnCursorCreated { get; }
-        void Move(Vector2 pos);
-        void Reset();
-    }
 }

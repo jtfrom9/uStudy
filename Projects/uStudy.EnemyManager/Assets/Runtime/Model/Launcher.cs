@@ -19,7 +19,8 @@ namespace Hedwig.Runtime
     {
         void Fire(ITransform start, ITransform target);
         void TriggerOn(ITransform start, ITransform target);
-        void TriggerOff(ITransform start, ITransform target);
+        void TriggerOff();
+        void Error();
     }
 
     public interface ILauncher : IDisposable
