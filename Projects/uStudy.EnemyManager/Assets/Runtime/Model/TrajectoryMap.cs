@@ -54,33 +54,10 @@ namespace Hedwig.Runtime
             return getPoint(toFactor, sectionMap);
         }
 
-        float speedPower(float factor, int pow) {
-            return sectionMap.baseSpeed * sectionMap.speedFactor * Mathf.Pow(factor, pow);
-        }
-
         public float GetAccelatedSpeed()
         {
             var factor = (float)index / (float)sectionMap.numLines;
-            int pow = 0;
-            switch (sectionMap.acceleration)
-            {
-                case Trajectory.AccelerationType.None:
-                default:
-                    break;
-                case Trajectory.AccelerationType.Linear:
-                    pow = 1;
-                    break;
-                case Trajectory.AccelerationType.Quad:
-                    pow = 2;
-                    break;
-                case Trajectory.AccelerationType.Cubic:
-                    pow = 3;
-                    break;
-                case Trajectory.AccelerationType.Quart:
-                    pow = 4;
-                    break;
-            }
-            return sectionMap.baseSpeed + speedPower(factor, pow);
+            return sectionMap.GetAccelatedSpeed(factor);
         }
 
         public (Vector3, Vector3) GetPoints() => (GetFromPoint(), GetToPoint());
@@ -105,8 +82,9 @@ namespace Hedwig.Runtime
 
     public class TrajectorySectionMap
     {
-        int index;
+        TrajectoryMap parent;
         Trajectory.Section section;
+        int index;
         List<TrajectoryLineMap> _lineMaps = new List<TrajectoryLineMap>();
         List<TrajectoryLineMap> _dynamicLineMaps = new List<TrajectoryLineMap>();
 
@@ -115,17 +93,44 @@ namespace Hedwig.Runtime
         public Vector3 baseEnd { get; private set; }
         public float minfactor { get; private set; }
         public float maxfactor { get; private set; }
-        public float baseSpeed { get; private set; }
         public List<Vector2> controlPoints { get => section.controlPoints; }
 
-        public float speedFactor { get => section.speedFactor; }
-        public Trajectory.AccelerationType acceleration { get => section.acceleration; }
-        public float factorRatio { get => maxfactor - minfactor; }
         public Vector3 disrection { get => (this.to - this.from).normalized; }
         public float distance { get => (this.to - this.from).magnitude; }
         public float adjustMaxAngle { get => section.adjustMaxAngle; }
         public int numLines { get => _lineMaps.Count; }
-        public float speed { get => baseSpeed + baseSpeed * speedFactor; }
+        public float speed { get => parent.baseSpeed + additionalSpeed; }
+        public float additionalSpeed { get => parent.baseSpeed * section.speedFactor; }
+
+        float speedPower(float factor, int pow)
+        {
+            return additionalSpeed * Mathf.Pow(factor, pow);
+        }
+
+        public float GetAccelatedSpeed(float factor)
+        {
+            int pow = 0;
+            switch (section.acceleration)
+            {
+                case Trajectory.AccelerationType.None:
+                default:
+                    break;
+                case Trajectory.AccelerationType.Linear:
+                    pow = 1;
+                    break;
+                case Trajectory.AccelerationType.Quad:
+                    pow = 2;
+                    break;
+                case Trajectory.AccelerationType.Cubic:
+                    pow = 3;
+                    break;
+                case Trajectory.AccelerationType.Quart:
+                    pow = 4;
+                    break;
+            }
+            return parent.baseSpeed + speedPower(factor, pow);
+        }
+
 
         public bool IsCurve { get => section.IsCurve; }
         public bool IsFirst { get => index == 0; }
@@ -140,12 +145,12 @@ namespace Hedwig.Runtime
         const float fixedTimestep = 0.02f;
 
         float getMinimumPointsPerFixedUpdate() {
-            return distance / (baseSpeed * (speedFactor + 1.0f) * fixedTimestep);
+            return distance / (speed * fixedTimestep);
         }
 
         void makeLines()
         {
-            if (IsCurve || IsHoming || acceleration != Trajectory.AccelerationType.None)
+            if (IsCurve || IsHoming || section.acceleration != Trajectory.AccelerationType.None)
             {
                 var pointCount = (int)getMinimumPointsPerFixedUpdate();
                 for (var i = 0; i < pointCount - 1; i++)
@@ -185,10 +190,12 @@ namespace Hedwig.Runtime
         }
 
         public TrajectorySectionMap(
+            TrajectoryMap parent,
             Trajectory.Section section,
             int index,
-            Vector3 start, Vector3 baseEnd, Vector3 end, float minfacator, float maxfactor, float baseSpeed)
+            Vector3 start, Vector3 baseEnd, Vector3 end, float minfacator, float maxfactor)
         {
+            this.parent = parent;
             this.index = index;
             this.section = section;
             this.from = start;
@@ -196,7 +203,6 @@ namespace Hedwig.Runtime
             this.to = end;
             this.minfactor = minfacator;
             this.maxfactor = maxfactor;
-            this.baseSpeed = baseSpeed;
             makeLines();
         }
     }
@@ -204,9 +210,11 @@ namespace Hedwig.Runtime
     public class TrajectoryMap
     {
         Trajectory _trajectory;
+        float _baseSpeed;
         List<TrajectorySectionMap> _sectionMaps = new List<TrajectorySectionMap>();
 
         public IList<TrajectorySectionMap> Sections { get => _sectionMaps; }
+        public float baseSpeed { get => _baseSpeed; }
 
         public IEnumerable<TrajectoryLineMap> Lines
         {
@@ -222,16 +230,16 @@ namespace Hedwig.Runtime
             }
         }
 
-        TrajectoryMap(in Trajectory trajectory, List<TrajectorySectionMap> selectionMaps)
+        TrajectoryMap(in Trajectory trajectory, float baseSpeed)
         {
             this._trajectory = trajectory;
-            this._sectionMaps = selectionMaps;
+            this._baseSpeed = baseSpeed;
         }
 
         public static TrajectoryMap Create(in Trajectory trajectory, Vector3 globalFrom, Vector3 globalTo, float baseSpeed)
         {
             Vector3 from = globalFrom;
-            var sectionMaps = new List<TrajectorySectionMap>();
+            var map = new TrajectoryMap(trajectory, baseSpeed);
 
             if (trajectory.sections.Count > 0)
             {
@@ -240,16 +248,16 @@ namespace Hedwig.Runtime
                     var (minfactor, maxfactor) = trajectory.GetSectionFactor(index);
                     var baseTo = Vector3.Lerp(globalFrom, globalTo, maxfactor);
                     var to = section.toOffset.ToPoint(baseTo.Y(from.y), baseTo);
-                    sectionMaps.Add(new TrajectorySectionMap(section, index,
+                    map.Sections.Add(new TrajectorySectionMap(map, section, index,
                         from, baseTo, to,
-                        minfactor, maxfactor,
-                        baseSpeed));
+                        minfactor, maxfactor));
                     from = to;
                 }
             }
             else
             {
-                sectionMaps.Add(new TrajectorySectionMap(
+                map.Sections.Add(new TrajectorySectionMap(
+                    map,
                     new Trajectory.Section()
                     {
                         factor = 1,
@@ -258,9 +266,9 @@ namespace Hedwig.Runtime
                             type = Trajectory.OffsetType.Base,
                             value = 0
                         }
-                    }, 0, globalFrom, globalTo, globalTo, 0f, 1f, baseSpeed));
+                    }, 0, globalFrom, globalTo, globalTo, 0f, 1f));
             }
-            return new TrajectoryMap(trajectory, sectionMaps);
+            return map;
         }
     }
 }
