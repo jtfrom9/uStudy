@@ -113,7 +113,7 @@ namespace Hedwig.Runtime
                     var section = sections[0];
                     await projectileController.Move(
                         toSpearPoint(globalFromPoint, globalToPoint, config.range),
-                        section.baseSpeed * section.speedFactor);
+                        section.speed);
                 }
                 else
                 {
@@ -123,7 +123,6 @@ namespace Hedwig.Runtime
                     foreach (var section in sections)
                     {
                         var exitLoop = false;
-                        Debug.Log($"{section}");
                         if (!section.IsHoming)
                         {
                             exitLoop = await curveMainLoop(section);

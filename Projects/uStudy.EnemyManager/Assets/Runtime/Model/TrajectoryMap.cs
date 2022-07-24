@@ -125,6 +125,7 @@ namespace Hedwig.Runtime
         public float distance { get => (this.to - this.from).magnitude; }
         public float adjustMaxAngle { get => section.adjustMaxAngle; }
         public int numLines { get => _lineMaps.Count; }
+        public float speed { get => baseSpeed + baseSpeed * speedFactor; }
 
         public bool IsCurve { get => section.IsCurve; }
         public bool IsFirst { get => index == 0; }
