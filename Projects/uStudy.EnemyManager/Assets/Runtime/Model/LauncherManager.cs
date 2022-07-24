@@ -137,7 +137,7 @@ namespace Hedwig.Runtime
 
         void handleTriggerOn()
         {
-            Debug.Log($"handleTrigerOn. {_target}, req:{triggerReq}");
+            // Debug.Log($"handleTrigerOn. {_target}, req:{triggerReq}");
             if (_target == null)
                 return;
             if (launcherHandler == null)
@@ -151,7 +151,7 @@ namespace Hedwig.Runtime
 
         void handleError()
         {
-            Debug.Log($"handleError. error:{!canFire.Value}");
+            // Debug.Log($"handleError. error:{!canFire.Value}");
             if (launcherHandler == null)
                 return;
             if (!canFire.Value) 

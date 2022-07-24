@@ -35,7 +35,8 @@ namespace Hedwig.Runtime
                         Debug.LogError($"fail to create projectile");
                         break;
                     }
-                    projectile?.Start(target);
+                    projectile.Start(target);
+                    launcherManager.OnFired(projectile);
                     try
                     {
                         await UniTask.Delay(100, cancellationToken: cts.Token);

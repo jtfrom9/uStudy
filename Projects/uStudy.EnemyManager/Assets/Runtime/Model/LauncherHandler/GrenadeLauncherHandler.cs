@@ -41,7 +41,8 @@ namespace Hedwig.Runtime
                 Debug.LogError($"fiail to create projectile");
                 return;
             }
-            projectile?.Start(_target);
+            projectile.Start(_target);
+            launcherManager.OnFired(projectile);
             launcherManager.ShowTrajectory(false);
             launcherManager.AfterFire();
         }
