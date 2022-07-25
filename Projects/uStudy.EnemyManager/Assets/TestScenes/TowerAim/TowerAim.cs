@@ -24,6 +24,7 @@ public class TowerAim : LifetimeScope
     [SerializeField] Setting? setting;
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
+    [SerializeField] Transform? cameraTarget;
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] IMouseOperation? mouseOperation;
@@ -53,6 +54,7 @@ public class TowerAim : LifetimeScope
 
         if(cursorFactory==null) return;
         if(mouseOperation==null) return;
+        if(cameraTarget==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
         enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
@@ -122,7 +124,10 @@ Distance: {config.range}
                 case MouseMoveEventType.Enter:
                     if(cursor==null) {
                         cursor = cursorFactory.CreateFreeCusor();
-                        cursor?.Move(e.position);
+                        if(cursor==null) {
+                            throw new InvalidConditionException("fail to create cursor");
+                        }
+                        cursor.Move(e.position);
                         launcher.SetTarget(cursor);
                     }
                     break;
@@ -160,5 +165,20 @@ Distance: {config.range}
                 launcher.TriggerOff();
             }
         }).AddTo(this);
+
+        if (this.cameraTarget != null)
+        {
+            var speed = 20f;
+            this.UpdateAsObservable().Where(_ => cursor != null).Subscribe(_ =>
+            {
+                var diff = cursor!.transform.Position - cameraTarget.position;
+                if(diff.magnitude < 0.1f) {
+                    cameraTarget.position = cursor!.transform.Position;
+                }else
+                {
+                    cameraTarget.position += diff.normalized * Time.deltaTime * speed;
+                }
+            }).AddTo(this);
+        }
     }
 }
