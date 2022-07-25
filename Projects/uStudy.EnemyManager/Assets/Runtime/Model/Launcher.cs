@@ -12,7 +12,7 @@ namespace Hedwig.Runtime
     public interface ILauncherController
     {
         ITransform mazzle { get; }
-        void Initialize(ILauncherManager launcherManager);
+        void Initialize(ILauncher launcher);
     }
 
     public interface ILauncherHandler : IDisposable
@@ -21,6 +21,14 @@ namespace Hedwig.Runtime
         void TriggerOn(ITransform start, ITransform target);
         void TriggerOff();
         void Error();
+    }
+
+    public interface ILauncherHandlerEvent
+    {
+        void OnShowTrajectory(bool v);
+        void OnBeforeFire();
+        void OnAfterFire();
+        void OnFired(IProjectile projectile);
     }
 
     public interface ILauncher : IDisposable
@@ -42,14 +50,5 @@ namespace Hedwig.Runtime
         ISubject<IMobileObject?> OnTargetChanged { get; }
         ISubject<float> OnRecastTimeUpdated { get; }
         ISubject<IProjectile> OnFired { get; }
-    }
-
-    public interface ILauncherManager
-    {
-        ILauncher launcher { get; }
-        void ShowTrajectory(bool v);
-        void BeforeFire();
-        void AfterFire();
-        void OnFired(IProjectile projectile);
     }
 }

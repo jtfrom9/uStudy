@@ -9,7 +9,7 @@ namespace Hedwig.Runtime
 {
     public class GrenadeLauncherHandler : ILauncherHandler
     {
-        ILauncherManager launcherManager;
+        ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
@@ -22,7 +22,7 @@ namespace Hedwig.Runtime
 
         public void TriggerOn(ITransform start, ITransform target)
         {
-            launcherManager.ShowTrajectory(true);
+            handlerEvent.OnShowTrajectory(true);
             _start = start;
             _target = target;
         }
@@ -32,7 +32,7 @@ namespace Hedwig.Runtime
             if(_start==null || _target==null)
                 return;
 
-            launcherManager.BeforeFire();
+            handlerEvent.OnBeforeFire();
             var projectile = projectileFactory.Create(
                 _start.Position,
                 config);
@@ -42,9 +42,9 @@ namespace Hedwig.Runtime
                 return;
             }
             projectile.Start(_target);
-            launcherManager.OnFired(projectile);
-            launcherManager.ShowTrajectory(false);
-            launcherManager.AfterFire();
+            handlerEvent.OnFired(projectile);
+            handlerEvent.OnShowTrajectory(false);
+            handlerEvent.OnAfterFire();
         }
 
         public void Error()
@@ -56,11 +56,11 @@ namespace Hedwig.Runtime
         }
 
         public GrenadeLauncherHandler(
-            ILauncherManager launcherManager,
+            ILauncherHandlerEvent handlerEvent,
             IProjectileFactory projectileFactory,
             ProjectileConfig config)
         {
-            this.launcherManager = launcherManager;
+            this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;
             this.config = config;
         }

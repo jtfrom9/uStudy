@@ -12,7 +12,7 @@ namespace Hedwig.Runtime
 {
     public class ShotLauncherHandler: ILauncherHandler
     {
-        ILauncherManager launcherManager;
+        ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
         ProjectileOption? option;
@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
         {
             UniTask.Create(async () =>
             {
-                launcherManager.BeforeFire();
+                handlerEvent.OnBeforeFire();
                 for (var i = 0; i < config.successionCount; i++)
                 {
                     var cts = new CancellationTokenSource();
@@ -37,7 +37,7 @@ namespace Hedwig.Runtime
                         cts.Cancel();
                     });
                     projectile.Start(target, in option);
-                    launcherManager.OnFired(projectile);
+                    handlerEvent.OnFired(projectile);
 
                     if (config.successionCount > 1)
                     {
@@ -52,7 +52,7 @@ namespace Hedwig.Runtime
                         }
                     }
                 }
-                launcherManager.AfterFire();
+                handlerEvent.OnAfterFire();
             }).Forget();
         }
 
@@ -61,7 +61,7 @@ namespace Hedwig.Runtime
             Debug.Log($"StartFire: {config.chargable}");
             if (config.chargable)
             {
-                launcherManager.ShowTrajectory(true);
+                handlerEvent.OnShowTrajectory(true);
             }
         }
 
@@ -70,7 +70,7 @@ namespace Hedwig.Runtime
             Debug.Log("EndFire");
             if (config.chargable)
             {
-                launcherManager.ShowTrajectory(false);
+                handlerEvent.OnShowTrajectory(false);
             }
         }
 
@@ -83,12 +83,12 @@ namespace Hedwig.Runtime
         }
 
         public ShotLauncherHandler(
-            ILauncherManager  launcherManager,
+            ILauncherHandlerEvent  handlerEvent,
             IProjectileFactory projectileFactory,
             ProjectileConfig config,
             ProjectileOption? option)
         {
-            this.launcherManager = launcherManager;
+            this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;
             this.config = config;
             this.option = option;

@@ -56,15 +56,15 @@ namespace Hedwig.Runtime
 
         ITransform ILauncherController.mazzle { get => _mazzleTranform; }
 
-         void ILauncherController.Initialize(ILauncherManager launcherManager)
+         void ILauncherController.Initialize(ILauncher launcher)
         {
-            launcherManager.launcher.CanFire.Subscribe(v => {
+            launcher.CanFire.Subscribe(v => {
                 if(mazzleMeshRenderer!=null) {
                     mazzleMeshRenderer.material.color = (!v) ? Color.red : Color.white;
                 }
             }).AddTo(this);
 
-            launcherManager.launcher.OnTargetChanged.Subscribe(v =>
+            launcher.OnTargetChanged.Subscribe(v =>
             {
                 this.clearHandler();
                 this.setupHandler(v);

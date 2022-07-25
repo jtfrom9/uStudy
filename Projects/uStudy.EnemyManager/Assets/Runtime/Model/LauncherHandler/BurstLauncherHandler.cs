@@ -10,7 +10,7 @@ namespace Hedwig.Runtime
 {
     public class BurstLauncherHandler : ILauncherHandler
     {
-        ILauncherManager launcherManager;
+        ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
         ProjectileConfig config;
 
@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
         {
             UniTask.Create(async () =>
             {
-                launcherManager.BeforeFire();
+                handlerEvent.OnBeforeFire();
                 while (true)
                 {
                     var projectile = projectileFactory.Create(
@@ -36,7 +36,7 @@ namespace Hedwig.Runtime
                         break;
                     }
                     projectile.Start(target);
-                    launcherManager.OnFired(projectile);
+                    handlerEvent.OnFired(projectile);
                     try
                     {
                         await UniTask.Delay(100, cancellationToken: cts.Token);
@@ -46,7 +46,7 @@ namespace Hedwig.Runtime
                         break;
                     }
                 }
-                launcherManager.AfterFire();
+                handlerEvent.OnAfterFire();
             }).Forget();
         }
 
@@ -68,11 +68,11 @@ namespace Hedwig.Runtime
         }
 
         public BurstLauncherHandler(
-            ILauncherManager launcherManager,
+            ILauncherHandlerEvent handlerEvent,
             IProjectileFactory projectileFactory,
             ProjectileConfig config)
         {
-            this.launcherManager = launcherManager;
+            this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;
             this.config = config;
         }

@@ -9,7 +9,7 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class LauncherManager : ILauncher, ILauncherManager
+    public class LauncherManager : ILauncher, ILauncherHandlerEvent
     {
         ProjectileConfig? _config;
         IMobileObject? _target;
@@ -233,11 +233,10 @@ namespace Hedwig.Runtime
         #endregion
 
         #region ILauncherManager
-        ILauncher ILauncherManager.launcher { get => this; }
-        void ILauncherManager.ShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
-        void ILauncherManager.BeforeFire() => onBeforeLaunched();
-        void ILauncherManager.AfterFire() => onAfterFire();
-        void ILauncherManager.OnFired(IProjectile projectile) => onFired.OnNext(projectile);
+        void ILauncherHandlerEvent.OnShowTrajectory(bool v) => trajectoryVisualizer?.Show(v);
+        void ILauncherHandlerEvent.OnBeforeFire() => onBeforeLaunched();
+        void ILauncherHandlerEvent.OnAfterFire() => onAfterFire();
+        void ILauncherHandlerEvent.OnFired(IProjectile projectile) => onFired.OnNext(projectile);
         #endregion
 
         #region IDisposable
