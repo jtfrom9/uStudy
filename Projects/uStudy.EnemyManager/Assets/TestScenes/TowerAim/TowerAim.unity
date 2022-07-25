@@ -308,7 +308,7 @@ MonoBehaviour:
     ModeOverride: 0
     LensShift: {x: 0, y: 0}
     GateFit: 2
-    m_SensorSize: {x: 0.98056996, y: 1}
+    m_SensorSize: {x: 1.7777778, y: 1}
   m_Transitions:
     m_BlendHint: 0
     m_InheritPosition: 0
@@ -1190,14 +1190,14 @@ MonoBehaviour:
   m_RecenterTarget: 0
   m_VerticalAxis:
     Value: 50
-    m_SpeedMode: 0
-    m_MaxSpeed: 30
+    m_SpeedMode: 1
+    m_MaxSpeed: 5
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse Y
     m_InputAxisValue: 0
     m_InvertInput: 1
-    m_MinValue: -10
+    m_MinValue: 20
     m_MaxValue: 90
     m_Wrap: 0
     m_Recentering:
@@ -1214,15 +1214,15 @@ MonoBehaviour:
     m_LegacyVelocityFilterStrength: -1
   m_HorizontalAxis:
     Value: 0
-    m_SpeedMode: 0
-    m_MaxSpeed: 100
+    m_SpeedMode: 1
+    m_MaxSpeed: 3
     m_AccelTime: 0.1
     m_DecelTime: 0.1
     m_InputAxisName: Mouse X
     m_InputAxisValue: 0
     m_InvertInput: 0
-    m_MinValue: -90
-    m_MaxValue: 90
+    m_MinValue: -70
+    m_MaxValue: 70
     m_Wrap: 0
     m_Recentering:
       m_enabled: 0
