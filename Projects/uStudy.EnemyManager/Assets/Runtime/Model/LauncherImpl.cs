@@ -9,7 +9,7 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class LauncherManager : ILauncher, ILauncherHandlerEvent
+    public class LauncherImpl : ILauncher, ILauncherHandlerEvent
     {
         ProjectileConfig? _config;
         IMobileObject? _target;
@@ -251,7 +251,7 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        public LauncherManager(IProjectileFactory projectileFactory, ILauncherController launcherController)
+        public LauncherImpl(IProjectileFactory projectileFactory, ILauncherController launcherController)
         {
             this.projectileFactory = projectileFactory;
             this.launcherController = launcherController;

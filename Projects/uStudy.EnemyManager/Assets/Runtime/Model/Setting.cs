@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
             if (projectileController != null)
             {
                 projectileController.Initialize(start);
-                projectile = new ProjectileManager(projectileController, config);
+                projectile = new ProjectileImpl(projectileController, config);
                 onCreated.OnNext(projectile);
             }
             return projectile;

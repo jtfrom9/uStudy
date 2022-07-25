@@ -39,7 +39,7 @@ public class TowerAim : LifetimeScope
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();
-        builder.Register<LauncherManager>(Lifetime.Singleton).AsImplementedInterfaces();
+        builder.Register<LauncherImpl>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
     }
 

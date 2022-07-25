@@ -38,7 +38,7 @@ namespace Hedwig.Runtime
             builder.RegisterInstance<Setting>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
-            builder.Register<ILauncher, LauncherManager>(Lifetime.Singleton);
+            builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);
             builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
         }
 

@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
 {
     using Projectile;
 
-    public class ProjectileManager : IProjectile
+    public class ProjectileImpl : IProjectile
     {
         IProjectileController projectileController;
         ProjectileConfig config;
@@ -201,7 +201,7 @@ namespace Hedwig.Runtime
             return $"Projectile({endReason})";
         }
 
-        public ProjectileManager(IProjectileController projectileController, ProjectileConfig config)
+        public ProjectileImpl(IProjectileController projectileController, ProjectileConfig config)
         {
             this.projectileController = projectileController;
             this.config = config;
