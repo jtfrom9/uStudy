@@ -42,7 +42,7 @@ namespace Hedwig.Runtime
         [SerializeField]
         Button? triggerButton;
 
-        [Inject] System.Func<Vector3, ILauncher>? launcherFactory;
+        [Inject] System.Func<(Vector3 pos, ProjectileConfig config), ILauncher>? launcherFactory;
         [Inject] IEnemyManager? enemyManager;
 
         List<(ILauncher launcher, IMobileObject target)> pairs = new List<(ILauncher launcher, IMobileObject target)>();
@@ -58,16 +58,27 @@ namespace Hedwig.Runtime
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
 
             if (launcherPrefab == null) { Debug.LogError("launcherPrefab is null"); return; }
-            builder.RegisterFactory<Vector3, ILauncher>((resolver) =>
+            builder.RegisterFactory<(Vector3 pos, ProjectileConfig config), ILauncher>((resolver) =>
             {
-                return (pos) =>
+                return (x) =>
                 {
-                    var go = Instantiate(launcherPrefab, pos, Quaternion.identity, root.transform);
+                    var go = Instantiate(launcherPrefab, x.pos, Quaternion.identity, root.transform);
                     var launcherController = go.GetComponent<ILauncherController>();
                     var projectileFactory = resolver.Resolve<IProjectileFactory>();
+                    addConfigInfo(go, x.config);
                     return new LauncherImpl(projectileFactory, launcherController);
                 };
             }, Lifetime.Transient);
+        }
+
+        void addConfigInfo(GameObject gameObject, ProjectileConfig config) {
+            var textGameObject = new GameObject("text");
+            textGameObject.transform.SetParent(gameObject.transform);
+            textGameObject.transform.localPosition = Vector3.forward * (-3);
+            var textMesh = textGameObject.AddComponent<TextMeshPro>();
+            textMesh.fontSize = 6;
+            textMesh.alignment = TextAlignmentOptions.Center;
+            textMesh.text = config.name;
         }
 
         void Start()
@@ -85,21 +96,23 @@ namespace Hedwig.Runtime
         (ILauncher, IMobileObject) createInstance(int index, ProjectileConfig config)
         {
             var root = GameObject.Find("Root");
-            if(root==null) {throw new InvalidConditionException("no root"); }
+            if (root == null) { throw new InvalidConditionException("no root"); }
             if (launcherFactory == null) { throw new InvalidConditionException("launcherFactory is null"); }
             var pos = new Vector3(index * 5, 0.5f, 0);
 
             if (targetPrefab == null) { throw new InvalidConditionException("targetprefab is null"); }
 
             var cube = Instantiate(targetPrefab, pos + Vector3.forward * 10, Quaternion.identity, root.transform);
-            if(cube==null) throw new InvalidConditionException("fail to instantiate target");
+            if (cube == null) throw new InvalidConditionException("fail to instantiate target");
             var target = cube.GetComponent<IEnemy>();
-            var launcher = launcherFactory.Invoke(pos);
+            var launcher = launcherFactory.Invoke((pos, config));
             launcher.Initialize();
             launcher.SetProjectileConfig(config, new ProjectileOption() { destroyAtEnd = false });
             launcher.SetTarget(target);
 
-            launcher.OnFired.Subscribe(projectile => {
+
+            launcher.OnFired.Subscribe(projectile =>
+            {
                 projectile.OnEnded.Subscribe(_ =>
                 {
                     if (projectile.trajectoryMap != null)
