@@ -208,11 +208,8 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IProjectileController
-
-        UniTask<bool> IProjectileController.Move(Vector3 destRelative, float duration) => move(destRelative, duration);
-
+        UniTask<bool> IProjectileController.Move(Vector3 to, float speed) => move(to, speed);
         UniTask IProjectileController.LastMove(float speed) => lastMove(speed);
-
         ISubject<Projectile.EventArg> IProjectileController.OnEvent { get => onEvent; }
 
         static int count = 0;

@@ -62,7 +62,7 @@ namespace Hedwig.Runtime
 
     public interface IProjectileController : IMobileObject
     {
-        UniTask<bool> Move(Vector3 destRelative, float duration);
+        UniTask<bool> Move(Vector3 to, float speed);
         UniTask LastMove(float speed);
         ISubject<Projectile.EventArg> OnEvent { get; }
 
