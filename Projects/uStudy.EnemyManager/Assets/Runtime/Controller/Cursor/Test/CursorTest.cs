@@ -19,7 +19,7 @@ namespace Hedwig.Runtime
     public class CursorTest : LifetimeScope
     {
         [SerializeField]
-        Setting? setting;
+        Factory? setting;
 
         [SerializeField]
         Button? goButton;
@@ -40,7 +40,7 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance<Setting>(setting!)
+            builder.RegisterInstance<Factory>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
         }

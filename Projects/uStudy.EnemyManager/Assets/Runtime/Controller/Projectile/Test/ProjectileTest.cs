@@ -19,7 +19,7 @@ namespace Hedwig.Runtime
     public class ProjectileTest : LifetimeScope
     {
         [SerializeField]
-        Setting? setting;
+        Factory? setting;
 
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
@@ -35,7 +35,7 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance<Setting>(setting!)
+            builder.RegisterInstance<Factory>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);

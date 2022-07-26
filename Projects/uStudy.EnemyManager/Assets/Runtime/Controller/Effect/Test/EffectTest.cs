@@ -14,7 +14,7 @@ using Hedwig.Runtime;
 public class EffectTest : LifetimeScope
 {
     [SerializeField]
-    Setting setting;
+    Factory setting;
 
     [SerializeField]
     List<GameObject> targets = new List<GameObject>();

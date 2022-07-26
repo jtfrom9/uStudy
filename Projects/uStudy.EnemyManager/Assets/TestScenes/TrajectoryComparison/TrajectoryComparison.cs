@@ -19,7 +19,7 @@ namespace Hedwig.Runtime
     public class TrajectoryComparison : LifetimeScope
     {
         [SerializeField]
-        Setting? setting;
+        Factory? setting;
 
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
@@ -53,7 +53,7 @@ namespace Hedwig.Runtime
             if (root == null) { throw new InvalidConditionException("no root"); }
 
             if (setting == null) { Debug.LogError("setting is null"); return; }
-            builder.RegisterInstance<Setting>(setting!)
+            builder.RegisterInstance<Factory>(setting!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
 
