@@ -574,6 +574,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1f24e3c5f98744a48ba8d996db0d3b3e, type: 2}
   - {fileID: 11400000, guid: c38789a74621d45a490f3f51989df448, type: 2}
   - {fileID: 11400000, guid: 670f88d8b93a44a65b2efdbfaa3d76fb, type: 2}
+  - {fileID: 11400000, guid: 0b90f6bb46ba5471bac623959808c14b, type: 2}
   launcherPrefab: {fileID: 5009377473899467902, guid: af9075afe3b0240ffb8b1be0422a5099, type: 3}
   targetPrefab: {fileID: 2489900876656539108, guid: 8e92bdc89cc064600a03877e9a4b006d, type: 3}
   distanceTextMesh: {fileID: 44337808}

@@ -121,6 +121,8 @@ namespace Hedwig.Runtime
 
         async UniTask<bool> move(Vector3 to, float speed)
         {
+            _transform.Raw.rotation = Quaternion.LookRotation(to - _transform.Position);
+
             var castEveryFrame = speed > castingEveryFrameSpeed;
             onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove)
             {

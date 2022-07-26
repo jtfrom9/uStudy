@@ -16,7 +16,8 @@ namespace Hedwig.Runtime
     [CreateAssetMenu(menuName = "Hedwig/Projectile", fileName = "Projectile")]
     public class ProjectileConfig : ScriptableObject
     {
-        [SerializeField] GameObject? endEffectPrefab;
+        [SerializeField, InterfaceType(typeof(IProjectileController))]
+        public Component? prefab;
 
         [SerializeField] public ProjectileType type;
         [SerializeField] public bool chargable;
