@@ -24,37 +24,42 @@ namespace Hedwig.Runtime
         }
     }
 
+    public interface IEnemyController: ICharactor
+    {
+        void Initialize(IEnemyControllerEvent controllerEvent);
+        void SetDestination(Vector3 pos);
+        void Stop();
+        void ResetPos(); // to bedeelted
+    }
+
+    public interface IEnemyControllerEvent
+    {
+        void OnAttacked(Vector3 position);
+    }
+
     public interface IEnemy : ICharactor, ISelectable
     {
         int Health { get; }
         void SetDestination(Vector3 pos);
         void Stop();
+
         void Attacked(int damage);
+        void ResetPos();
 
         ISubject<DamageEvent> OnAttacked { get; }
         ISubject<IEnemy> OnDeath { get; }
-
-        IEnemyControl GetControl();
     }
 
-    public interface IEnemyControl
+    public interface IEnemyControllerRepository
     {
-        void SetHealth(int v);
-        void SetDeffence(int v);
-        void SetSelector(ICursor? selector);
-        void ResetPos();
-    }
-
-    public interface IEnemyRepository
-    {
-        IEnemy[] GetEnemies();
+        IEnemyController[] GetEnemyController();
     }
 
     public interface IEnemyManager : IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }
         void Initialize();
-        void AddEnemy(IEnemy eney);
+        // void AddEnemy(IEnemy eney);
 
         ISubject<IEnemy> OnCreated { get; }
     }

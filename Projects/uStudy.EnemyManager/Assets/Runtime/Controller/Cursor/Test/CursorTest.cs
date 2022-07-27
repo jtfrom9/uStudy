@@ -138,7 +138,7 @@ namespace Hedwig.Runtime
             {
                 foreach (var enemy in enemyManager.Enemies)
                 {
-                    enemy.GetControl().ResetPos();
+                    enemy.ResetPos();
                 }
             }).AddTo(this);
 

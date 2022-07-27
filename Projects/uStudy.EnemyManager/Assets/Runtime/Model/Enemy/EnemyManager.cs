@@ -16,11 +16,11 @@ namespace Hedwig.Runtime
         Subject<IEnemy> onCreated = new Subject<IEnemy>();
 
         IEffectFactory effectFactory;
-        ICursorFactory selectorFactory;
+        ICursorFactory cursorFactory;
 
         void OnEnemyAttacked(DamageEvent e)
         {
-            Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}, {e.enemy.Health}");
+            Debug.Log($"onAttacked: {e.enemy}, {e.damage}, {e.enemy.Health}");
             // var effect = effectFactory.CreateDamageEffect(
             //     e.enemy.transform,
             //     e.damage);
@@ -50,23 +50,33 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        void addEnemy(IEnemy enemy) {
+        void addEnemy(IEnemyController enemyController)
+        {
+            var def = ScriptableObject.CreateInstance<EnemyDef>();
+            def.MaxHealth = 100;
+            def.Deffence = 0;
+            def.Attack = 0;
+            var cursor = cursorFactory.CreateTargetCusor(enemyController);
+            if (cursor == null)
+            {
+                return;
+            }
+            var enemy = new EnemyImpl(def, enemyController, cursor);
+            enemyController.Initialize(enemy);
+
             _enemies.Add(enemy);
+
             enemy.OnAttacked.Subscribe(OnEnemyAttacked).AddTo(disposable);
             enemy.OnDeath.Subscribe(OnEnemyDeath).AddTo(disposable);
-
-            var ctrl = enemy.GetControl();
-            ctrl.SetHealth(100);
-            ctrl.SetSelector(selectorFactory.CreateTargetCusor(enemy));
 
             onCreated.OnNext(enemy);
         }
 
         // ctor
-        public EnemyManager(IEffectFactory effectFactory, ICursorFactory selectorFactory)
+        public EnemyManager(IEffectFactory effectFactory, ICursorFactory cursorFactory)
         {
             this.effectFactory = effectFactory;
-            this.selectorFactory = selectorFactory;
+            this.cursorFactory = cursorFactory;
         }
 
         #region IEnemyManager
@@ -75,17 +85,15 @@ namespace Hedwig.Runtime
 
         void IEnemyManager.Initialize()
         {
-            var enemyRepository = Controller.Find<IEnemyRepository>();
+            var enemyRepository = Controller.Find<IEnemyControllerRepository>();
             if (enemyRepository != null)
             {
-                foreach (var enemy in enemyRepository.GetEnemies())
+                foreach (var enemyController in enemyRepository.GetEnemyController())
                 {
-                    addEnemy(enemy);
+                    addEnemy(enemyController);
                 }
             }
         }
-
-        void IEnemyManager.AddEnemy(IEnemy enemy) => addEnemy(enemy);
 
         ISubject<IEnemy> IEnemyManager.OnCreated { get => onCreated; }
         #endregion

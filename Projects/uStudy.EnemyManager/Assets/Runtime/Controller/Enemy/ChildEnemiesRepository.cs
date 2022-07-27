@@ -4,13 +4,13 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public class ChildEnemiesRepository : Controller, IEnemyRepository
+    public class ChildEnemiesRepository : Controller, IEnemyControllerRepository
     {
-        IEnemy[] IEnemyRepository.GetEnemies()
+        IEnemyController[] IEnemyControllerRepository.GetEnemyController()
         {
-            var list = new List<IEnemy>();
-            foreach(var enemy in transform.GetComponentsInChildren<SimpleEnemyController>()) {
-                list.Add(enemy);
+            var list = new List<IEnemyController>();
+            foreach(var enemyController in transform.GetComponentsInChildren<SimpleEnemyController>()) {
+                list.Add(enemyController);
             }
             return list.ToArray();
         }

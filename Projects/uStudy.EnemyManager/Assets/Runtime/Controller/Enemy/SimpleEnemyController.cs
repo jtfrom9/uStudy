@@ -9,8 +9,9 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : MonoBehaviour, IEnemy, IEnemyControl
+    public class SimpleEnemyController : MonoBehaviour, IEnemyController
     {
+        IEnemyControllerEvent? controllerEvent;
         ITransform _transform = new CachedTransform();
         NavMeshAgent? _agent;
 
@@ -18,9 +19,6 @@ namespace Hedwig.Runtime
         Quaternion initialRotation;
         Vector3 initialScale;
         float? _distanceToGround;
-
-        bool _selected;
-        int defence = 0;
 
         void Awake()
         {
@@ -30,6 +28,10 @@ namespace Hedwig.Runtime
 
             var mr = GetComponent<MeshRenderer>();
             mr.material.color = UnityEngine.Random.ColorHSV();
+        }
+
+        void OnDestroy()
+        {
         }
 
         void Start()
@@ -59,41 +61,16 @@ namespace Hedwig.Runtime
         //     }
         // }
 
-        void OnDestroy()
-        {
-            onAttcked.OnCompleted();
-            onDeath.OnCompleted();
-            selector?.Dispose();
-        }
-
         void onHit(IMobileObject target, Vector3 position)
         {
             Debug.Log($"[{target.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
-            onAttacked(10, position);
+            onAttacked(position);
         }
 
-        void onAttacked(int damage, Vector3 position)
+        void onAttacked(Vector3 position)
         {
-            var actualDamage = Math.Max(damage - defence, 0);
-            Health -= actualDamage;
-            if (Health > 0)
-            {
-                onAttcked.OnNext(new DamageEvent(this, damage, transform.position));
-            }
-            else
-            {
-                onDeath.OnNext(this);
-            }
+            controllerEvent?.OnAttacked(position);
         }
-
-        #region ISelectable
-        void ISelectable.Select(bool v)
-        {
-            selector?.Show(v);
-            _selected = v;
-        }
-        bool ISelectable.selected { get => _selected; }
-        #endregion
 
         #region IDisposable
         void IDisposable.Dispose()
@@ -118,56 +95,26 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        #region IEnemy
-        public int Health { get; private set; }
-        ICursor? selector;
-
-        void IEnemy.SetDestination(Vector3 pos)
+        #region IEnemyController
+        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent)
+        {
+            this.controllerEvent = controllerEvent;
+        }
+        void IEnemyController.SetDestination(Vector3 pos)
         {
             _agent!.isStopped = false;
             _agent?.SetDestination(pos);
         }
-
-        void IEnemy.Stop()
+        void IEnemyController.Stop()
         {
             _agent!.isStopped = true;
             _agent?.SetDestination(_transform.Position);
         }
-
-        Subject<DamageEvent> onAttcked = new Subject<DamageEvent>();
-        Subject<IEnemy> onDeath = new Subject<IEnemy>();
-
-        public ISubject<DamageEvent> OnAttacked { get => onAttcked; }
-        public ISubject<IEnemy> OnDeath { get => onDeath; }
-
-        void IEnemy.Attacked(int damage) => onAttacked(damage, transform.position);
-        IEnemyControl IEnemy.GetControl() => this;
-
-        #endregion
-
-        #region IEnemyControl
-        void IEnemyControl.SetHealth(int v) {
-            this.Health = v;
-        }
-        void IEnemyControl.SetDeffence(int v)
+        void IEnemyController.ResetPos()
         {
-            this.defence = v;
-        }
-        void IEnemyControl.SetSelector(ICursor? selector) {
-            this.selector = selector;
-        }
-        void IEnemyControl.ResetPos() {
             transform.SetPositionAndRotation(initialPosition, initialRotation);
             transform.localScale = initialScale;
         }
         #endregion
-
-        [ContextMenu("Select")]
-        void Context_Select() {
-            var selectable = (this as ISelectable);
-            if(selectable!=null) {
-                selectable.Select(!selectable.selected);
-            }
-        }
     }
 }

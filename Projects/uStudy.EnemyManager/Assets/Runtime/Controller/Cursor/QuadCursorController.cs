@@ -9,9 +9,18 @@ namespace Hedwig.Runtime
     public class QuadCursorController : MonoBehaviour, ITargetCursor, IFreeCursor
     {
         ITransform _transform = new CachedTransform();
+        bool _disposed = false;
 
         void Awake() {
             _transform.Initialize(transform);
+        }
+
+        void OnDestroy() {
+            _disposed = true;
+            if (DOTween.IsTweening(transform))
+            {
+                transform.DOKill();
+            }
         }
 
         ITransform IMobileObject.transform { get => _transform; }
@@ -51,10 +60,7 @@ namespace Hedwig.Runtime
 
         void IDisposable.Dispose()
         {
-            if (DOTween.IsTweening(transform))
-            {
-                transform.DOKill();
-            }
+            if (_disposed) return;
             Destroy(gameObject);
         }
     }
