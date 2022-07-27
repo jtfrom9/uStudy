@@ -1,5 +1,13 @@
 {
   "dependencies": {
+    "com.jtfrom9.test.package": {
+      "version": "file:com.jtfrom9.test.package",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {
+        "com.cysharp.unitask": "2.3.1"
+      }
+    },
     "com.unity.collab-proxy": {
       "version": "1.15.18",
       "depth": 0,

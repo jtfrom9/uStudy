@@ -1,0 +1,15 @@
+{
+  "displayName": "Test Package0",
+  "name": "com.jtfrom9.test.package",
+  "author": "jtfrom9",
+  "dependencies": {
+  },
+  "description": "test package",
+  "keywords": [
+    "unity"
+  ],
+  "license": "MIT",
+  "unity": "2021.3",
+  "unityRelease": "0f1",
+  "version": "0.0.1"
+}
