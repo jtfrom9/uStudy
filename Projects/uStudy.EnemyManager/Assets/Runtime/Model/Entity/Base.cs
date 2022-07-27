@@ -13,7 +13,6 @@ namespace Hedwig.Runtime
 
     public interface IMobileObject: IDisposable
     {
-        string Name { get; }
         ITransform transform { get; }
     }
 
@@ -30,7 +29,6 @@ namespace Hedwig.Runtime
             GameObject _gameObject;
             CachedTransform _transform;
 
-            string IMobileObject.Name { get => _gameObject.name; }
             ITransform IMobileObject.transform { get => _transform; }
 
             public void Dispose() { }

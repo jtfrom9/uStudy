@@ -70,7 +70,6 @@ public class EffectTest : LifetimeScope
     class DummyMobileObject : MonoBehaviour, IMobileObject
     {
         ITransform _transform = new CachedTransform();
-        string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
 
         public void Dispose() { Destroy(gameObject); }

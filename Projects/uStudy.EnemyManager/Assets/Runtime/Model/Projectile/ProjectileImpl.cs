@@ -167,7 +167,6 @@ namespace Hedwig.Runtime
         }
 
         #region IMobileObject
-        string IMobileObject.Name { get => projectileController.Name; }
         ITransform IMobileObject.transform { get => projectileController.transform; }
         #endregion
 

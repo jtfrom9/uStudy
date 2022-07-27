@@ -14,7 +14,6 @@ namespace Hedwig.Runtime
             _transform.Initialize(transform);
         }
 
-        string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
 
         void IFreeCursor.Initialize()

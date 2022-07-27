@@ -52,7 +52,7 @@ public class EnemyTest : LifetimeScope
             text.text = $"# of enemy: {enemyManager.Enemies.Count}";
             foreach (var e in enemyManager.Enemies)
             {
-                text.text += $"\n {e.Name}: {e.Health}";
+                text.text += $"\n {e}: {e.Health}";
             }
 
             if (enemyManager.Enemies.Count == 0)

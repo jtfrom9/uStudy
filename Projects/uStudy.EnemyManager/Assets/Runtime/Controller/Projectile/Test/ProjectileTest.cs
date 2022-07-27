@@ -213,7 +213,7 @@ namespace Hedwig.Runtime
 
             textMesh.text = @$"
 Weapon: {info.config}
-Target: {info.target?.Name ?? ""}
+Target: {info.target}
 {status}
             ";
         }

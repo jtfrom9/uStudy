@@ -42,7 +42,7 @@ namespace Hedwig.Runtime
 
         async void OnEnemyDeath(IEnemy enemy)
         {
-            Debug.Log($"onDeath: {enemy.Name}");
+            Debug.Log($"onDeath: {enemy}");
 
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
 

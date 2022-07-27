@@ -205,7 +205,6 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
-        string IMobileObject.Name { get => gameObject.name; }
         ITransform IMobileObject.transform { get => _transform; }
         #endregion
 
