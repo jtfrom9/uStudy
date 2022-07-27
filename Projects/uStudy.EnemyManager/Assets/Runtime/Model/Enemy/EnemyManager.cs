@@ -20,7 +20,7 @@ namespace Hedwig.Runtime
 
         void OnEnemyAttacked(DamageEvent e)
         {
-            // Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}");
+            Debug.Log($"onAttacked: {e.enemy.Name}, {e.damage}, {e.enemy.Health}");
             // var effect = effectFactory.CreateDamageEffect(
             //     e.enemy.transform,
             //     e.damage);

@@ -40,6 +40,7 @@ namespace Hedwig.Runtime
     public interface IEnemyControl
     {
         void SetHealth(int v);
+        void SetDeffence(int v);
         void SetSelector(ICursor? selector);
         void ResetPos();
     }

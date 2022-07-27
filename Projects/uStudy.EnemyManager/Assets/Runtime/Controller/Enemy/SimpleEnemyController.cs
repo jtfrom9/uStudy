@@ -20,6 +20,7 @@ namespace Hedwig.Runtime
         float? _distanceToGround;
 
         bool _selected;
+        int defence = 0;
 
         void Awake()
         {
@@ -68,8 +69,21 @@ namespace Hedwig.Runtime
         void onHit(IMobileObject target, Vector3 position)
         {
             Debug.Log($"[{target.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
-            var damage = new DamageEvent(this, 10, position);
-            this.onAttcked.OnNext(damage);
+            onAttacked(10, position);
+        }
+
+        void onAttacked(int damage, Vector3 position)
+        {
+            var actualDamage = Math.Max(damage - defence, 0);
+            Health -= actualDamage;
+            if (Health > 0)
+            {
+                onAttcked.OnNext(new DamageEvent(this, damage, transform.position));
+            }
+            else
+            {
+                onDeath.OnNext(this);
+            }
         }
 
         #region ISelectable
@@ -126,19 +140,7 @@ namespace Hedwig.Runtime
         public ISubject<DamageEvent> OnAttacked { get => onAttcked; }
         public ISubject<IEnemy> OnDeath { get => onDeath; }
 
-        void IEnemy.Attacked(int damage)
-        {
-            Health -= damage;
-            if (Health > 0)
-            {
-                onAttcked.OnNext(new DamageEvent(this, damage, _transform.Position));
-            }
-            else
-            {
-                onDeath.OnNext(this);
-            }
-        }
-
+        void IEnemy.Attacked(int damage) => onAttacked(damage, transform.position);
         IEnemyControl IEnemy.GetControl() => this;
 
         #endregion
@@ -146,6 +148,10 @@ namespace Hedwig.Runtime
         #region IEnemyControl
         void IEnemyControl.SetHealth(int v) {
             this.Health = v;
+        }
+        void IEnemyControl.SetDeffence(int v)
+        {
+            this.defence = v;
         }
         void IEnemyControl.SetSelector(ICursor? selector) {
             this.selector = selector;
