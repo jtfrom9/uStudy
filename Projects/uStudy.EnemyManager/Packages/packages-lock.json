@@ -8,11 +8,11 @@
       "url": "https://package.openupm.com"
     },
     "com.demigiant.dotween": {
-      "version": "1.2.632",
+      "version": "git+https://github.com/yoshida190/dotween.git#v1.2.632-upm",
       "depth": 0,
-      "source": "registry",
+      "source": "git",
       "dependencies": {},
-      "url": "https://package.openupm.com"
+      "hash": "9f1c3648a838f759c70b08bb66468532951e0ea7"
     },
     "com.jtfrom9.input-observable": {
       "version": "0.1.3",
