@@ -18,7 +18,7 @@ namespace Hedwig.Runtime
         public T Current { get => this.list[_index]; }
         public ISubject<T> OnCurrentChanged { get => onCurrentChanged; }
 
-        public void Select(int index)
+        public virtual void Select(int index)
         {
             if (list.Count > 0 && index >= 0 && index < list.Count)
             {

@@ -13,18 +13,17 @@ namespace Hedwig.Runtime
         public SelectiveSelection(IReadOnlyList<ISelectable> selectables) :
             base(selectables)
         {
+            Current.Select(true);
         }
 
-        public void SelectExclusive(int index)
+        public override void Select(int index)
         {
-            if (list.Count > 0 && index >= 0 && index < list.Count)
+            if (Index != index)
             {
-                foreach (var (s, i) in list.Select((s, i) => (s, i)))
-                {
-                    list[i].Select(index == i);
-                }
+                Current.Select(false);
             }
             base.Select(index);
+            Current.Select(true);
         }
     }
 }

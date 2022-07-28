@@ -55,7 +55,6 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
 
             var selection = new SelectiveSelection(enemyManager.Enemies);
-            selection.SelectExclusive(0);
 
             setupUI(selection, enemyManager);
 

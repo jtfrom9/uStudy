@@ -61,8 +61,6 @@ namespace Hedwig.Runtime
                 // launcher.ShowTrajectory(true);
             }).AddTo(this);
 
-            enemySelection.SelectExclusive(0);
-
             var configSelection = new Selection<ProjectileConfig>(projectileConfigs);
             configSelection.OnCurrentChanged.Subscribe(config =>
             {
