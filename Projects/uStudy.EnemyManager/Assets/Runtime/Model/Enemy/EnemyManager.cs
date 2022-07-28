@@ -15,6 +15,7 @@ namespace Hedwig.Runtime
         CompositeDisposable disposable = new CompositeDisposable();
         Subject<IEnemy> onCreated = new Subject<IEnemy>();
 
+        IEnemyManagerConfig? enemyManagerConfig;
         IEffectFactory effectFactory;
         ICursorFactory cursorFactory;
 
@@ -50,33 +51,34 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        void addEnemy(IEnemyController enemyController)
+        EnemyDef getDefaultDef()
         {
             var def = ScriptableObject.CreateInstance<EnemyDef>();
             def.MaxHealth = 100;
             def.Deffence = 0;
             def.Attack = 0;
+            return def;
+        }
+
+        EnemyDef getDef()
+        {
+            return enemyManagerConfig?.EnemyDef ?? getDefaultDef();
+        }
+
+        void addEnemy(IEnemyController enemyController)
+        {
+            var def = getDef();
             var cursor = cursorFactory.CreateTargetCusor(enemyController);
             if (cursor == null)
             {
                 return;
             }
             var enemy = new EnemyImpl(def, enemyController, cursor);
-            enemyController.Initialize(enemy);
-
             _enemies.Add(enemy);
 
             enemy.OnAttacked.Subscribe(OnEnemyAttacked).AddTo(disposable);
             enemy.OnDeath.Subscribe(OnEnemyDeath).AddTo(disposable);
-
             onCreated.OnNext(enemy);
-        }
-
-        // ctor
-        public EnemyManager(IEffectFactory effectFactory, ICursorFactory cursorFactory)
-        {
-            this.effectFactory = effectFactory;
-            this.cursorFactory = cursorFactory;
         }
 
         #region IEnemyManager
@@ -99,9 +101,18 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IDisposable
-        void IDisposable.Dispose() {
+        void IDisposable.Dispose()
+        {
             this.disposable.Dispose();
         }
         #endregion
+
+        // ctor
+        public EnemyManager(IEnemyManagerConfig? enemyManagerConfig, IEffectFactory effectFactory, ICursorFactory cursorFactory)
+        {
+            this.enemyManagerConfig = enemyManagerConfig;
+            this.effectFactory = effectFactory;
+            this.cursorFactory = cursorFactory;
+        }
     }
 }

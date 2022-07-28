@@ -89,6 +89,8 @@ namespace Hedwig.Runtime
             this.enemyController = enemyController;
             this.cursor = cursor;
             this.health = def.MaxHealth;
+
+            enemyController.Initialize(this);
         }
     }
 }

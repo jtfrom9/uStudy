@@ -55,6 +55,11 @@ namespace Hedwig.Runtime
         IEnemyController[] GetEnemyController();
     }
 
+    public interface IEnemyManagerConfig
+    {
+        EnemyDef? EnemyDef { get; }
+    }
+
     public interface IEnemyManager : IDisposable
     {
         IReadOnlyList<IEnemy> Enemies { get; }

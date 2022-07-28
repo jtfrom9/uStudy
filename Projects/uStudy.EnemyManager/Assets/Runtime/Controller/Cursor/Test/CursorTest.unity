@@ -2598,6 +2598,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -3463,6 +3464,7 @@ MonoBehaviour:
   autoInjectGameObjects:
   - {fileID: 1915988970}
   setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
+  enemyManagerConfig: {fileID: 11400000, guid: c5f90ba20c9a246d0a125bd56e1a4b84, type: 2}
   goButton: {fileID: 771307003}
   resetButton: {fileID: 476078515}
   dropdown: {fileID: 1033547967}

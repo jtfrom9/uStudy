@@ -22,6 +22,9 @@ namespace Hedwig.Runtime
         Factory? setting;
 
         [SerializeField]
+        EnemyManagerConfig? enemyManagerConfig;
+
+        [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
         [SerializeField]
@@ -36,6 +39,8 @@ namespace Hedwig.Runtime
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterInstance<Factory>(setting!)
+                .AsImplementedInterfaces();
+            builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
             builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);
@@ -60,6 +65,7 @@ namespace Hedwig.Runtime
                 launcher.SetTarget(selectable as IEnemy);
                 // launcher.ShowTrajectory(true);
             }).AddTo(this);
+            enemySelection.Select(0);
 
             var configSelection = new Selection<ProjectileConfig>(projectileConfigs);
             configSelection.OnCurrentChanged.Subscribe(config =>

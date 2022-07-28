@@ -22,6 +22,9 @@ namespace Hedwig.Runtime
         Factory? setting;
 
         [SerializeField]
+        EnemyManagerConfig? enemyManagerConfig;
+
+        [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
 
         [SerializeField]
@@ -54,6 +57,8 @@ namespace Hedwig.Runtime
 
             if (setting == null) { Debug.LogError("setting is null"); return; }
             builder.RegisterInstance<Factory>(setting!)
+                .AsImplementedInterfaces();
+            builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
 
@@ -104,7 +109,7 @@ namespace Hedwig.Runtime
 
             var cube = Instantiate(targetPrefab, pos + Vector3.forward * 10, Quaternion.identity, root.transform);
             if (cube == null) throw new InvalidConditionException("fail to instantiate target");
-            var target = cube.GetComponent<IEnemy>();
+            var target = cube.GetComponent<IEnemyController>();
             var launcher = launcherFactory.Invoke((pos, config));
             launcher.Initialize();
             launcher.SetProjectileConfig(config, new ProjectileOption() { destroyAtEnd = false });

@@ -20,6 +20,9 @@ public class EnemyTest : LifetimeScope
     Factory? setting;
 
     [SerializeField]
+    EnemyManagerConfig? enemyManagerConfig;
+
+    [SerializeField]
     Text? text;
 
     [Inject]
@@ -28,6 +31,8 @@ public class EnemyTest : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterInstance<Factory>(setting!)
+            .AsImplementedInterfaces();
+        builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
     }
