@@ -166,10 +166,6 @@ namespace Hedwig.Runtime
             onEnded.OnNext(Unit.Default);
         }
 
-        #region IMobileObject
-        ITransform IMobileObject.transform { get => projectileController.transform; }
-        #endregion
-
         #region IProjectile
         IProjectileController IProjectile.controller { get => projectileController; }
         EndReason IProjectile.EndReason { get => endReason; }
@@ -197,7 +193,7 @@ namespace Hedwig.Runtime
 
         public override string ToString()
         {
-            return $"Projectile({endReason})";
+            return $"{projectileController.name}.Impl({endReason})";
         }
 
         public ProjectileImpl(IProjectileController projectileController, ProjectileConfig config)

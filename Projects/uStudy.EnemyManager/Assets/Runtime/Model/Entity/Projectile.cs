@@ -62,11 +62,12 @@ namespace Hedwig.Runtime
 
     public interface IProjectileController : IMobileObject
     {
+        void Initialize(Vector3 initial);
+
+        string name { get; }
         UniTask<bool> Move(Vector3 to, float speed);
         UniTask LastMove(float speed);
         ISubject<Projectile.EventArg> OnEvent { get; }
-
-        void Initialize(Vector3 initial);
     }
 
     public struct ProjectileOption
@@ -76,7 +77,7 @@ namespace Hedwig.Runtime
         public bool DestroyAtEnd { get => destroyAtEnd ?? true; }
     }
 
-    public interface IProjectile : IMobileObject
+    public interface IProjectile: IDisposable
     {
         IProjectileController controller { get; }
         Projectile.EndReason EndReason { get; }

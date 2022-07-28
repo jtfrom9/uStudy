@@ -9,8 +9,9 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : MonoBehaviour, IEnemyController
+    public class SimpleEnemyController : MonoBehaviour, IEnemyController, ICharactor
     {
+        string _name = "";
         IEnemyControllerEvent? controllerEvent;
         ITransform _transform = new CachedTransform();
         NavMeshAgent? _agent;
@@ -84,7 +85,8 @@ namespace Hedwig.Runtime
         #endregion
 
         #region ICharactor
-        float ICharactor.distanceToGround {
+        float ICharactor.distanceToGround
+        {
             get {
                 if(_distanceToGround==null) {
                     var mr = GetComponent<MeshRenderer>();
@@ -96,10 +98,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IEnemyController
-        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent)
-        {
-            this.controllerEvent = controllerEvent;
-        }
+        string IEnemyController.name { get => _name; }
         void IEnemyController.SetDestination(Vector3 pos)
         {
             _agent!.isStopped = false;
@@ -114,6 +113,28 @@ namespace Hedwig.Runtime
         {
             transform.SetPositionAndRotation(initialPosition, initialRotation);
             transform.localScale = initialScale;
+        }
+        ICharactor IEnemyController.GetCharactor()
+        {
+            return this;
+        }
+
+        static int count = 0;
+        [RuntimeInitializeOnLoadMethod]
+        void _InitializeOnEnterPlayMode()
+        {
+            count = 0;
+        }
+
+        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent)
+        {
+            if (gameObject.name == "")
+            {
+                gameObject.name = $"SimpleEnemyController({count})";
+                count++;
+            }
+            _name = gameObject.name;
+            this.controllerEvent = controllerEvent;
         }
         #endregion
     }

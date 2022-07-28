@@ -20,6 +20,7 @@ namespace Hedwig.Runtime
         float castingEveryFrameSpeed = 50;
 
         ITransform _transform = new CachedTransform();
+        string _name = "";
         bool _disposed = false;
 
         bool _willHit = false;
@@ -209,6 +210,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IProjectileController
+        string IProjectileController.name { get => _name; }
         UniTask<bool> IProjectileController.Move(Vector3 to, float speed) => move(to, speed);
         UniTask IProjectileController.LastMove(float speed) => lastMove(speed);
         ISubject<Projectile.EventArg> IProjectileController.OnEvent { get => onEvent; }
@@ -223,8 +225,12 @@ namespace Hedwig.Runtime
 
         void IProjectileController.Initialize(Vector3 initial)
         {
-            gameObject.name = $"TweenProjectile({count})";
-            count++;
+            if (gameObject.name == "")
+            {
+                gameObject.name = $"TweenProjectile({count})";
+                count++;
+            }
+            _name = gameObject.name;
             transform.position = initial;
         }
         #endregion

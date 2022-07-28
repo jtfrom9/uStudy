@@ -14,14 +14,14 @@ namespace Hedwig.Runtime
         [SerializeField, InterfaceType(typeof(IFreeCursor))]
         Component? freeCursorPrefab;
 
-        ITargetCursor? ICursorFactory.CreateTargetCusor(ICharactor charactor)
+        ITargetCursor? ICursorFactory.CreateTargetCusor(IMobileObject target, ICharactor charactor)
         {
             if (targetCursorPrefab == null)
             {
                 return null;
             }
             var cursor = Instantiate(targetCursorPrefab) as ITargetCursor;
-            cursor?.Initialize(charactor, charactor.distanceToGround);
+            cursor?.Initialize(target, charactor.distanceToGround);
             return cursor;
         }
 

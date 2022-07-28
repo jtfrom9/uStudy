@@ -24,11 +24,15 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IEnemyController: ICharactor
+    public interface IEnemyController: IMobileObject
     {
         void Initialize(IEnemyControllerEvent controllerEvent);
+
+        string name { get; }
         void SetDestination(Vector3 pos);
         void Stop();
+        ICharactor GetCharactor();
+
         void ResetPos(); // to bedeelted
     }
 
@@ -37,11 +41,13 @@ namespace Hedwig.Runtime
         void OnAttacked(Vector3 position);
     }
 
-    public interface IEnemy : ICharactor, ISelectable
+    public interface IEnemy : IDisposable
     {
         int Health { get; }
         void SetDestination(Vector3 pos);
         void Stop();
+
+        IEnemyController controller { get; }
 
         void Attacked(int damage);
         void ResetPos();

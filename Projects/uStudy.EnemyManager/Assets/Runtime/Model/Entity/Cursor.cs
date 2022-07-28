@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
 
     public interface ICursorFactory
     {
-        ITargetCursor? CreateTargetCusor(ICharactor charactor);
+        ITargetCursor? CreateTargetCusor(IMobileObject target, ICharactor charactor);
         IFreeCursor? CreateFreeCusor();
     }
 }

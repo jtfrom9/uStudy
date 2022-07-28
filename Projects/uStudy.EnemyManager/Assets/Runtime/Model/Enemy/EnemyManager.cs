@@ -28,10 +28,10 @@ namespace Hedwig.Runtime
             // effect.Play().Forget();
             var effects = new IEffect?[] {
                     effectFactory.CreateDamageEffect(
-                        e.enemy,
+                        e.enemy.controller,
                         e.damage),
                     effectFactory.CreateHitEffect(
-                        e.enemy,
+                        e.enemy.controller,
                         e.position,
                         Vector3.zero)
                 };
@@ -68,7 +68,7 @@ namespace Hedwig.Runtime
         void addEnemy(IEnemyController enemyController)
         {
             var def = getDef();
-            var cursor = cursorFactory.CreateTargetCusor(enemyController);
+            var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetCharactor());
             if (cursor == null)
             {
                 return;

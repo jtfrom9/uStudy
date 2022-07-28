@@ -59,11 +59,14 @@ namespace Hedwig.Runtime
             setupDebug(projectileFactory);
             setupUI(textMesh, launcher);
 
-            var enemySelection = new SelectiveSelection(enemyManager.Enemies);
-            enemySelection.OnCurrentChanged.Subscribe(selectable =>
+            var enemySelection = new Selection<IEnemy>(enemyManager.Enemies);
+            enemySelection.OnPrevChanged.Subscribe(enemy => {
+                (enemy as ISelectable)?.Select(false);
+            }).AddTo(this);
+            enemySelection.OnCurrentChanged.Subscribe(enemy =>
             {
-                launcher.SetTarget(selectable as IEnemy);
-                // launcher.ShowTrajectory(true);
+                (enemy as ISelectable)?.Select(true);
+                launcher.SetTarget(enemy.controller);
             }).AddTo(this);
             enemySelection.Select(0);
 
@@ -99,7 +102,7 @@ namespace Hedwig.Runtime
             launcher?.Dispose();
         }
 
-        void _update(ILauncher launcher, IEnemy enemy, SelectiveSelection enemySelection, Selection<ProjectileConfig> configSelection)
+        void _update(ILauncher launcher, IEnemy enemy, Selection<IEnemy> enemySelection, Selection<ProjectileConfig> configSelection)
         {
             if(Input.GetKeyDown(KeyCode.RightArrow))
             {
@@ -143,7 +146,7 @@ namespace Hedwig.Runtime
                 projectile.OnEnded.Subscribe(_ =>
                 {
                     stopwatch.Stop();
-                    Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Ended @({projectile.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
+                    Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Ended @({projectile.controller.transform.Position}, elapsed:{stopwatch.ElapsedMilliseconds}ms");
                 }).AddTo(this);
 
                 projectile.OnDestroy.Subscribe(_ =>
@@ -154,25 +157,26 @@ namespace Hedwig.Runtime
 
                 projectile.controller.OnEvent.Subscribe(e => {
                     var lateCount = (willHitFrame == 0) ? "-" : (Time.frameCount - willHitFrame).ToString();
+                    var transform = projectile.controller.transform;
                     switch(e.type) {
                         case Projectile.EventType.BeforeMove:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{projectile.transform.Position} to {e.to}");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeMove @{transform.Position} to {e.to}");
                             break;
                         case Projectile.EventType.AfterMove:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterMove @{projectile.transform.Position} (late:{lateCount})");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterMove @{transform.Position} (late:{lateCount})");
                             break;
                         case Projectile.EventType.BeforeLastMove:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeLastMove @{projectile.transform.Position} -> {e.willHit!.Value.point} (late:{lateCount})");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} BeforeLastMove @{transform.Position} -> {e.willHit!.Value.point} (late:{lateCount})");
                             break;
                         case Projectile.EventType.AfterLastMove:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterLastMove @{projectile.transform.Position} (late:{lateCount})");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} AfterLastMove @{transform.Position} (late:{lateCount})");
                             break;
                         case Projectile.EventType.WillHit:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} WillHit @{projectile.transform.Position} ray: {e.ray}, maxDist: {e.maxDistance!.Value} point: {e.willHit!.Value.point} distance: {e.willHit!.Value.distance}");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} WillHit @{transform.Position} ray: {e.ray}, maxDist: {e.maxDistance!.Value} point: {e.willHit!.Value.point} distance: {e.willHit!.Value.distance}");
                             willHitFrame = Time.frameCount;
                             break;
                         case Projectile.EventType.Trigger:
-                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Trigger with <{e.collider!.gameObject.name}> @{projectile.transform.Position} (late:{lateCount})");
+                            Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Trigger with <{e.collider!.gameObject.name}> @{transform.Position} (late:{lateCount})");
                             break;
                         case Projectile.EventType.OnKill:
                             Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} OnKill (late:{lateCount})");
@@ -186,7 +190,7 @@ namespace Hedwig.Runtime
                     }
                 }).AddTo(this);
 
-                projectile.transform.OnPositionChanged.Subscribe(pos => {
+                projectile.controller.transform.OnPositionChanged.Subscribe(pos => {
                     if (pos.z > 1)
                     {
                         Debug.LogWarning($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} {pos}");

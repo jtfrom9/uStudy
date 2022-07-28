@@ -6,7 +6,7 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class EnemyImpl : IEnemy, IEnemyControllerEvent
+    public class EnemyImpl : IEnemy, IEnemyControllerEvent, ISelectable
     {
         EnemyDef _def;
         IEnemyController enemyController;
@@ -56,18 +56,12 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        #region IMobileObject
-        ITransform IMobileObject.transform { get => enemyController.transform; }
-        #endregion
-
-        #region ICharactor
-        float ICharactor.distanceToGround { get => enemyController.distanceToGround; }
-        #endregion
-
         #region IEnemy
         public int Health { get => health; }
         public void SetDestination(Vector3 pos) => enemyController.SetDestination(pos);
         public void Stop() => enemyController.Stop();
+
+        public IEnemyController controller { get => enemyController; }
 
         void IEnemy.Attacked(int damage) {
             _onAttacked(new DamageEvent()
@@ -82,6 +76,11 @@ namespace Hedwig.Runtime
         public ISubject<DamageEvent> OnAttacked => onAttacked;
         public ISubject<IEnemy> OnDeath => onDeath;
         #endregion
+
+        public override string ToString()
+        {
+            return $"{controller.name}.Impl";
+        }
 
         public EnemyImpl(EnemyDef def, IEnemyController enemyController, ICursor cursor)
         {

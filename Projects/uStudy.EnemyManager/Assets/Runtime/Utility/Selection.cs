@@ -13,15 +13,18 @@ namespace Hedwig.Runtime
         protected IReadOnlyList<T> list;
         protected int _index = -1;
         protected readonly ISubject<T> onCurrentChanged = new Subject<T>();
+        protected readonly ISubject<T> onPrevChanged = new Subject<T>();
 
         public int Index { get => _index; }
         public T Current { get => this.list[_index]; }
         public ISubject<T> OnCurrentChanged { get => onCurrentChanged; }
+        public ISubject<T> OnPrevChanged{ get => onPrevChanged; }
 
-        public virtual void Select(int index)
+        public void Select(int index)
         {
             if (list.Count > 0 && index >= 0 && index < list.Count)
             {
+                onPrevChanged.OnNext(Current);
                 _index = index;
                 onCurrentChanged.OnNext(Current);
             }

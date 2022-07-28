@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -59,7 +60,10 @@ namespace Hedwig.Runtime
             }
             enemyManager.Initialize();
 
-            var selection = new SelectiveSelection(enemyManager.Enemies);
+            // var selection = new SelectiveSelection(enemyManager.Enemies.Select(e => e as ISelectable));
+            var selection = new Selection<IEnemy>(enemyManager.Enemies);
+            selection.OnPrevChanged.Subscribe(e => { (e as ISelectable)?.Select(false); }).AddTo(this);
+            selection.OnCurrentChanged.Subscribe(e => { (e as ISelectable)?.Select(true); }).AddTo(this);
 
             setupUI(selection, enemyManager);
 
@@ -81,20 +85,20 @@ namespace Hedwig.Runtime
 
             if (towerView)
             {
-                Camera.main.MoveWithLookAt(tower, enemy.transform.Position, 1);
+                Camera.main.MoveWithLookAt(tower, enemy.controller.transform.Position, 1);
             }
             else
             {
                 if (birdView)
                 {
-                    Camera.main.Tracking(enemy.transform,
+                    Camera.main.Tracking(enemy.controller.transform,
                         new Vector3(0, 10, -3),
                         new Vector3(80, 0, 0),
                         1);
                 }
                 else
                 {
-                    Camera.main.Tracking(enemy.transform,
+                    Camera.main.Tracking(enemy.controller.transform,
                         new Vector3(0, 3f, -3),
                         new Vector3(30, 0, 0),
                         1);
@@ -106,19 +110,19 @@ namespace Hedwig.Runtime
         bool birdView { get => dropdown!.options[dropdown.value].text == "Bird"; }
         bool towerView { get => dropdown!.options[dropdown.value].text == "Tower"; }
 
-        void selectNext(SelectiveSelection selection, IEnemyManager enemyManager)
+        void selectNext(Selection<IEnemy> selection, IEnemyManager enemyManager)
         {
             selection.Next();
-            if(tracking) trackCam(selection.Current);
+            if(tracking) trackCam(selection.Current as ISelectable);
         }
 
-        void selectPrev(SelectiveSelection selection, IEnemyManager enemyManager)
+        void selectPrev(Selection<IEnemy> selection, IEnemyManager enemyManager)
         {
             selection.Prev();
-            if (tracking) trackCam(selection.Current);
+            if (tracking) trackCam(selection.Current as ISelectable);
         }
 
-        void setupUI(SelectiveSelection selection, IEnemyManager enemyManager)
+        void setupUI(Selection<IEnemy> selection, IEnemyManager enemyManager)
         {
             bool go = false;
             var tmp = goButton!.GetComponentInChildren<TextMeshProUGUI>();
@@ -159,7 +163,7 @@ namespace Hedwig.Runtime
                 Debug.Log(tracking);
                 if (tracking)
                 {
-                    trackCam(selection.Current);
+                    trackCam(selection.Current as ISelectable);
                 }
                 else
                 {
@@ -168,7 +172,7 @@ namespace Hedwig.Runtime
             }).AddTo(this);
         }
 
-        void shot(SelectiveSelection selection)
+        void shot(Selection<IEnemy> selection)
         {
             if (!towerView) return;
             if (bulletPrefab == null) return;
@@ -178,13 +182,13 @@ namespace Hedwig.Runtime
             var go = Instantiate(bulletPrefab);
             go.transform.position = tower;
 
-            go.transform.DOMove(e.transform.Position, 3).OnComplete(() =>
+            go.transform.DOMove(e.controller.transform.Position, 3).OnComplete(() =>
             {
                 Destroy(go);
             });
 
             var start = go.transform.position;
-            var end = e.transform.Position;
+            var end = e.controller.transform.Position;
             var dir = end - start;
             Debug.Log(dir.magnitude);
 
@@ -194,15 +198,15 @@ namespace Hedwig.Runtime
             }, 3, PathType.CatmullRom).SetEase(Ease.InQuart);
         }
 
-        void aim(SelectiveSelection selection)
+        void aim(Selection<IEnemy> selection)
         {
             if (!towerView) return;
             var e = selection.Current as IEnemy;
             if (e == null) return;
-            Debug.DrawLine(tower, e.transform.Position, Color.red, 100);
+            Debug.DrawLine(tower, e.controller.transform.Position, Color.red, 100);
         }
 
-        void update(SelectiveSelection selection, IEnemyManager enemyManager)
+        void update(Selection<IEnemy> selection, IEnemyManager enemyManager)
         {
             if (Input.GetKeyDown(KeyCode.RightArrow))
             {
