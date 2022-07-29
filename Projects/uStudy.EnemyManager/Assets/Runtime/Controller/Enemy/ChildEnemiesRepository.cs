@@ -9,7 +9,7 @@ namespace Hedwig.Runtime
         IEnemyController[] IEnemyControllerRepository.GetEnemyController()
         {
             var list = new List<IEnemyController>();
-            foreach(var enemyController in transform.GetComponentsInChildren<SimpleEnemyController>()) {
+            foreach(var enemyController in transform.GetControllersInChildren<IEnemyController>()) {
                 list.Add(enemyController);
             }
             return list.ToArray();

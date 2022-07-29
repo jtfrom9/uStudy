@@ -1,3 +1,4 @@
+using System.Linq;
 using UnityEngine;
 
 namespace Hedwig.Runtime
@@ -13,6 +14,17 @@ namespace Hedwig.Runtime
                     return _obj as T;
             }
             return null;
+        }
+    }
+
+    public static class ControllerTransformExtension
+    {
+        public static T[] GetControllersInChildren<T>(this Transform transform) where T : class
+        {
+            return transform.GetComponentsInChildren<Controller>()
+                .Select(controller => controller as T)
+                .Where(controller => controller != null)
+                .ToArray();
         }
     }
 }

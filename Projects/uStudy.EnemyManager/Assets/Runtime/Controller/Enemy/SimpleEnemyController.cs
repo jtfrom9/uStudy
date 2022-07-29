@@ -9,7 +9,7 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : MonoBehaviour, IEnemyController, ICharactor
+    public class SimpleEnemyController : Controller, IEnemyController, ICharactor
     {
         string _name = "";
         IEnemyControllerEvent? controllerEvent;
