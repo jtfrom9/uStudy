@@ -226,10 +226,10 @@ namespace Hedwig.Runtime
         void ILauncher.TriggerOn() => triggerOn();
         void ILauncher.TriggerOff() => triggerOff();
 
-        ISubject<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
-        ISubject<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
-        ISubject<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
-        ISubject<IProjectile> ILauncher.OnFired { get => onFired; }
+        IObservable<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
+        IObservable<IMobileObject?> ILauncher.OnTargetChanged { get => onTargetChanged; }
+        IObservable<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
+        IObservable<IProjectile> ILauncher.OnFired { get => onFired; }
         #endregion
 
         #region ILauncherManager

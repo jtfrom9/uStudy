@@ -1,7 +1,6 @@
 #nullable enable
 
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
@@ -122,11 +121,11 @@ namespace Hedwig.Runtime.InputObservable
         }
 
         #region IMouseOperation
-        ISubject<Unit> IMouseOperation.OnLeftClick { get => onLeftClick; }
-        ISubject<bool> IMouseOperation.OnLeftTrigger { get => onLeftTrigger; }
-        ISubject<Unit> IMouseOperation.OnRightClick { get => onRightClick; }
-        ISubject<bool> IMouseOperation.OnRightTrigger { get => onRightTrigger; }
-        ISubject<MouseMoveEvent> IMouseOperation.OnMove { get => onMove; }
+        IObservable<Unit> IMouseOperation.OnLeftClick { get => onLeftClick; }
+        IObservable<bool> IMouseOperation.OnLeftTrigger { get => onLeftTrigger; }
+        IObservable<Unit> IMouseOperation.OnRightClick { get => onRightClick; }
+        IObservable<bool> IMouseOperation.OnRightTrigger { get => onRightTrigger; }
+        IObservable<MouseMoveEvent> IMouseOperation.OnMove { get => onMove; }
         #endregion
     }
 }

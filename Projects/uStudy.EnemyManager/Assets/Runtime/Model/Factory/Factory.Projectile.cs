@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using UnityEngine;
 using UniRx;
 
@@ -14,7 +15,7 @@ namespace Hedwig.Runtime
 
         Subject<IProjectile> onCreated = new Subject<IProjectile>();
 
-        ISubject<IProjectile> IProjectileFactory.OnCreated { get => onCreated; }
+        IObservable<IProjectile> IProjectileFactory.OnCreated { get => onCreated; }
 
         private IProjectileController? createController(ProjectileConfig config)
         {

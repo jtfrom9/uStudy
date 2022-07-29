@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,8 +18,8 @@ namespace Hedwig.Runtime
 
         public int Index { get => _index; }
         public T Current { get => this.list[_index]; }
-        public ISubject<T> OnCurrentChanged { get => onCurrentChanged; }
-        public ISubject<T> OnPrevChanged{ get => onPrevChanged; }
+        public IObservable<T> OnCurrentChanged { get => onCurrentChanged; }
+        public IObservable<T> OnPrevChanged{ get => onPrevChanged; }
 
         public void Select(int index)
         {

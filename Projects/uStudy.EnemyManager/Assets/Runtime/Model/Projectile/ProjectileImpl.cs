@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
@@ -170,9 +171,9 @@ namespace Hedwig.Runtime
         IProjectileController IProjectile.controller { get => projectileController; }
         EndReason IProjectile.EndReason { get => endReason; }
 
-        ISubject<Unit> IProjectile.OnStarted { get => onStarted; }
-        ISubject<Unit> IProjectile.OnEnded { get => onEnded; }
-        ISubject<Unit> IProjectile.OnDestroy { get => onDestroy; }
+        IObservable<Unit> IProjectile.OnStarted { get => onStarted; }
+        IObservable<Unit> IProjectile.OnEnded { get => onEnded; }
+        IObservable<Unit> IProjectile.OnDestroy { get => onDestroy; }
         TrajectoryMap? IProjectile.trajectoryMap { get => map; }
 
         void IProjectile.Start(ITransform target, in ProjectileOption? option)

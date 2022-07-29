@@ -213,7 +213,7 @@ namespace Hedwig.Runtime
         string IProjectileController.name { get => _name; }
         UniTask<bool> IProjectileController.Move(Vector3 to, float speed) => move(to, speed);
         UniTask IProjectileController.LastMove(float speed) => lastMove(speed);
-        ISubject<Projectile.EventArg> IProjectileController.OnEvent { get => onEvent; }
+        IObservable<Projectile.EventArg> IProjectileController.OnEvent { get => onEvent; }
 
         static int count = 0;
 

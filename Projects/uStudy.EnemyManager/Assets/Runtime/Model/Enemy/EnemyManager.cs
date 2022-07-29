@@ -97,7 +97,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        ISubject<IEnemy> IEnemyManager.OnCreated { get => onCreated; }
+        IObservable<IEnemy> IEnemyManager.OnCreated { get => onCreated; }
         #endregion
 
         #region IDisposable

@@ -73,8 +73,8 @@ namespace Hedwig.Runtime
         }
         void IEnemy.ResetPos() => enemyController.ResetPos();
 
-        public ISubject<DamageEvent> OnAttacked => onAttacked;
-        public ISubject<IEnemy> OnDeath => onDeath;
+        public IObservable<DamageEvent> OnAttacked => onAttacked;
+        public IObservable<IEnemy> OnDeath => onDeath;
         #endregion
 
         public override string ToString()

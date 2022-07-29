@@ -52,8 +52,8 @@ namespace Hedwig.Runtime
         void Attacked(int damage);
         void ResetPos();
 
-        ISubject<DamageEvent> OnAttacked { get; }
-        ISubject<IEnemy> OnDeath { get; }
+        IObservable<DamageEvent> OnAttacked { get; }
+        IObservable<IEnemy> OnDeath { get; }
     }
 
     public interface IEnemyControllerRepository
@@ -72,7 +72,7 @@ namespace Hedwig.Runtime
         void Initialize();
         // void AddEnemy(IEnemy eney);
 
-        ISubject<IEnemy> OnCreated { get; }
+        IObservable<IEnemy> OnCreated { get; }
     }
 
     public static class EnemyManagerExtension

@@ -16,8 +16,8 @@ namespace Hedwig.Runtime
         Vector3 Up { get; }
         Vector3 Forward { get; }
 
-        ISubject<Vector3> OnPositionChanged { get; }
-        ISubject<Quaternion> OnRotationChanged { get; }
+        IObservable<Vector3> OnPositionChanged { get; }
+        IObservable<Quaternion> OnRotationChanged { get; }
 
         Transform Raw { get; }
 
@@ -41,7 +41,7 @@ namespace Hedwig.Runtime
         Vector3 ITransform.Up { get => (_transform != null) ? _transform.up : Vector3.up; }
         Vector3 ITransform.Forward { get => (_transform != null) ? _transform.forward : Vector3.forward; }
 
-        ISubject<Vector3> ITransform.OnPositionChanged
+        IObservable<Vector3> ITransform.OnPositionChanged
         {
             get
             {
@@ -61,7 +61,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        ISubject<Quaternion> ITransform.OnRotationChanged
+        IObservable<Quaternion> ITransform.OnRotationChanged
         {
             get
             {
@@ -122,21 +122,13 @@ namespace Hedwig.Runtime
 
     public static class CachedTransformFactory
     {
-        public static ITransform CachedTransform(this MonoBehaviour? monoBehaviour)
+        public static ITransform CachedTransform(this MonoBehaviour monoBehaviour)
         {
-            if (monoBehaviour == null)
-            {
-                throw new InvalidConditionException("Unable to create CachedTransform");
-            }
             return new CachedTransform(monoBehaviour.transform);
         }
 
         public static ITransform CachedTransform(this GameObject gameObject)
         {
-            if (gameObject == null)
-            {
-                throw new InvalidConditionException("Unable to create CachedTransform");
-            }
             return new CachedTransform(gameObject.transform);
         }
     }

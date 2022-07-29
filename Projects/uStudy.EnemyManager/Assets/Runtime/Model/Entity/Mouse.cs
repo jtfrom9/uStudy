@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using UnityEngine;
 using UniRx;
 
@@ -19,11 +20,11 @@ namespace Hedwig.Runtime
 
     public interface IMouseOperation
     {
-        ISubject<Unit> OnLeftClick { get; }
-        ISubject<bool> OnLeftTrigger { get; }
-        ISubject<Unit> OnRightClick { get; }
-        ISubject<bool> OnRightTrigger { get; }
+        IObservable<Unit> OnLeftClick { get; }
+        IObservable<bool> OnLeftTrigger { get; }
+        IObservable<Unit> OnRightClick { get; }
+        IObservable<bool> OnRightTrigger { get; }
 
-        ISubject<MouseMoveEvent> OnMove { get; }
+        IObservable<MouseMoveEvent> OnMove { get; }
     }
 }

@@ -46,9 +46,9 @@ namespace Hedwig.Runtime
         void TriggerOn();
         void TriggerOff();
 
-        ISubject<ProjectileConfig?> OnConfigChanged { get; }
-        ISubject<IMobileObject?> OnTargetChanged { get; }
-        ISubject<float> OnRecastTimeUpdated { get; }
-        ISubject<IProjectile> OnFired { get; }
+        IObservable<ProjectileConfig?> OnConfigChanged { get; }
+        IObservable<IMobileObject?> OnTargetChanged { get; }
+        IObservable<float> OnRecastTimeUpdated { get; }
+        IObservable<IProjectile> OnFired { get; }
     }
 }

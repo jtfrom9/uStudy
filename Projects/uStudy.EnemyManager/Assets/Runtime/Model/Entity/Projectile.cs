@@ -67,7 +67,7 @@ namespace Hedwig.Runtime
         string name { get; }
         UniTask<bool> Move(Vector3 to, float speed);
         UniTask LastMove(float speed);
-        ISubject<Projectile.EventArg> OnEvent { get; }
+        IObservable<Projectile.EventArg> OnEvent { get; }
     }
 
     public struct ProjectileOption
@@ -82,9 +82,9 @@ namespace Hedwig.Runtime
         IProjectileController controller { get; }
         Projectile.EndReason EndReason { get; }
 
-        ISubject<Unit> OnStarted { get; }
-        ISubject<Unit> OnEnded { get; }
-        ISubject<Unit> OnDestroy { get; }
+        IObservable<Unit> OnStarted { get; }
+        IObservable<Unit> OnEnded { get; }
+        IObservable<Unit> OnDestroy { get; }
         void Start(ITransform target, in ProjectileOption? option = null);
 
         TrajectoryMap? trajectoryMap { get; }
@@ -93,6 +93,6 @@ namespace Hedwig.Runtime
     public interface IProjectileFactory
     {
         IProjectile? Create(Vector3 start, ProjectileConfig config);
-        ISubject<IProjectile> OnCreated { get; }
+        IObservable<IProjectile> OnCreated { get; }
     }
 }
