@@ -23,7 +23,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        ITransform IMobileObject.transform { get => _transform; }
+        ITransform ITransformProvider.transform { get => _transform; }
 
         void IFreeCursor.Initialize()
         {
@@ -33,7 +33,7 @@ namespace Hedwig.Runtime
             transform.position = pos;
         }
 
-        void ITargetCursor.Initialize(IMobileObject target, float distanceToGround)
+        void ITargetCursor.Initialize(ITransformProvider target, float distanceToGround)
         {
             // transform.position = target.position.Y(0.01f);
             // transform.SetParent(target, true);

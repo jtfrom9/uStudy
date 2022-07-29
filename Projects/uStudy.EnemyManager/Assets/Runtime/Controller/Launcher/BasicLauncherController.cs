@@ -40,7 +40,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        void setupHandler(IMobileObject? target)
+        void setupHandler(ITransformProvider? target)
         {
             if (target != null)
             {

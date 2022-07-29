@@ -51,7 +51,7 @@ namespace Hedwig.Runtime
         }
 
         #region IDamageEffect
-        public void Initialize(IMobileObject parent, DamageEffectParameter param, int damage)
+        public void Initialize(ITransformProvider parent, DamageEffectParameter param, int damage)
         {
             this.duration = param.duration;
             this.damage = damage;

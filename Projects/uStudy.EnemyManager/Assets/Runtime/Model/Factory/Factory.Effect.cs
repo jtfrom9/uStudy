@@ -17,7 +17,7 @@ namespace Hedwig.Runtime
         [SerializeField]
         DamageEffectParameter? damageEffectParameter;
 
-        public IDamageEffect? CreateDamageEffect(IMobileObject parent, int damage)
+        public IDamageEffect? CreateDamageEffect(ITransformProvider parent, int damage)
         {
             if (damageEffectPrefab == null)
             {
@@ -30,7 +30,7 @@ namespace Hedwig.Runtime
             return effect;
         }
 
-        public IHitEffect? CreateHitEffect(IMobileObject parent, Vector3 position, Vector3 normal)
+        public IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 normal)
         {
             if (hitEffectPrefab == null)
             {

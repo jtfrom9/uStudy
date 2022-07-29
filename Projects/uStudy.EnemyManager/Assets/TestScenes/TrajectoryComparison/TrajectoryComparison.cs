@@ -48,7 +48,7 @@ namespace Hedwig.Runtime
         [Inject] System.Func<(Vector3 pos, ProjectileConfig config), ILauncher>? launcherFactory;
         [Inject] IEnemyManager? enemyManager;
 
-        List<(ILauncher launcher, IMobileObject target)> pairs = new List<(ILauncher launcher, IMobileObject target)>();
+        List<(ILauncher launcher, ITransformProvider target)> pairs = new List<(ILauncher launcher, ITransformProvider target)>();
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -98,7 +98,7 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
         }
 
-        (ILauncher, IMobileObject) createInstance(int index, ProjectileConfig config)
+        (ILauncher, ITransformProvider) createInstance(int index, ProjectileConfig config)
         {
             var root = GameObject.Find("Root");
             if (root == null) { throw new InvalidConditionException("no root"); }
@@ -109,7 +109,7 @@ namespace Hedwig.Runtime
 
             var cube = Instantiate(targetPrefab, pos + Vector3.forward * 10, Quaternion.identity, root.transform);
             if (cube == null) throw new InvalidConditionException("fail to instantiate target");
-            var target = cube.GetComponent<IMobileObject>();
+            var target = cube.GetComponent<ITransformProvider>();
             var launcher = launcherFactory.Invoke((pos, config));
             launcher.Initialize();
             launcher.SetProjectileConfig(config, new ProjectileOption() { destroyAtEnd = false });

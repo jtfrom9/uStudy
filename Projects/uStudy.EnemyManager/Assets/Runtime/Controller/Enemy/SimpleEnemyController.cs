@@ -62,7 +62,7 @@ namespace Hedwig.Runtime
         //     }
         // }
 
-        void onHit(IMobileObject target, Vector3 position)
+        void onHit(ITransformProvider target, Vector3 position)
         {
             Debug.Log($"[{target.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
             onAttacked(position);
@@ -81,7 +81,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
-        ITransform IMobileObject.transform { get => _transform; }
+        ITransform ITransformProvider.transform { get => _transform; }
         #endregion
 
         #region ICharactor

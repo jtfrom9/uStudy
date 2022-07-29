@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IEnemyController: IMobileObject
+    public interface IEnemyController: ITransformProvider
     {
         void Initialize(IEnemyControllerEvent controllerEvent);
 

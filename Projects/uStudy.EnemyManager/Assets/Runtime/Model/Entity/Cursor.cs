@@ -14,10 +14,10 @@ namespace Hedwig.Runtime
 
     public interface ITargetCursor : ICursor
     {
-        void Initialize(IMobileObject target, float distanceToGround);
+        void Initialize(ITransformProvider target, float distanceToGround);
     }
 
-    public interface IFreeCursor : ICursor, IMobileObject
+    public interface IFreeCursor : ICursor, ITransformProvider
     {
         void Initialize();
         void Move(Vector3 pos);
@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
 
     public interface ICursorFactory
     {
-        ITargetCursor? CreateTargetCusor(IMobileObject target, ICharactor charactor);
+        ITargetCursor? CreateTargetCusor(ITransformProvider target, ICharactor charactor);
         IFreeCursor? CreateFreeCusor();
     }
 }

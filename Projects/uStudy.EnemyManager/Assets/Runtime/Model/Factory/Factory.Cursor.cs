@@ -14,7 +14,7 @@ namespace Hedwig.Runtime
         [SerializeField, InterfaceType(typeof(IFreeCursor))]
         Component? freeCursorPrefab;
 
-        ITargetCursor? ICursorFactory.CreateTargetCusor(IMobileObject target, ICharactor charactor)
+        ITargetCursor? ICursorFactory.CreateTargetCusor(ITransformProvider target, ICharactor charactor)
         {
             if (targetCursorPrefab == null)
             {

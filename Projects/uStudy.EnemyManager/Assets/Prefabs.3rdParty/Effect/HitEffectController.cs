@@ -28,7 +28,7 @@ namespace Hedwig.Runtime
         }
 
         #region IDamageEffect
-        public void Initialize(IMobileObject parent, Vector3 position, Vector3 normal)
+        public void Initialize(ITransformProvider parent, Vector3 position, Vector3 normal)
         {
             transform.position = position;
             transform.SetParent(parent.transform, true);

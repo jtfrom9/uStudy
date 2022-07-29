@@ -69,7 +69,7 @@ namespace Hedwig.Runtime
 
         void willHit(GameObject gameObject, Ray ray, float distance, RaycastHit hit)
         {
-            var mobileObject = gameObject.GetComponent<IMobileObject>();
+            var mobileObject = gameObject.GetComponent<ITransformProvider>();
             if (mobileObject != null)
             {
                 // immediately stop tweening without cancel
@@ -206,7 +206,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IMobileObject
-        ITransform IMobileObject.transform { get => _transform; }
+        ITransform ITransformProvider.transform { get => _transform; }
         #endregion
 
         #region IProjectileController

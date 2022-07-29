@@ -30,7 +30,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region IHitEffect
-        void IHitEffect.Initialize(IMobileObject parent, Vector3 position, Vector3 normal) {
+        void IHitEffect.Initialize(ITransformProvider parent, Vector3 position, Vector3 normal) {
             transform.position = position;
             transform.SetParent(parent.transform);
         }

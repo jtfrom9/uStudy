@@ -37,17 +37,17 @@ namespace Hedwig.Runtime
 
     public interface IDamageEffect : IEffect
     {
-        void Initialize(IMobileObject parent, DamageEffectParameter duration, int damage);
+        void Initialize(ITransformProvider parent, DamageEffectParameter duration, int damage);
     }
 
     public interface IHitEffect: IEffect
     {
-        void Initialize(IMobileObject parent, Vector3 position, Vector3 normal);
+        void Initialize(ITransformProvider parent, Vector3 position, Vector3 normal);
     }
 
     public interface IEffectFactory
     {
-        IDamageEffect? CreateDamageEffect(IMobileObject parent, int damage);
-        IHitEffect? CreateHitEffect(IMobileObject parent, Vector3 position, Vector3 normal);
+        IDamageEffect? CreateDamageEffect(ITransformProvider parent, int damage);
+        IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 normal);
     }
 }

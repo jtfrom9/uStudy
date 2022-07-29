@@ -204,7 +204,7 @@ namespace Hedwig.Runtime
 
         struct Info {
             public string config;
-            public IMobileObject? target;
+            public ITransformProvider? target;
             public bool canfire;
             public float recastRatio;
             public int elapsed;

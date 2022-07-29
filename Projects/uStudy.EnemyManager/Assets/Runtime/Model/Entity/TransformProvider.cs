@@ -5,21 +5,24 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    public interface IMobileObject: IDisposable
+    public interface ITransformProvider: IDisposable
     {
         ITransform transform { get; }
     }
 
-    public static class MobileObjectFactory
+    public static class TransformProviderFactory
     {
-        class Impl : IMobileObject
+        class Impl : ITransformProvider
         {
             GameObject _gameObject;
             CachedTransform _transform;
 
-            ITransform IMobileObject.transform { get => _transform; }
+            ITransform ITransformProvider.transform { get => _transform; }
 
-            public void Dispose() { }
+            public void Dispose()
+            {
+                GameObject.Destroy(_gameObject);
+            }
 
             public Impl(GameObject gameObject)
             {
@@ -29,7 +32,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        public static IMobileObject AsMobileObject(this GameObject gameObject)
+        public static ITransformProvider AsTransformProvider(this GameObject gameObject)
         {
             return new Impl(gameObject);
         }

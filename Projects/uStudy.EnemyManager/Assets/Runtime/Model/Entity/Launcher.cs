@@ -38,8 +38,8 @@ namespace Hedwig.Runtime
         ProjectileConfig? config { get; }
         void SetProjectileConfig(ProjectileConfig? config, ProjectileOption? option = null);
 
-        IMobileObject? target { get; }
-        void SetTarget(IMobileObject? target);
+        ITransformProvider? target { get; }
+        void SetTarget(ITransformProvider? target);
 
         IReadOnlyReactiveProperty<bool> CanFire { get; }
         void Fire();
@@ -47,7 +47,7 @@ namespace Hedwig.Runtime
         void TriggerOff();
 
         IObservable<ProjectileConfig?> OnConfigChanged { get; }
-        IObservable<IMobileObject?> OnTargetChanged { get; }
+        IObservable<ITransformProvider?> OnTargetChanged { get; }
         IObservable<float> OnRecastTimeUpdated { get; }
         IObservable<IProjectile> OnFired { get; }
     }

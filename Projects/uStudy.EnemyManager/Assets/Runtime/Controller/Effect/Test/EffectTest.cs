@@ -39,7 +39,7 @@ public class EffectTest : LifetimeScope
         }
     }
 
-    IEffect[] createEffects(IMobileObject target, int damage, Vector3 position)
+    IEffect[] createEffects(ITransformProvider target, int damage, Vector3 position)
     {
         return new IEffect[] {
             factory.CreateDamageEffect(target, damage),
@@ -47,7 +47,7 @@ public class EffectTest : LifetimeScope
         }.Where(e => e != null).ToArray();
     }
 
-    Vector3 hitPosition(IMobileObject target) {
+    Vector3 hitPosition(ITransformProvider target) {
         var position = Vector3.zero;
         if (target != null)
         {
@@ -67,10 +67,10 @@ public class EffectTest : LifetimeScope
         }
     }
 
-    class DummyMobileObject : MonoBehaviour, IMobileObject
+    class DummyMobileObject : MonoBehaviour, ITransformProvider
     {
         ITransform _transform = new CachedTransform();
-        ITransform IMobileObject.transform { get => _transform; }
+        ITransform ITransformProvider.transform { get => _transform; }
 
         public void Dispose() { Destroy(gameObject); }
         void Awake()
@@ -90,7 +90,7 @@ public class EffectTest : LifetimeScope
 
             var _targets = targets.Select(target =>
             {
-                return target.AddComponent<DummyMobileObject>() as IMobileObject;
+                return target.AddComponent<DummyMobileObject>() as ITransformProvider;
             });
 
             var tasks = new List<UniTask>();

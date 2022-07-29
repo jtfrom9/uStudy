@@ -60,7 +60,7 @@ namespace Hedwig.Runtime
         }
     }
 
-    public interface IProjectileController : IMobileObject
+    public interface IProjectileController : ITransformProvider
     {
         void Initialize(Vector3 initial);
 
