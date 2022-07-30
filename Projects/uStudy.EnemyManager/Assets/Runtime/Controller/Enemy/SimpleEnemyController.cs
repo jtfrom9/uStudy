@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UniRx;
+using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
@@ -115,8 +115,19 @@ namespace Hedwig.Runtime
         }
         void IEnemyController.Knockback(Vector3 direction, float power)
         {
-            Debug.Log($"AddShock: ${_rigidbody}");
-            _rigidbody?.AddForce(direction * power, ForceMode.Impulse);
+            Debug.Log($"{_name}: AddShock: ${direction}, ${power}");
+            if (_rigidbody != null && _agent!=null)
+            {
+                UniTask.Create(async () => {
+                    _agent.isStopped = true;
+                    _rigidbody.isKinematic = false;
+                    _rigidbody.AddForce(direction * power, ForceMode.Impulse);
+
+                    await UniTask.Delay(1000);
+                    _rigidbody.isKinematic = true;
+                    _agent.isStopped = false;
+                }).Forget();
+            }
         }
 
         ICharactor IEnemyController.GetCharactor()
