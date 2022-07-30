@@ -197,20 +197,20 @@ namespace Hedwig.Runtime
         }
 
         #region IHitObject
-        HitObjectType IHitObject.Type {
+        HitType IHitObject.type {
             get
             {
                 switch (config.type)
                 {
                     case ProjectileType.Grenade:
-                        return HitObjectType.Range;
+                        return HitType.Range;
                     default:
-                        return HitObjectType.Single;
+                        return HitType.Single;
                 }
             }
         }
-        float IHitObject.weight { get => 1; }
-        float IHitObject.power { get => 1; }
+        int IHitObject.attack { get => config?.weaponData?.attack ?? 0; }
+        float IHitObject.power { get => config?.weaponData?.power ?? 0; }
         float _speed;
         float IHitObject.speed { get => _speed; }
         Vector3 IHitObject.direction { get => projectileController.transform.Forward; }

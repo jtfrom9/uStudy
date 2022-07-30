@@ -9,10 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8f3adb55a0f6d4119a90a74b8aaba46c, type: 3}
-  m_Name: DemoEnemyDef
+  m_Script: {fileID: 11500000, guid: 7ec060a8231cb4af5b74cef488000d5e, type: 3}
+  m_Name: Shot1Weapon
   m_EditorClassIdentifier: 
-  prefab: {fileID: 0}
-  MaxHealth: 1
-  Attack: 0
-  Deffence: 10000
+  hitType: 0
+  power: 0.3
+  attack: 10

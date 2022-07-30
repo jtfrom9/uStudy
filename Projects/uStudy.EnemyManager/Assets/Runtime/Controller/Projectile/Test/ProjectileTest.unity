@@ -537,6 +537,7 @@ MonoBehaviour:
   setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   enemyManagerConfig: {fileID: 11400000, guid: e4db2a9458afa409593a1c74af8a16df, type: 2}
   projectileConfigs:
+  - {fileID: 11400000, guid: 5c5dcbfea5e2f4c4681f8f9c5c2a604f, type: 2}
   - {fileID: 11400000, guid: 5c52007cd3f684ec39f34d3e33895d0f, type: 2}
   textMesh: {fileID: 1544323828}
 --- !u!4 &1209448254

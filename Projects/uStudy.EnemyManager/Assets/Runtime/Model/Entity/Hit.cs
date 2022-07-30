@@ -16,7 +16,7 @@ namespace Hedwig.Runtime
         public const string Projectile = "Projectile";
     }
 
-    public enum HitObjectType
+    public enum HitType
     {
         Single,
         Range
@@ -24,8 +24,8 @@ namespace Hedwig.Runtime
 
     public interface IHitObject
     {
-        HitObjectType Type { get; }
-        float weight { get; }
+        HitType type { get; }
+        int attack { get; }
         float power { get; }
         float speed { get; }
         Vector3 direction { get; }

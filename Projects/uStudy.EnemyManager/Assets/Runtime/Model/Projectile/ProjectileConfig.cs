@@ -47,5 +47,7 @@ namespace Hedwig.Runtime
         public float range = 10;
 
         [SerializeField] public Trajectory? trajectory;
+
+        [SerializeField] public WeaponData? weaponData;
     }
 }

@@ -22,3 +22,4 @@ MonoBehaviour:
   baseSpeed: 100
   range: 30
   trajectory: {fileID: 11400000, guid: ac5a7cc8c52974f4abab6fbee695b21a, type: 2}
+  weaponData: {fileID: 11400000, guid: fce4a91b8c76344b98ca76e47226d435, type: 2}

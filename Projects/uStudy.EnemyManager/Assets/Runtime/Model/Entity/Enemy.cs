@@ -13,9 +13,12 @@ namespace Hedwig.Runtime
     public struct DamageEvent
     {
         public readonly int damage;
+        public readonly int actualDamage;
 
-        public DamageEvent(int damage) {
+        public DamageEvent(int damage, int actualDamage = 0)
+        {
             this.damage = damage;
+            this.actualDamage = actualDamage;
         }
     }
 
@@ -29,7 +32,7 @@ namespace Hedwig.Runtime
         ICharactor GetCharactor();
 
         void ResetPos(); // to bedeelted
-        void AddShock(Vector3 direction, float power);
+        void Knockback(Vector3 direction, float power);
     }
 
     public interface IEnemyControllerEvent

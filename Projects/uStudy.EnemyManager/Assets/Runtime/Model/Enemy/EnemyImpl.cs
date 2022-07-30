@@ -16,45 +16,54 @@ namespace Hedwig.Runtime
         int health;
 
         int calcDamage(IHitObject hitObject) {
-            return 10;
+            return hitObject.attack;
         }
 
-        void makeDamageEvent(IHitObject hitObject, out DamageEvent damageEvent)
+        int calcActualDamage(int damage)
         {
-            damageEvent = new DamageEvent(damage: calcDamage(hitObject));
+            return Math.Max(damage - _def.Deffence, 0);
         }
 
-        void applyDamage(in DamageEvent damageEvent)
+        void applyDamage(int actualDamage)
         {
-            var actualDamage = damageEvent.damage - _def.Deffence;
             this.health -= actualDamage;
+            if(this.health <0) this.health = 0;
+            Debug.Log($"{this}: applyDamage: actualDamage={actualDamage}, health={health}");
+        }
+
+        void doDamage(int damage, out DamageEvent damageEvent)
+        {
+            var actualDamage = calcActualDamage(damage);
+            applyDamage(actualDamage);
+            damageEvent = new DamageEvent(damage, actualDamage: actualDamage);
+        }
+
+        void doDamage(IHitObject hitObject, out DamageEvent damageEvent)
+        {
+            var damage = calcDamage(hitObject);
+            doDamage(damage, out damageEvent);
         }
 
         void raiseEvent(IHitObject? hitObject, in DamageEvent damageEvent)
         {
-            if (health <= 0)
+            enemyEvent.OnAttacked(this, hitObject, damageEvent);
+
+            if (health == 0)
             {
-                this.health = 0;
                 enemyEvent.OnDeath(this);
-            }
-            else
-            {
-                enemyEvent.OnAttacked(this, hitObject, damageEvent);
             }
         }
 
         void damaged(int damage)
         {
-            var e = new DamageEvent(damage: damage);
-            applyDamage(e);
-            raiseEvent(null, e);
+            doDamage(damage, out DamageEvent damageEvent);
+            raiseEvent(null, damageEvent);
         }
 
         #region IEnemyControllerEvent
         void IEnemyControllerEvent.OnHit(IHitObject hitObject)
         {
-            makeDamageEvent(hitObject, out DamageEvent damageEvent);
-            applyDamage(damageEvent);
+            doDamage(hitObject, out DamageEvent damageEvent);
             raiseEvent(hitObject, damageEvent);
         }
         #endregion

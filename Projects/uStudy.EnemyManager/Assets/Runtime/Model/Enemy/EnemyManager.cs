@@ -21,9 +21,9 @@ namespace Hedwig.Runtime
 
         void equipHitTransformEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
-            if (hitObject != null)
+            if (hitObject != null && e.actualDamage > 0)
             {
-                enemy.controller.AddShock(hitObject.direction, 2);
+                enemy.controller.Knockback(hitObject.direction, hitObject.power);
             }
         }
 
@@ -44,17 +44,13 @@ namespace Hedwig.Runtime
 
         void onEnemyAttacked(IEnemy enemy, IHitObject? hitObject, in DamageEvent damageEvent)
         {
-            Debug.Log($"onAttacked: {enemy}, {damageEvent.damage}, {enemy.Health}");
             equipHitVisualEffect(enemy, hitObject, damageEvent);
             equipHitTransformEffect(enemy, hitObject, damageEvent);
         }
 
         async void onEnemyDeath(IEnemy enemy)
         {
-            Debug.Log($"onDeath: {enemy}");
-
             await UniTask.Yield(PlayerLoopTiming.FixedUpdate);
-
             _enemies.Remove(enemy);
             enemy.Dispose();
         }

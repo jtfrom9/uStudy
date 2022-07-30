@@ -113,7 +113,7 @@ namespace Hedwig.Runtime
             transform.SetPositionAndRotation(initialPosition, initialRotation);
             transform.localScale = initialScale;
         }
-        void IEnemyController.AddShock(Vector3 direction, float power)
+        void IEnemyController.Knockback(Vector3 direction, float power)
         {
             Debug.Log($"AddShock: ${_rigidbody}");
             _rigidbody?.AddForce(direction * power, ForceMode.Impulse);
