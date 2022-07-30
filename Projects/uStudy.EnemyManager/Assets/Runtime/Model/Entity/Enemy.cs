@@ -12,15 +12,10 @@ namespace Hedwig.Runtime
 {
     public struct DamageEvent
     {
-        public IEnemy enemy;
-        public int damage;
-        public Vector3 position;
+        public readonly int damage;
 
-        public DamageEvent(IEnemy enemy, int damage, Vector3 position)
-        {
-            this.enemy = enemy;
+        public DamageEvent(int damage) {
             this.damage = damage;
-            this.position = position;
         }
     }
 
@@ -34,11 +29,12 @@ namespace Hedwig.Runtime
         ICharactor GetCharactor();
 
         void ResetPos(); // to bedeelted
+        void AddShock(Vector3 direction, float power);
     }
 
     public interface IEnemyControllerEvent
     {
-        void OnAttacked(Vector3 position);
+        void OnHit(IHitObject hitObject);
     }
 
     public interface IEnemy : IDisposable
@@ -49,12 +45,16 @@ namespace Hedwig.Runtime
 
         IEnemyController controller { get; }
 
-        void Attacked(int damage);
+        void Damaged(int damange);
         void ResetPos();
-
-        IObservable<DamageEvent> OnAttacked { get; }
-        IObservable<IEnemy> OnDeath { get; }
     }
+
+    public interface IEnemyEvent
+    {
+        void OnAttacked(IEnemy enemy, IHitObject? hitObject, in DamageEvent damageEvent);
+        void OnDeath(IEnemy enemy);
+    }
+
 
     public interface IEnemyControllerRepository
     {

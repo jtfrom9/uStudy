@@ -15,4 +15,25 @@ namespace Hedwig.Runtime
         public const string Character = "Character";
         public const string Projectile = "Projectile";
     }
+
+    public enum HitObjectType
+    {
+        Single,
+        Range
+    }
+
+    public interface IHitObject
+    {
+        HitObjectType Type { get; }
+        float weight { get; }
+        float power { get; }
+        float speed { get; }
+        Vector3 direction { get; }
+        Vector3 position{ get; }
+    }
+
+    public interface IHitHandler
+    {
+        void OnHit(IHitObject hitObject);
+    }
 }

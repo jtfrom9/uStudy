@@ -25,6 +25,7 @@ namespace Hedwig.Runtime
 
         bool _willHit = false;
         RaycastHit? willCastHit = null;
+        float _lastSpeed = 0f;
 
         Subject<Projectile.EventArg> onEvent = new Subject<EventArg>();
         CancellationTokenSource cts = new CancellationTokenSource();
@@ -40,16 +41,16 @@ namespace Hedwig.Runtime
             onEvent.OnCompleted();
         }
 
-        void OnTriggerEnter(Collider other)
+        void OnTriggerEnter(Collider collider)
         {
             var _hit = false;
             EndReason? endReason = null;
-            if (other.gameObject.CompareTag(HitTag.Character))
+            if (collider.gameObject.CompareTag(HitTag.Character))
             {
-                endReason = EndReason.TargetHit;
+                endReason = EndReason.CharactorHit;
                 _hit = true;
             }
-            if (other.gameObject.CompareTag(HitTag.Environment))
+            if (collider.gameObject.CompareTag(HitTag.Environment))
             {
                 endReason = EndReason.OtherHit;
                 _hit = true;
@@ -58,9 +59,10 @@ namespace Hedwig.Runtime
             {
                 onEvent.OnNext(new EventArg(Projectile.EventType.Trigger)
                 {
-                    collider = other,
+                    collider = collider,
                     willHit = willCastHit,
-                    endReason = endReason
+                    endReason = endReason,
+                    speed = _lastSpeed
                 });
                 // request cancel
                 cts.Cancel();
@@ -123,6 +125,7 @@ namespace Hedwig.Runtime
         async UniTask<bool> move(Vector3 to, float speed)
         {
             _transform.Raw.rotation = Quaternion.LookRotation(to - _transform.Position);
+            _lastSpeed = speed;
 
             var castEveryFrame = speed > castingEveryFrameSpeed;
             onEvent.OnNext(new EventArg(Projectile.EventType.BeforeMove)
@@ -230,7 +233,7 @@ namespace Hedwig.Runtime
                 gameObject.name = $"TweenProjectile({count})";
                 count++;
             }
-            _name = gameObject.name;
+            this._name = gameObject.name;
             transform.position = initial;
         }
         #endregion

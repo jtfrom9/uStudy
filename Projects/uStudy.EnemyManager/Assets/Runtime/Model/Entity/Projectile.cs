@@ -18,7 +18,7 @@ namespace Hedwig.Runtime
 
         public enum EndReason
         {
-            TargetHit,
+            CharactorHit,
             OtherHit,
             Expired,
             Disposed
@@ -46,6 +46,7 @@ namespace Hedwig.Runtime
             public Ray? ray;
             public float? maxDistance;
             public Vector3? to;
+            public float? speed;
 
             public EventArg(EventType type)
             {
@@ -56,6 +57,7 @@ namespace Hedwig.Runtime
                 this.ray = null;
                 this.maxDistance = null;
                 this.to = null;
+                this.speed = null;
             }
         }
     }

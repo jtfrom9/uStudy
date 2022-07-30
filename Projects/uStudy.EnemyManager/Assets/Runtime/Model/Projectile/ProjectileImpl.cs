@@ -12,7 +12,7 @@ namespace Hedwig.Runtime
 {
     using Projectile;
 
-    public class ProjectileImpl : IProjectile
+    public class ProjectileImpl : IProjectile, IHitObject
     {
         IProjectileController projectileController;
         ProjectileConfig config;
@@ -183,7 +183,6 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-
         #region IDisposable
         public void Dispose()
         {
@@ -195,6 +194,52 @@ namespace Hedwig.Runtime
         public override string ToString()
         {
             return $"{projectileController.name}.Impl({endReason})";
+        }
+
+        #region IHitObject
+        HitObjectType IHitObject.Type {
+            get
+            {
+                switch (config.type)
+                {
+                    case ProjectileType.Grenade:
+                        return HitObjectType.Range;
+                    default:
+                        return HitObjectType.Single;
+                }
+            }
+        }
+        float IHitObject.weight { get => 1; }
+        float IHitObject.power { get => 1; }
+        float _speed;
+        float IHitObject.speed { get => _speed; }
+        Vector3 IHitObject.direction { get => projectileController.transform.Forward; }
+        Vector3 IHitObject.position { get => projectileController.transform.Position; }
+        #endregion
+
+        void onHit(in Projectile.EventArg e)
+        {
+            if (e.collider != null)
+            {
+                var hitHandler = e.collider.GetComponent<IHitHandler>();
+                if (hitHandler != null)
+                {
+                    if (e.endReason.HasValue && e.endReason.Value == EndReason.CharactorHit)
+                    {
+                        var transform = projectileController.transform;
+                        var speed = e.speed!.Value;
+                        Debug.DrawLine(transform.Position,
+                            transform.Position + transform.Forward * speed,
+                            Color.red, 1f);
+
+                        Debug.DrawLine(transform.Position,
+                            transform.Position - transform.Forward * speed,
+                            Color.green, 1f);
+                    }
+                    _speed = e.speed!.Value;
+                    hitHandler.OnHit(this);
+                }
+            }
         }
 
         public ProjectileImpl(IProjectileController projectileController, ProjectileConfig config)
@@ -209,6 +254,7 @@ namespace Hedwig.Runtime
                     case Projectile.EventType.Trigger:
                         if (e.endReason.HasValue)
                             this.endReason = e.endReason.Value;
+                        onHit(e);
                         break;
                     case Projectile.EventType.Destroy:
                         destroy();

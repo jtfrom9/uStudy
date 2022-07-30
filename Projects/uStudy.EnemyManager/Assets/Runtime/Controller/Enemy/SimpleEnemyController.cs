@@ -9,12 +9,13 @@ using UniRx;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : Controller, IEnemyController, ICharactor
+    public class SimpleEnemyController : Controller, IEnemyController, ICharactor, IHitHandler
     {
         string _name = "";
         IEnemyControllerEvent? controllerEvent;
         ITransform _transform = new CachedTransform();
         NavMeshAgent? _agent;
+        Rigidbody? _rigidbody;
 
         Vector3 initialPosition;
         Quaternion initialRotation;
@@ -26,6 +27,8 @@ namespace Hedwig.Runtime
             _transform.Initialize(transform);
             _agent = GetComponent<NavMeshAgent>();
             _agent.speed = 3;
+
+            _rigidbody = GetComponent<Rigidbody>();
 
             var mr = GetComponent<MeshRenderer>();
             mr.material.color = UnityEngine.Random.ColorHSV();
@@ -47,8 +50,8 @@ namespace Hedwig.Runtime
             if (other.gameObject.CompareTag(HitTag.Projectile))
             {
                 var projectile = other.gameObject.GetComponent<IProjectileController>();
-                var posision = other.ClosestPointOnBounds(_transform.Position);
-                onHit(projectile, posision);
+                var position = other.ClosestPointOnBounds(_transform.Position);
+                Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
             }
         }
 
@@ -62,21 +65,17 @@ namespace Hedwig.Runtime
         //     }
         // }
 
-        void onHit(ITransformProvider target, Vector3 position)
-        {
-            Debug.Log($"[{target.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
-            onAttacked(position);
-        }
-
-        void onAttacked(Vector3 position)
-        {
-            controllerEvent?.OnAttacked(position);
-        }
-
         #region IDisposable
         void IDisposable.Dispose()
         {
             Destroy(gameObject);
+        }
+        #endregion
+
+        #region
+        void IHitHandler.OnHit(IHitObject hitObject)
+        {
+            controllerEvent?.OnHit(hitObject);
         }
         #endregion
 
@@ -114,6 +113,12 @@ namespace Hedwig.Runtime
             transform.SetPositionAndRotation(initialPosition, initialRotation);
             transform.localScale = initialScale;
         }
+        void IEnemyController.AddShock(Vector3 direction, float power)
+        {
+            Debug.Log($"AddShock: ${_rigidbody}");
+            _rigidbody?.AddForce(direction * power, ForceMode.Impulse);
+        }
+
         ICharactor IEnemyController.GetCharactor()
         {
             return this;

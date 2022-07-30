@@ -9,7 +9,7 @@ using VContainer.Unity;
 
 namespace Hedwig.Runtime
 {
-    public class EnemyManager: IEnemyManager
+    public class EnemyManager: IEnemyManager, IEnemyEvent
     {
         List<IEnemy> _enemies = new List<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
@@ -19,29 +19,37 @@ namespace Hedwig.Runtime
         IEffectFactory effectFactory;
         ICursorFactory cursorFactory;
 
-        void OnEnemyAttacked(DamageEvent e)
+        void equipHitTransformEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
-            Debug.Log($"onAttacked: {e.enemy}, {e.damage}, {e.enemy.Health}");
-            // var effect = effectFactory.CreateDamageEffect(
-            //     e.enemy.transform,
-            //     e.damage);
-            // effect.Play().Forget();
-            var effects = new IEffect?[] {
-                    effectFactory.CreateDamageEffect(
-                        e.enemy.controller,
-                        e.damage),
-                    effectFactory.CreateHitEffect(
-                        e.enemy.controller,
-                        e.position,
-                        Vector3.zero)
-                };
+            if (hitObject != null)
+            {
+                enemy.controller.AddShock(hitObject.direction, 2);
+            }
+        }
+
+        void equipHitVisualEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
+        {
+            var effects = new IEffect?[]
+            {
+                effectFactory.CreateDamageEffect(enemy.controller, e.damage),
+                effectFactory.CreateHitEffect(enemy.controller,
+                    hitObject?.position ?? enemy.controller.transform.Position,
+                    Vector3.zero)
+            };
             foreach (var effect in effects)
             {
                 effect?.PlayAndDispose().Forget();
             }
         }
 
-        async void OnEnemyDeath(IEnemy enemy)
+        void onEnemyAttacked(IEnemy enemy, IHitObject? hitObject, in DamageEvent damageEvent)
+        {
+            Debug.Log($"onAttacked: {enemy}, {damageEvent.damage}, {enemy.Health}");
+            equipHitVisualEffect(enemy, hitObject, damageEvent);
+            equipHitTransformEffect(enemy, hitObject, damageEvent);
+        }
+
+        async void onEnemyDeath(IEnemy enemy)
         {
             Debug.Log($"onDeath: {enemy}");
 
@@ -73,16 +81,13 @@ namespace Hedwig.Runtime
             {
                 return;
             }
-            var enemy = new EnemyImpl(def, enemyController, cursor);
+            var enemy = new EnemyImpl(def, enemyController, this, cursor);
             _enemies.Add(enemy);
 
-            enemy.OnAttacked.Subscribe(OnEnemyAttacked).AddTo(disposable);
-            enemy.OnDeath.Subscribe(OnEnemyDeath).AddTo(disposable);
             onCreated.OnNext(enemy);
         }
 
         #region IEnemyManager
-
         IReadOnlyList<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
         void IEnemyManager.Initialize()
@@ -105,6 +110,15 @@ namespace Hedwig.Runtime
         {
             this.disposable.Dispose();
         }
+        #endregion
+
+
+        #region IEnemyEvent
+        void IEnemyEvent.OnAttacked(IEnemy enemy, IHitObject? hitObject, in DamageEvent damageEvent)
+            => onEnemyAttacked(enemy, hitObject, damageEvent);
+
+        void IEnemyEvent.OnDeath(IEnemy enemy)
+            => onEnemyDeath(enemy);
         #endregion
 
         // ctor

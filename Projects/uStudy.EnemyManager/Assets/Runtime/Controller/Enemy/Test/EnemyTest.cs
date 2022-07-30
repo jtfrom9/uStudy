@@ -92,7 +92,7 @@ public class EnemyTest : LifetimeScope
             await UniTask.Delay(1000);
             foreach (var enemy in enemyManager.Enemies)
             {
-                enemy.Attacked(Random.Range(1, 10));
+                enemy.Damaged(Random.Range(1, 10));
             }
         }
     }

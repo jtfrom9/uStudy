@@ -10,35 +10,53 @@ namespace Hedwig.Runtime
     {
         EnemyDef _def;
         IEnemyController enemyController;
+        IEnemyEvent enemyEvent;
         ICursor cursor;
 
         int health;
-        Subject<DamageEvent> onAttacked = new Subject<DamageEvent>();
-        Subject<IEnemy> onDeath = new Subject<IEnemy>();
 
-        void _onAttacked(DamageEvent e)
+        int calcDamage(IHitObject hitObject) {
+            return 10;
+        }
+
+        void makeDamageEvent(IHitObject hitObject, out DamageEvent damageEvent)
         {
-            var actualDamage = e.damage - _def.Deffence;
+            damageEvent = new DamageEvent(damage: calcDamage(hitObject));
+        }
+
+        void applyDamage(in DamageEvent damageEvent)
+        {
+            var actualDamage = damageEvent.damage - _def.Deffence;
             this.health -= actualDamage;
+        }
+
+        void raiseEvent(IHitObject? hitObject, in DamageEvent damageEvent)
+        {
             if (health <= 0)
             {
                 this.health = 0;
-                onDeath.OnNext(this);
+                enemyEvent.OnDeath(this);
             }
             else
             {
-                onAttacked.OnNext(e);
+                enemyEvent.OnAttacked(this, hitObject, damageEvent);
             }
         }
 
+        void damaged(int damage)
+        {
+            var e = new DamageEvent(damage: damage);
+            applyDamage(e);
+            raiseEvent(null, e);
+        }
+
         #region IEnemyControllerEvent
-        void IEnemyControllerEvent.OnAttacked(Vector3 position) =>
-            _onAttacked(new DamageEvent()
-            {
-                enemy = this,
-                damage = 10,
-                position = position
-            });
+        void IEnemyControllerEvent.OnHit(IHitObject hitObject)
+        {
+            makeDamageEvent(hitObject, out DamageEvent damageEvent);
+            applyDamage(damageEvent);
+            raiseEvent(hitObject, damageEvent);
+        }
         #endregion
 
         #region ISelectable
@@ -63,18 +81,8 @@ namespace Hedwig.Runtime
 
         public IEnemyController controller { get => enemyController; }
 
-        void IEnemy.Attacked(int damage) {
-            _onAttacked(new DamageEvent()
-            {
-                enemy = this,
-                damage = damage,
-                position = enemyController.transform.Position
-            });
-        }
+        void IEnemy.Damaged(int damage) => damaged(damage);
         void IEnemy.ResetPos() => enemyController.ResetPos();
-
-        public IObservable<DamageEvent> OnAttacked => onAttacked;
-        public IObservable<IEnemy> OnDeath => onDeath;
         #endregion
 
         public override string ToString()
@@ -82,10 +90,11 @@ namespace Hedwig.Runtime
             return $"{controller.name}.Impl";
         }
 
-        public EnemyImpl(EnemyDef def, IEnemyController enemyController, ICursor cursor)
+        public EnemyImpl(EnemyDef def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor)
         {
             this._def = def;
             this.enemyController = enemyController;
+            this.enemyEvent = enemyEvent;
             this.cursor = cursor;
             this.health = def.MaxHealth;
 
