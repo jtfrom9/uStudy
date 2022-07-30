@@ -31,6 +31,7 @@ public class TowerAim : LifetimeScope
     [Inject] IMouseOperation? mouseOperation;
     [Inject] ICursorFactory? cursorFactory;
     [Inject] ILauncher? launcher;
+    [Inject] IEnvironment? environment;
 
     CompositeDisposable disposables = new CompositeDisposable();
 
@@ -45,6 +46,8 @@ public class TowerAim : LifetimeScope
             .AsImplementedInterfaces();
         builder.Register<LauncherImpl>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
+        builder.Register<EnvironmentImpl>(Lifetime.Singleton)
+            .AsImplementedInterfaces();
     }
 
     void Start()
