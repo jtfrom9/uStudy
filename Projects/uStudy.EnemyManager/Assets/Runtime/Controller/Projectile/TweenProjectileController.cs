@@ -24,11 +24,11 @@ namespace Hedwig.Runtime
         bool _disposed = false;
 
         bool _willHit = false;
+        bool _hit = false;
         RaycastHit? willCastHit = null;
         float _lastSpeed = 0f;
 
         Subject<Projectile.EventArg> onEvent = new Subject<EventArg>();
-        CancellationTokenSource cts = new CancellationTokenSource();
 
         void Awake() {
             _transform.Initialize(transform);
@@ -43,7 +43,8 @@ namespace Hedwig.Runtime
 
         void OnTriggerEnter(Collider collider)
         {
-            var _hit = false;
+            if (_hit) return;
+
             EndReason? endReason = null;
             if (collider.gameObject.CompareTag(HitTag.Character))
             {
@@ -65,7 +66,7 @@ namespace Hedwig.Runtime
                     speed = _lastSpeed
                 });
                 // request cancel
-                cts.Cancel();
+                _transform.Raw.DOKill();
             }
         }
 
@@ -155,12 +156,10 @@ namespace Hedwig.Runtime
             {
                 tween = tween.OnUpdate(() => hitTest(_transform.Position, dir, speed));
             }
-
-            await tween.ToUniTask(cancellationToken: cts.Token);
+            await tween;
 
             onEvent.OnNext(new EventArg(Projectile.EventType.AfterMove));
-
-            return _willHit || cts.IsCancellationRequested;
+            return _willHit || _hit;
         }
 
         async UniTask lastMove(float speed)
@@ -168,7 +167,7 @@ namespace Hedwig.Runtime
             //
             // last one step move to the object will hit
             //
-            if (willCastHit.HasValue && !cts.IsCancellationRequested)
+            if (willCastHit.HasValue && !_hit)
             {
                 onEvent.OnNext(new EventArg(Projectile.EventType.BeforeLastMove)
                 {
@@ -195,7 +194,6 @@ namespace Hedwig.Runtime
 
             if (DOTween.IsTweening(transform))
             {
-                cts.Cancel();
                 _transform.Raw.DOKill();
             }
             Destroy(gameObject);
