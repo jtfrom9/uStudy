@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public interface IEnvironmentController
+    public interface IEnvironmentController: ITransformProvider
     {
         void Initialize(IEnvironmentEvent environmentEvent);
         string name { get; }

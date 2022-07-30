@@ -1,5 +1,6 @@
 #nullable enable
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,26 @@ namespace Hedwig.Runtime
     {
         string _name = "";
         IEnvironmentEvent? environmentEvent = null;
+        ITransform _transform = new CachedTransform();
+
+        bool _disposed = false;
+
+        void Awake()
+        {
+            _transform.Initialize(transform);
+        }
+
+        void OnDestroy()
+        {
+            _disposed = true;
+        }
+
+        ITransform ITransformProvider.transform { get => _transform; }
+
+        void IDisposable.Dispose()
+        {
+            Destroy(gameObject);
+        }
 
         void IHitHandler.OnHit(IHitObject hitObject)
         {

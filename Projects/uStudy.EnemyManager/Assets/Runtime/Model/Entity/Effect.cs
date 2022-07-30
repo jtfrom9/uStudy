@@ -42,12 +42,13 @@ namespace Hedwig.Runtime
 
     public interface IHitEffect: IEffect
     {
-        void Initialize(ITransformProvider parent, Vector3 position, Vector3 normal);
+        void Initialize(ITransformProvider parent, Vector3 position, Vector3 direction);
     }
 
     public interface IEffectFactory
     {
         IDamageEffect? CreateDamageEffect(ITransformProvider parent, int damage);
-        IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 normal);
+        IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction);
+        IHitEffect? CreateEnvironmentHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction);
     }
 }

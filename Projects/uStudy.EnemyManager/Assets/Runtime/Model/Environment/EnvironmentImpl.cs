@@ -17,6 +17,10 @@ namespace Hedwig.Runtime
         void IEnvironmentEvent.OnHit(IHitObject hitObject)
         {
             Debug.Log($"{this}: OnHit");
+            var effect = effectFactory.CreateEnvironmentHitEffect(environmentController,
+                hitObject.position,
+                -hitObject.direction);
+            effect?.PlayAndDispose().Forget();
         }
 
         public override string ToString()

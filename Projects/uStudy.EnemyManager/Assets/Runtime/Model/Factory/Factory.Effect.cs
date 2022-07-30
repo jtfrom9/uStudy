@@ -14,6 +14,9 @@ namespace Hedwig.Runtime
         [SerializeField, InterfaceType(typeof(IHitEffect))]
         Component? hitEffectPrefab;
 
+        [SerializeField, InterfaceType(typeof(IHitEffect))]
+        Component? environmentHitPrefab;
+
         [SerializeField]
         DamageEffectParameter? damageEffectParameter;
 
@@ -30,7 +33,7 @@ namespace Hedwig.Runtime
             return effect;
         }
 
-        public IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 normal)
+        public IHitEffect? CreateHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction)
         {
             if (hitEffectPrefab == null)
             {
@@ -39,7 +42,18 @@ namespace Hedwig.Runtime
             var effect = Instantiate(hitEffectPrefab) as IHitEffect;
             effect?.Initialize(parent,
                 position,
-                normal);
+                direction);
+            return effect;
+        }
+
+        public IHitEffect? CreateEnvironmentHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction)
+        {
+            if (environmentHitPrefab == null)
+            {
+                return null;
+            }
+            var effect = Instantiate(environmentHitPrefab) as IHitEffect;
+            effect?.Initialize(parent, position, direction);
             return effect;
         }
     }

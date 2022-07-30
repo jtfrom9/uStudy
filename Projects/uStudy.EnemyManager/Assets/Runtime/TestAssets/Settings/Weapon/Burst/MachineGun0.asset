@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: MachineGun0
   m_EditorClassIdentifier: 
-  endEffectPrefab: {fileID: 0}
+  prefab: {fileID: 0}
   type: 1
   chargable: 0
   successionCount: 0
@@ -22,3 +22,4 @@ MonoBehaviour:
   baseSpeed: 100
   range: 10
   trajectory: {fileID: 11400000, guid: 474110825e5524326a07d1a3126677d1, type: 2}
+  weaponData: {fileID: 11400000, guid: f4d9efd1f697740f290d7e70eec7b61b, type: 2}
