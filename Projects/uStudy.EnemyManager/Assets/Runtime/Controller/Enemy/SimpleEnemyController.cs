@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,8 @@ namespace Hedwig.Runtime
         Quaternion initialRotation;
         Vector3 initialScale;
         float? _distanceToGround;
+
+        CancellationTokenSource cts = new CancellationTokenSource();
 
         void Awake()
         {
@@ -72,6 +75,7 @@ namespace Hedwig.Runtime
         #region IDisposable
         void IDisposable.Dispose()
         {
+            cts.Cancel();
             Destroy(gameObject);
         }
         #endregion
@@ -119,6 +123,8 @@ namespace Hedwig.Runtime
         }
         void IEnemyController.Knockback(Vector3 direction, float power)
         {
+            if (!cts.IsCancellationRequested)
+                return;
             Debug.Log($"{_name}: AddShock: ${direction}, ${power}");
             if (_rigidbody != null && _agent!=null)
             {
@@ -127,7 +133,7 @@ namespace Hedwig.Runtime
                     _rigidbody.isKinematic = false;
                     _rigidbody.AddForce(direction * power, ForceMode.Impulse);
 
-                    await UniTask.Delay(1000);
+                    await UniTask.Delay(1000, cancellationToken: cts.Token);
                     _rigidbody.isKinematic = true;
                     _agent.isStopped = false;
                 }).Forget();
