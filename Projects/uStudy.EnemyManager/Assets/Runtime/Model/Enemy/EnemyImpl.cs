@@ -99,7 +99,7 @@ namespace Hedwig.Runtime
             return $"{controller.name}.Impl";
         }
 
-        public EnemyImpl(EnemyDef def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor)
+        public EnemyImpl(EnemyDef def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor, Vector3? position)
         {
             this._def = def;
             this.enemyController = enemyController;
@@ -107,7 +107,7 @@ namespace Hedwig.Runtime
             this.cursor = cursor;
             this.health = def.MaxHealth;
 
-            enemyController.Initialize(this);
+            enemyController.Initialize(this, position);
         }
     }
 }

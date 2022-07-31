@@ -8,7 +8,7 @@ namespace Hedwig.Runtime
     public sealed partial class EnemyManagerConfig : ScriptableObject, IEnemyManagerConfig
     {
         [SerializeField]
-        EnemyDef? enemyDef;
+        public EnemyDef? enemyDef;
 
         EnemyDef? IEnemyManagerConfig.EnemyDef { get => enemyDef; }
     }

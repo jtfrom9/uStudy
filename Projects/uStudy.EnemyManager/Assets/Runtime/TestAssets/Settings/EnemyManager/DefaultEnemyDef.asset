@@ -9,7 +9,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c78668d1cc3554915a18fc409bedf980, type: 3}
-  m_Name: DefaultEnemyManager
+  m_Script: {fileID: 11500000, guid: 8f3adb55a0f6d4119a90a74b8aaba46c, type: 3}
+  m_Name: DefaultEnemyDef
   m_EditorClassIdentifier: 
-  enemyDef: {fileID: 11400000, guid: e36963e16f1c94a9aacc475f3ea67436, type: 2}
+  prefab: {fileID: 2489900876656539109, guid: 8e92bdc89cc064600a03877e9a4b006d, type: 3}
+  MaxHealth: 100
+  Attack: 0
+  Deffence: 0

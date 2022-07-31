@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,6 +27,9 @@ public class TowerAim : LifetimeScope
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
+    [SerializeField] List<Vector3> spawnPoints = new List<Vector3>();
+    [SerializeField] bool randomWalk = true;
+    [SerializeField] int spawnCondition = 10;
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] IMouseOperation? mouseOperation;
@@ -63,7 +67,19 @@ public class TowerAim : LifetimeScope
         if(cameraTarget==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
-        enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
+        if (randomWalk)
+        {
+            enemyManager.RandomWalk(-10f, 10f, 3000, token).Forget();
+        }else
+        {
+            var gameSenario = new GameSenario(enemyManager,
+                enemyManagerConfig?.enemyDef!,
+                spawnPoints.ToArray(),
+                Vector3.zero,
+                spawnCondition);
+            var cts = new CancellationTokenSource();
+            gameSenario.Run(cts.Token).Forget();
+        }
 
         var configSelection = new Selection<ProjectileConfig>(configs);
         configSelection.OnCurrentChanged.Subscribe(config =>

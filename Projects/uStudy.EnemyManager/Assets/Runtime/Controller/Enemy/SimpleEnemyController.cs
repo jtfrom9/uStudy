@@ -38,13 +38,6 @@ namespace Hedwig.Runtime
         {
         }
 
-        void Start()
-        {
-            this.initialPosition = transform.position;
-            this.initialRotation = transform.rotation;
-            this.initialScale = transform.localScale;
-        }
-
         void OnTriggerEnter(Collider other)
         {
             if (other.gameObject.CompareTag(HitTag.Projectile))
@@ -53,6 +46,17 @@ namespace Hedwig.Runtime
                 var position = other.ClosestPointOnBounds(_transform.Position);
                 Debug.Log($"[{projectile.GetHashCode():x}] frame:{Time.frameCount} Hit({gameObject.name}) @{position}");
             }
+        }
+
+        void initialize(Vector3? position)
+        {
+            if (position.HasValue)
+            {
+                transform.position = position.Value;
+            }
+            this.initialPosition = transform.position;
+            this.initialRotation = transform.rotation;
+            this.initialScale = transform.localScale;
         }
 
         // void OnTriggerStay(Collider other)
@@ -142,7 +146,7 @@ namespace Hedwig.Runtime
             count = 0;
         }
 
-        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent)
+        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent, Vector3? position)
         {
             if (gameObject.name == "")
             {
@@ -151,6 +155,7 @@ namespace Hedwig.Runtime
             }
             _name = gameObject.name;
             this.controllerEvent = controllerEvent;
+            this.initialize(position);
         }
         #endregion
     }

@@ -13,7 +13,6 @@ namespace Hedwig.Runtime
     {
         ReactiveCollection<IEnemy> _enemies = new ReactiveCollection<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
-        Subject<IEnemy> onCreated = new Subject<IEnemy>();
 
         IEnemyManagerConfig? enemyManagerConfig;
         IEffectFactory effectFactory;
@@ -69,22 +68,36 @@ namespace Hedwig.Runtime
             return enemyManagerConfig?.EnemyDef ?? getDefaultDef();
         }
 
-        void addEnemy(IEnemyController enemyController)
+        IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
         {
             var def = getDef();
             var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetCharactor());
             if (cursor == null)
             {
-                return;
+                return null;
             }
-            var enemy = new EnemyImpl(def, enemyController, this, cursor);
+            var enemy = new EnemyImpl(def, enemyController, this, cursor, position);
             _enemies.Add(enemy);
-
-            onCreated.OnNext(enemy);
+            return enemy;
         }
 
         #region IEnemyManager
         IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
+
+        IEnemy IEnemyManager.Spawn(EnemyDef enemyDef, Vector3 position)
+        {
+            var enemyController = GameObject.Instantiate(enemyDef.prefab) as IEnemyController;
+            if (enemyController == null)
+            {
+                throw new InvalidConditionException("Invalid prefab");
+            }
+            var enemy = addEnemy(enemyController, position);
+            if (enemy == null)
+            {
+                throw new InvalidCastException("fail to spwawn");
+            }
+            return enemy;
+        }
 
         void IEnemyManager.Initialize()
         {
@@ -97,8 +110,6 @@ namespace Hedwig.Runtime
                 }
             }
         }
-
-        IObservable<IEnemy> IEnemyManager.OnCreated { get => onCreated; }
         #endregion
 
         #region IDisposable

@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
 
     public interface IEnemyController: ITransformProvider
     {
-        void Initialize(IEnemyControllerEvent controllerEvent);
+        void Initialize(IEnemyControllerEvent controllerEvent, Vector3? position);
 
         string name { get; }
         void SetDestination(Vector3 pos);
@@ -72,10 +72,9 @@ namespace Hedwig.Runtime
     public interface IEnemyManager : IDisposable
     {
         IReadOnlyReactiveCollection<IEnemy> Enemies { get; }
-        void Initialize();
-        // void AddEnemy(IEnemy eney);
+        IEnemy Spawn(EnemyDef enemyDef, Vector3 position);
 
-        IObservable<IEnemy> OnCreated { get; }
+        void Initialize();
     }
 
     public static class EnemyManagerExtension
