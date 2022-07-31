@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
 {
     public class EnemyManager: IEnemyManager, IEnemyEvent
     {
-        List<IEnemy> _enemies = new List<IEnemy>();
+        ReactiveCollection<IEnemy> _enemies = new ReactiveCollection<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
         Subject<IEnemy> onCreated = new Subject<IEnemy>();
 
@@ -84,7 +84,7 @@ namespace Hedwig.Runtime
         }
 
         #region IEnemyManager
-        IReadOnlyList<IEnemy> IEnemyManager.Enemies { get => _enemies; }
+        IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
         void IEnemyManager.Initialize()
         {

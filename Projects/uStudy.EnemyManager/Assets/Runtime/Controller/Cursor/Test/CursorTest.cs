@@ -60,8 +60,7 @@ namespace Hedwig.Runtime
             }
             enemyManager.Initialize();
 
-            // var selection = new SelectiveSelection(enemyManager.Enemies.Select(e => e as ISelectable));
-            var selection = new Selection<IEnemy>(enemyManager.Enemies);
+            var selection = new ReactiveSelection<IEnemy>(enemyManager.Enemies);
             selection.OnPrevChanged.Subscribe(e => { (e as ISelectable)?.Select(false); }).AddTo(this);
             selection.OnCurrentChanged.Subscribe(e => { (e as ISelectable)?.Select(true); }).AddTo(this);
 

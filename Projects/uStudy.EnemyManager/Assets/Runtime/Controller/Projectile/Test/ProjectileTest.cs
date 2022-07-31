@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
@@ -59,7 +60,7 @@ namespace Hedwig.Runtime
             setupDebug(projectileFactory);
             setupUI(textMesh, launcher);
 
-            var enemySelection = new Selection<IEnemy>(enemyManager.Enemies);
+            var enemySelection = new ReactiveSelection<IEnemy>(enemyManager.Enemies);
             enemySelection.OnPrevChanged.Subscribe(enemy => {
                 (enemy as ISelectable)?.Select(false);
             }).AddTo(this);

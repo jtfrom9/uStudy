@@ -54,4 +54,38 @@ namespace Hedwig.Runtime
             this._index = 0;
         }
     }
+
+    public class ReactiveSelection<T> : Selection<T>, IDisposable
+    {
+        IReadOnlyReactiveCollection<T> reactiveList;
+        CompositeDisposable disposables = new CompositeDisposable();
+
+        public ReactiveSelection(IReadOnlyReactiveCollection<T> list) :
+            base(list.ToList())
+        {
+            reactiveList = list;
+
+            list.ObserveAdd().Subscribe(e =>
+            {
+                base.list = reactiveList.ToList();
+                if (e.Index <= this._index)
+                {
+                    base._index++;
+                }
+            }).AddTo(disposables);
+
+            list.ObserveRemove().Subscribe(e => {
+                base.list = reactiveList.ToList();
+                if(e.Index == this._index) {
+                    onPrevChanged.OnNext(e.Value);
+                    onCurrentChanged.OnNext(this.Current);
+                }
+            }).AddTo(disposables);
+        }
+
+        public void Dispose()
+        {
+            disposables.Dispose();
+        }
+    }
 }
