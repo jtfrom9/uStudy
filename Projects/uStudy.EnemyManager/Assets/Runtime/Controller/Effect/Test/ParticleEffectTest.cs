@@ -20,7 +20,7 @@ namespace Hedwig.Runtime
             effect.Initialize(transform, Vector3.zero, Vector3.up);
             button?.OnClickAsObservable().Subscribe(async _ =>
             {
-                await effect.PlayAndDispose();
+                await effect.Play();
             }).AddTo(this);
         }
     }
