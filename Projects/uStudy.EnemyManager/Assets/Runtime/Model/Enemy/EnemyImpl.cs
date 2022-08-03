@@ -8,7 +8,7 @@ namespace Hedwig.Runtime
 {
     public class EnemyImpl : IEnemy, IEnemyControllerEvent, ISelectable
     {
-        EnemyDef _def;
+        EnemyConfig _def;
         IEnemyController enemyController;
         IEnemyEvent enemyEvent;
         ICursor cursor;
@@ -102,7 +102,7 @@ namespace Hedwig.Runtime
             return $"{controller.name}.Impl";
         }
 
-        public EnemyImpl(EnemyDef def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor, Vector3? position)
+        public EnemyImpl(EnemyConfig def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor, Vector3? position)
         {
             this._def = def;
             this.enemyController = enemyController;

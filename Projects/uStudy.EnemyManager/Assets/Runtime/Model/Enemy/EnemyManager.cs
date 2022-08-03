@@ -54,16 +54,16 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        EnemyDef getDefaultDef()
+        EnemyConfig getDefaultDef()
         {
-            var def = ScriptableObject.CreateInstance<EnemyDef>();
+            var def = ScriptableObject.CreateInstance<EnemyConfig>();
             def.MaxHealth = 100;
             def.Deffence = 0;
             def.Attack = 0;
             return def;
         }
 
-        EnemyDef getDef()
+        EnemyConfig getDef()
         {
             return enemyManagerConfig?.EnemyDef ?? getDefaultDef();
         }
@@ -84,7 +84,7 @@ namespace Hedwig.Runtime
         #region IEnemyManager
         IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
-        IEnemy IEnemyManager.Spawn(EnemyDef enemyDef, Vector3 position)
+        IEnemy IEnemyManager.Spawn(EnemyConfig enemyDef, Vector3 position)
         {
             var enemyController = GameObject.Instantiate(enemyDef.prefab) as IEnemyController;
             if (enemyController == null)

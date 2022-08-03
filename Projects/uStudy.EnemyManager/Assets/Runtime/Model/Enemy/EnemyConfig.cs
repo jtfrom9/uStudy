@@ -6,8 +6,8 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/Enemy", fileName = "EnemyDef")]
-    public class EnemyDef : ScriptableObject
+    [CreateAssetMenu(menuName = "Hedwig/Enemy", fileName = "EnemyConfig")]
+    public class EnemyConfig : ScriptableObject
     {
         [SerializeField, InterfaceType(typeof(IEnemyController))]
         public Component? prefab;
