@@ -29,7 +29,7 @@ namespace Hedwig.Runtime
         string name { get; }
         void SetDestination(Vector3 pos);
         void Stop();
-        ICharactor GetCharactor();
+        IVisualProperty GetProperty();
 
         void ResetPos(); // to bedeelted
         void Knockback(Vector3 direction, float power);

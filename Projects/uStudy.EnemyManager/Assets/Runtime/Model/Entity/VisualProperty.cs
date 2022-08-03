@@ -2,7 +2,7 @@
 
 namespace Hedwig.Runtime
 {
-    public interface ICharactor
+    public interface IVisualProperty
     {
         float distanceToGround { get; }
     }

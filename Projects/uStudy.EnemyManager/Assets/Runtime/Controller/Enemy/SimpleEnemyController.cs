@@ -10,7 +10,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : Controller, IEnemyController, ICharactor, IHitHandler
+    public class SimpleEnemyController : Controller, IEnemyController, IVisualProperty, IHitHandler
     {
         string _name = "";
         IEnemyControllerEvent? controllerEvent;
@@ -92,7 +92,7 @@ namespace Hedwig.Runtime
         #endregion
 
         #region ICharactor
-        float ICharactor.distanceToGround
+        float IVisualProperty.distanceToGround
         {
             get {
                 if(_distanceToGround==null) {
@@ -140,7 +140,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        ICharactor IEnemyController.GetCharactor()
+        IVisualProperty IEnemyController.GetProperty()
         {
             return this;
         }

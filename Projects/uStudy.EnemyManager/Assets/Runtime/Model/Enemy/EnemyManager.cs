@@ -71,7 +71,7 @@ namespace Hedwig.Runtime
         IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
         {
             var def = getDef();
-            var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetCharactor());
+            var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetProperty());
             if (cursor == null)
             {
                 return null;
