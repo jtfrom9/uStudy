@@ -40,9 +40,8 @@ namespace Hedwig.Runtime
         void OnHit(IHitObject hitObject);
     }
 
-    public interface IEnemy : IDisposable
+    public interface IEnemy : IDisposable, ICharactor
     {
-        int Health { get; }
         void SetDestination(Vector3 pos);
         void Stop();
 

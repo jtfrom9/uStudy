@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
         IEnemyEvent enemyEvent;
         ICursor cursor;
 
-        int health;
+        ReactiveProperty<int> health;
 
         int calcDamage(IHitObject hitObject) {
             return hitObject.attack;
@@ -26,8 +26,8 @@ namespace Hedwig.Runtime
 
         void applyDamage(int actualDamage)
         {
-            this.health -= actualDamage;
-            if(this.health <0) this.health = 0;
+            this.health.Value -= actualDamage;
+            if(this.health.Value <0) this.health.Value = 0;
             Debug.Log($"{this}: applyDamage: actualDamage={actualDamage}, health={health}");
         }
 
@@ -48,7 +48,7 @@ namespace Hedwig.Runtime
         {
             enemyEvent.OnAttacked(this, hitObject, damageEvent);
 
-            if (health == 0)
+            if (health.Value == 0)
             {
                 enemyEvent.OnDeath(this);
             }
@@ -83,8 +83,11 @@ namespace Hedwig.Runtime
         }
         #endregion
 
+        #region ICharactor
+        public IReadOnlyReactiveProperty<int> Health { get => health; }
+        #endregion
+
         #region IEnemy
-        public int Health { get => health; }
         public void SetDestination(Vector3 pos) => enemyController.SetDestination(pos);
         public void Stop() => enemyController.Stop();
 
@@ -105,7 +108,7 @@ namespace Hedwig.Runtime
             this.enemyController = enemyController;
             this.enemyEvent = enemyEvent;
             this.cursor = cursor;
-            this.health = def.MaxHealth;
+            this.health = new ReactiveProperty<int>(def.MaxHealth);
 
             enemyController.Initialize(this, position);
         }
