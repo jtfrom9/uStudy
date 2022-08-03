@@ -34,7 +34,7 @@ public class EnemyTest : LifetimeScope
             .AsImplementedInterfaces();
         builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
             .AsImplementedInterfaces();
-        builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+        builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
     }
 
     void Start()

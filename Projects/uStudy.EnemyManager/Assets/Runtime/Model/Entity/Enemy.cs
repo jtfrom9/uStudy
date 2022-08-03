@@ -63,11 +63,6 @@ namespace Hedwig.Runtime
         IEnemyController[] GetEnemyController();
     }
 
-    public interface IEnemyManagerConfig
-    {
-        EnemyConfig? EnemyDef { get; }
-    }
-
     public interface IEnemyManager : IDisposable
     {
         IReadOnlyReactiveCollection<IEnemy> Enemies { get; }

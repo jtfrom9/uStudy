@@ -9,8 +9,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c78668d1cc3554915a18fc409bedf980, type: 3}
-  m_Name: DemoEnemyManager
+  m_Script: {fileID: 11500000, guid: 33a9e35dabea147f493d68450548e549, type: 3}
+  m_Name: DefaultDamageEffect
   m_EditorClassIdentifier: 
-  enemy: {fileID: 11400000, guid: b9bf2369e222348f7bfd155077eae988, type: 2}
-  effects: {fileID: 11400000, guid: 3e30682e156974cfd96c2dbb5158bae7, type: 2}
+  prefab: {fileID: 4371376129200516975, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
+  damageEffectParameter:
+    duration: 1

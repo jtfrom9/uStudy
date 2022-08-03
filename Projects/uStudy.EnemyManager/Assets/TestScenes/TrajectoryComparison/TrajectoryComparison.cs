@@ -60,7 +60,7 @@ namespace Hedwig.Runtime
                 .AsImplementedInterfaces();
             builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
                 .AsImplementedInterfaces();
-            builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+            builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
 
             if (launcherPrefab == null) { Debug.LogError("launcherPrefab is null"); return; }
             builder.RegisterFactory<(Vector3 pos, ProjectileConfig config), ILauncher>((resolver) =>

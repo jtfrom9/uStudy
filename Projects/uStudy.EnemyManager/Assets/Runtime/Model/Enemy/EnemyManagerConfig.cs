@@ -1,15 +1,14 @@
 #nullable enable
 
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Hedwig.Runtime
 {
     [CreateAssetMenu(menuName = "Hedwig/EnemyManager", fileName = "EnemyManager")]
-    public sealed partial class EnemyManagerConfig : ScriptableObject, IEnemyManagerConfig
+    public sealed partial class EnemyManagerConfig : ScriptableObject
     {
-        [SerializeField]
-        public EnemyConfig? enemyDef;
-
-        EnemyConfig? IEnemyManagerConfig.EnemyDef { get => enemyDef; }
+        public EnemyConfig? enemy;
+        public EnemyEffectsConfig? effects;
     }
 }

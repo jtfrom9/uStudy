@@ -21,5 +21,7 @@ namespace Hedwig.Runtime
     }
 
     public interface IEnvironment
-    {}
+    {
+        IEnvironmentController controller { get; }
+    }
 }

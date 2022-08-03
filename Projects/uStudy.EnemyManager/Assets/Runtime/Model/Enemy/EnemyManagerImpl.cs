@@ -9,13 +9,12 @@ using VContainer.Unity;
 
 namespace Hedwig.Runtime
 {
-    public class EnemyManager: IEnemyManager, IEnemyEvent
+    public class EnemyManagerImpl: IEnemyManager, IEnemyEvent
     {
         ReactiveCollection<IEnemy> _enemies = new ReactiveCollection<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
 
-        IEnemyManagerConfig? enemyManagerConfig;
-        IEffectFactory effectFactory;
+        EnemyManagerConfig config;
         ICursorFactory cursorFactory;
 
         void equipHitTransformEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
@@ -28,13 +27,7 @@ namespace Hedwig.Runtime
 
         void equipHitVisualEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
-            var effects = new IEffect?[]
-            {
-                effectFactory.CreateDamageEffect(enemy.controller, e.damage),
-                effectFactory.CreateHitEffect(enemy.controller,
-                    hitObject?.position ?? enemy.controller.transform.Position,
-                    Vector3.zero)
-            };
+            var effects = config.effects?.CreateEffects(enemy, hitObject, in e) ?? Array.Empty<IEffect>();
             foreach (var effect in effects)
             {
                 effect?.PlayAndDispose().Forget();
@@ -65,7 +58,7 @@ namespace Hedwig.Runtime
 
         EnemyConfig getDef()
         {
-            return enemyManagerConfig?.EnemyDef ?? getDefaultDef();
+            return config.enemy ?? getDefaultDef();
         }
 
         IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
@@ -84,9 +77,9 @@ namespace Hedwig.Runtime
         #region IEnemyManager
         IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
-        IEnemy IEnemyManager.Spawn(EnemyConfig enemyDef, Vector3 position)
+        IEnemy IEnemyManager.Spawn(EnemyConfig enemyConfig, Vector3 position)
         {
-            var enemyController = GameObject.Instantiate(enemyDef.prefab) as IEnemyController;
+            var enemyController = GameObject.Instantiate(enemyConfig.prefab) as IEnemyController;
             if (enemyController == null)
             {
                 throw new InvalidConditionException("Invalid prefab");
@@ -129,10 +122,9 @@ namespace Hedwig.Runtime
         #endregion
 
         // ctor
-        public EnemyManager(IEnemyManagerConfig? enemyManagerConfig, IEffectFactory effectFactory, ICursorFactory cursorFactory)
+        public EnemyManagerImpl(EnemyManagerConfig config, ICursorFactory cursorFactory)
         {
-            this.enemyManagerConfig = enemyManagerConfig;
-            this.effectFactory = effectFactory;
+            this.config = config;
             this.cursorFactory = cursorFactory;
         }
     }

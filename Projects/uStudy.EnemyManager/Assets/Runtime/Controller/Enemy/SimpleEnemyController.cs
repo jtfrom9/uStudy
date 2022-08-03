@@ -123,7 +123,7 @@ namespace Hedwig.Runtime
         }
         void IEnemyController.Knockback(Vector3 direction, float power)
         {
-            if (!cts.IsCancellationRequested)
+            if (cts.IsCancellationRequested)
                 return;
             Debug.Log($"{_name}: AddShock: ${direction}, ${power}");
             if (_rigidbody != null && _agent!=null)

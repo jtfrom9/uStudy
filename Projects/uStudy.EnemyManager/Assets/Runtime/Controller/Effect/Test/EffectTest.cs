@@ -3,19 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Search;
 
 using Cysharp.Threading.Tasks;
 using UniRx;
 using VContainer;
 using VContainer.Unity;
-
 using Hedwig.Runtime;
 
 public class EffectTest : LifetimeScope
 {
-    [SerializeField]
-    Factory setting;
-
     [SerializeField]
     List<GameObject> targets = new List<GameObject>();
 
@@ -25,25 +22,40 @@ public class EffectTest : LifetimeScope
     [SerializeField]
     Toggle continuousToggle;
 
-    [Inject]
-    IEffectFactory factory;
+    [SerializeField, InterfaceType(typeof(IDamageEffect))]
+    Component damageEffectPrefab;
+
+    [SerializeField, InterfaceType(typeof(IHitEffect))]
+    Component hitEffectPrefab;
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterInstance<IEffectFactory>(setting);
-
-        foreach (var target in targets)
+         foreach (var target in targets)
         {
             var mr = target.transform.gameObject.GetComponent<MeshRenderer>();
             mr.material.color = new Color(0.1f, 0.1f, 0.1f);
         }
     }
 
+    IEffect createDamageEffect(ITransformProvider parent, DamageEffectParameter duration, int damage)
+    {
+        var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
+        effect.Initialize(parent, duration, damage);
+        return effect;
+    }
+
+    IEffect createHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction)
+    {
+        var effect = Instantiate(hitEffectPrefab) as IHitEffect;
+        effect.Initialize(parent, position, direction);
+        return effect;
+    }
+
     IEffect[] createEffects(ITransformProvider target, int damage, Vector3 position)
     {
         return new IEffect[] {
-            factory.CreateDamageEffect(target, damage),
-            factory.CreateHitEffect(target, position, Vector3.zero)
+            createDamageEffect(target, new DamageEffectParameter() { duration = 1 }, damage),
+            createHitEffect(target, position, Vector3.zero)
         }.Where(e => e != null).ToArray();
     }
 

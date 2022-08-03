@@ -40,6 +40,11 @@ namespace Hedwig.Runtime
         void Initialize(ITransformProvider parent, DamageEffectParameter duration, int damage);
     }
 
+    public interface IDamageSoundEffect : IEffect
+    {
+        void Initialize(AudioClip audioClip, float volume);
+    }
+
     public interface IHitEffect: IEffect
     {
         void Initialize(ITransformProvider parent, Vector3 position, Vector3 direction);

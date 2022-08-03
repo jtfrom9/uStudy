@@ -1,5 +1,6 @@
 #nullable enable
 
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -37,6 +38,17 @@ namespace Hedwig.Runtime
         public static Vector3 Z(this Vector3 vec, float z)
         {
             return new Vector3(vec.x, vec.y, z);
+        }
+
+        public static IEnumerable<T> WhereNotNull<T>(this IEnumerable<T?> source)
+                where T : class
+        {
+            if (source == null)
+            {
+                return Enumerable.Empty<T>();
+            }
+
+            return source.Where(x => x != null)!;
         }
     }
 }

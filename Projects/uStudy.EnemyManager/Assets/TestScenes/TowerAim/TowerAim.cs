@@ -24,6 +24,7 @@ public class TowerAim : LifetimeScope
     // Inject
     [SerializeField] Factory? setting;
     [SerializeField] EnemyManagerConfig? enemyManagerConfig;
+    [SerializeField] EnvironmentObject? environmentObject;
     [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
@@ -43,9 +44,9 @@ public class TowerAim : LifetimeScope
     {
         builder.RegisterInstance<Factory>(setting!)
             .AsImplementedInterfaces();
-        builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
-            .AsImplementedInterfaces();
-        builder.Register<IEnemyManager, EnemyManager>(Lifetime.Singleton);
+        builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!);
+        builder.RegisterInstance<EnvironmentObject>(environmentObject!);
+        builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();
         builder.Register<LauncherImpl>(Lifetime.Singleton).AsImplementedInterfaces();
@@ -73,7 +74,7 @@ public class TowerAim : LifetimeScope
         }else
         {
             var gameSenario = new GameSenario(enemyManager,
-                enemyManagerConfig?.enemyDef!,
+                enemyManagerConfig?.enemy!,
                 spawnPoints.ToArray(),
                 Vector3.zero,
                 spawnCondition);
