@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        List<ProjectileObject> projectileConfigs = new List<ProjectileObject>();
+        List<ProjectileObject> projectileObjects = new List<ProjectileObject>();
 
         [SerializeField]
         TextMeshProUGUI? textMesh;
@@ -71,10 +71,10 @@ namespace Hedwig.Runtime
             }).AddTo(this);
             enemySelection.Select(0);
 
-            var configSelection = new Selection<ProjectileObject>(projectileConfigs);
+            var configSelection = new Selection<ProjectileObject>(projectileObjects);
             configSelection.OnCurrentChanged.Subscribe(config =>
             {
-                launcher.SetProjectileConfig(config);
+                launcher.SetProjectile(config);
             }).AddTo(this);
             configSelection.Select(0);
 
@@ -89,7 +89,7 @@ namespace Hedwig.Runtime
             {
                 if (can)
                 {
-                    if (launcher.config!.type == ProjectileType.Fire)
+                    if (launcher.projectileObject!.type == ProjectileType.Fire)
                     {
                         launcher.Fire();
                     }
@@ -229,7 +229,7 @@ Target: {info.target}
 
         void setupUI(TextMeshProUGUI textMesh, ILauncher launcher)
         {
-            launcher.OnConfigChanged.Where(config => config!=null).Subscribe(config => {
+            launcher.OnProjectilehanged.Where(config => config!=null).Subscribe(config => {
                 info.config = config!.name;
                 updateText();
             }).AddTo(this);
@@ -245,8 +245,8 @@ Target: {info.target}
             launcher.OnRecastTimeUpdated.Subscribe(ratio =>
             {
                 info.recastRatio = ratio;
-                info.elapsed = (int)(ratio * launcher.config!.recastTime /(float)100);
-                info.maxTime = launcher.config!.recastTime;
+                info.elapsed = (int)(ratio * launcher.projectileObject!.recastTime /(float)100);
+                info.maxTime = launcher.projectileObject!.recastTime;
                 updateText();
             }).AddTo(this);
         }

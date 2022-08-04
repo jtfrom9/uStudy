@@ -35,8 +35,8 @@ namespace Hedwig.Runtime
     {
         void Initialize();
 
-        ProjectileObject? config { get; }
-        void SetProjectileConfig(ProjectileObject? config, ProjectileOption? option = null);
+        ProjectileObject? projectileObject { get; }
+        void SetProjectile(ProjectileObject? projectileObject, ProjectileOption? option = null);
 
         ITransformProvider? target { get; }
         void SetTarget(ITransformProvider? target);
@@ -46,7 +46,7 @@ namespace Hedwig.Runtime
         void TriggerOn();
         void TriggerOff();
 
-        IObservable<ProjectileObject?> OnConfigChanged { get; }
+        IObservable<ProjectileObject?> OnProjectilehanged { get; }
         IObservable<ITransformProvider?> OnTargetChanged { get; }
         IObservable<float> OnRecastTimeUpdated { get; }
         IObservable<IProjectile> OnFired { get; }

@@ -77,9 +77,9 @@ namespace Hedwig.Runtime
         #region IEnemyManager
         IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
-        IEnemy IEnemyManager.Spawn(EnemyObject enemyConfig, Vector3 position)
+        IEnemy IEnemyManager.Spawn(EnemyObject enemyObject, Vector3 position)
         {
-            var enemyController = GameObject.Instantiate(enemyConfig.prefab) as IEnemyController;
+            var enemyController = GameObject.Instantiate(enemyObject.prefab) as IEnemyController;
             if (enemyController == null)
             {
                 throw new InvalidConditionException("Invalid prefab");

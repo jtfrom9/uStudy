@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        List<ProjectileObject> projectileConfigs = new List<ProjectileObject>();
+        List<ProjectileObject> projectileObjects = new List<ProjectileObject>();
 
         [SerializeField]
         GameObject? launcherPrefab;
@@ -88,9 +88,9 @@ namespace Hedwig.Runtime
 
         void Start()
         {
-            for (var i = 0; i < this.projectileConfigs.Count; i++)
+            for (var i = 0; i < this.projectileObjects.Count; i++)
             {
-                pairs.Add(createInstance(i, projectileConfigs[i]));
+                pairs.Add(createInstance(i, projectileObjects[i]));
             }
             setupUI();
 
@@ -112,7 +112,7 @@ namespace Hedwig.Runtime
             var target = cube.GetComponent<ITransformProvider>();
             var launcher = launcherFactory.Invoke((pos, config));
             launcher.Initialize();
-            launcher.SetProjectileConfig(config, new ProjectileOption() { destroyAtEnd = false });
+            launcher.SetProjectile(config, new ProjectileOption() { destroyAtEnd = false });
             launcher.SetTarget(target);
 
 

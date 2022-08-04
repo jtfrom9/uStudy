@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
 {
     public class LauncherImpl : ILauncher, ILauncherHandlerEvent
     {
-        ProjectileObject? _config;
+        ProjectileObject? _projectileObject;
         ITransformProvider? _target;
         CompositeDisposable disposable = new CompositeDisposable();
 
@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
         bool triggered = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
-        Subject<ProjectileObject?> onConfigChanged = new Subject<ProjectileObject?>();
+        Subject<ProjectileObject?> onProjectileChanged = new Subject<ProjectileObject?>();
         Subject<ITransformProvider?> onTargetChanged = new Subject<ITransformProvider?>();
         Subject<float> onRecastTimeUpdated = new Subject<float>();
         Subject<IProjectile> onFired = new Subject<IProjectile>();
@@ -47,7 +47,7 @@ namespace Hedwig.Runtime
 
         void setCanFire()
         {
-            var v = _config != null &&
+            var v = _projectileObject != null &&
                 _target != null &&
                 !recasting;
             canFire.Value = v;
@@ -66,7 +66,7 @@ namespace Hedwig.Runtime
             onRecastTimeUpdated.OnNext((float)elapsed / (float)recast);
         }
 
-        void setConfig(ProjectileObject? config, ProjectileOption? option)
+        void setProjectile(ProjectileObject? projectileObject, ProjectileOption? option)
         {
             if (!initialized)
             {
@@ -75,31 +75,31 @@ namespace Hedwig.Runtime
             if(recasting) {
                 throw new InvalidConditionException("LauncherManager is Recasting");
             }
-            this._config = config;
-            this.trajectoryVisualizer?.SetConfig(config);
+            this._projectileObject = projectileObject;
+            this.trajectoryVisualizer?.SetProjectile(projectileObject);
 
             // reset laouncher handler
             this.launcherHandler?.Dispose();
             this.launcherHandler = null;
 
-            if (config != null)
+            if (projectileObject != null)
             {
-                switch (config.type)
+                switch (projectileObject.type)
                 {
                     case ProjectileType.Fire:
-                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, config, option);
+                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, projectileObject, option);
                         break;
                     case ProjectileType.Burst:
-                        this.launcherHandler = new BurstLauncherHandler(this, projectileFactory, config);
+                        this.launcherHandler = new BurstLauncherHandler(this, projectileFactory, projectileObject);
                         break;
                     case ProjectileType.Grenade:
-                        this.launcherHandler = new GrenadeLauncherHandler(this, projectileFactory, config);
+                        this.launcherHandler = new GrenadeLauncherHandler(this, projectileFactory, projectileObject);
                         break;
                 }
             }
             setCanFire();
             handleError();
-            onConfigChanged.OnNext(config);
+            onProjectileChanged.OnNext(projectileObject);
         }
 
         void setTarget(ITransformProvider? target)
@@ -128,7 +128,7 @@ namespace Hedwig.Runtime
                 return;
             if (launcherHandler == null)
                 return;
-            if (_config == null)
+            if (_projectileObject == null)
                 return;
             if (!canFire.Value)
                 return;
@@ -201,13 +201,13 @@ namespace Hedwig.Runtime
 
         void onAfterFire()
         {
-            if(_config==null) {
+            if(_projectileObject==null) {
                 throw new InvalidConditionException("ProjectileConfig was modified unexpectedly");
             }
             UniTask.Create(async () => {
-                for (var i = 0; i < _config.recastTime; i += 100)
+                for (var i = 0; i < _projectileObject.recastTime; i += 100)
                 {
-                    await stepRecast(_config.recastTime, 100, i);
+                    await stepRecast(_projectileObject.recastTime, 100, i);
                 }
                 changeRecastState(false);
                 handleTriggerOn();
@@ -216,8 +216,8 @@ namespace Hedwig.Runtime
 
         #region ILauncher
         void ILauncher.Initialize() => initialize();
-        ProjectileObject? ILauncher.config { get => _config; }
-        void ILauncher.SetProjectileConfig(ProjectileObject? config, ProjectileOption? option) => setConfig(config, option);
+        ProjectileObject? ILauncher.projectileObject { get => _projectileObject; }
+        void ILauncher.SetProjectile(ProjectileObject? config, ProjectileOption? option) => setProjectile(config, option);
         ITransformProvider? ILauncher.target { get => _target; }
         void ILauncher.SetTarget(ITransformProvider? target) => setTarget(target);
 
@@ -226,7 +226,7 @@ namespace Hedwig.Runtime
         void ILauncher.TriggerOn() => triggerOn();
         void ILauncher.TriggerOff() => triggerOff();
 
-        IObservable<ProjectileObject?> ILauncher.OnConfigChanged { get => onConfigChanged; }
+        IObservable<ProjectileObject?> ILauncher.OnProjectilehanged { get => onProjectileChanged; }
         IObservable<ITransformProvider?> ILauncher.OnTargetChanged { get => onTargetChanged; }
         IObservable<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
         IObservable<IProjectile> ILauncher.OnFired { get => onFired; }
@@ -242,7 +242,7 @@ namespace Hedwig.Runtime
         #region IDisposable
         void IDisposable.Dispose()
         {
-            onConfigChanged.OnCompleted();
+            onProjectileChanged.OnCompleted();
             onTargetChanged.OnCompleted();
             onRecastTimeUpdated.OnCompleted();
             launcherHandler?.Dispose();

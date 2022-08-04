@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
     {
         LineRenderer? lineRenderer;
         bool _visible;
-        ProjectileObject? _config;
+        ProjectileObject? _projectileObject;
 
         ITransform? _start;
         ITransform? _end;
@@ -50,13 +50,13 @@ namespace Hedwig.Runtime
         {
             if (lineRenderer == null)
                 return;
-            if (!_visible || this._start == null || this._end == null || this._config == null)
+            if (!_visible || this._start == null || this._end == null || this._projectileObject == null)
             {
                 lineRenderer.positionCount = 0;
                 lineRenderer.enabled = false;
                 return;
             }
-            var points = _config.trajectory?.MakePoints(this._start.Position, this._end.Position, _config.baseSpeed) ?? new Vector3[] { };
+            var points = _projectileObject.trajectory?.MakePoints(this._start.Position, this._end.Position, _projectileObject.baseSpeed) ?? new Vector3[] { };
             lineRenderer.enabled = true;
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);
@@ -115,9 +115,9 @@ namespace Hedwig.Runtime
             this.setupHandler();
             this.redraw();
         }
-        void ITrajectoryVisualizer.SetConfig(ProjectileObject? config)
+        void ITrajectoryVisualizer.SetProjectile(ProjectileObject? projectileObject)
         {
-            this._config = config;
+            this._projectileObject = projectileObject;
             redraw();
         }
         void ITrajectoryVisualizer.Show(bool v)

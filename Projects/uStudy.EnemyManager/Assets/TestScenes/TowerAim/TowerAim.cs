@@ -85,12 +85,12 @@ public class TowerAim : LifetimeScope
         var configSelection = new Selection<ProjectileObject>(configs);
         configSelection.OnCurrentChanged.Subscribe(config =>
         {
-            launcher.SetProjectileConfig(config);
+            launcher.SetProjectile(config);
         }).AddTo(this);
 
         setupKey(configSelection, launcher);
 
-        launcher.OnConfigChanged.Subscribe(config =>
+        launcher.OnProjectilehanged.Subscribe(config =>
         {
             showConfigInfo(config);
         }).AddTo(this);
