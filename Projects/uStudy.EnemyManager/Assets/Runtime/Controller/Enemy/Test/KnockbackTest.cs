@@ -29,7 +29,6 @@ namespace Hedwig.Runtime
 
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncher? launcher;
-        [Inject] IProjectileFactory? projectileFactory;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -46,21 +45,20 @@ namespace Hedwig.Runtime
         {
             Assert.IsNotNull(enemyManager);
             Assert.IsNotNull(launcher);
-            Assert.IsNotNull(projectileFactory);
             Assert.IsNotNull(textMesh);
-            _start(enemyManager!, launcher!, projectileFactory!);
+            _start(enemyManager!, launcher!);
         }
 
-        void _start(IEnemyManager enemyManager, ILauncher launcher, IProjectileFactory projectileFactory)
+        void _start(IEnemyManager enemyManager, ILauncher launcher)
         {
             enemyManager.Initialize();
             launcher.Initialize();
 
             var configSelection = new Selection<ProjectileObject>(projectileObjects);
-            configSelection.OnCurrentChanged.Subscribe(config =>
+            configSelection.OnCurrentChanged.Subscribe(projectileObject =>
             {
-                launcher.SetProjectile(config);
-                updateText(config);
+                launcher.SetProjectile(projectileObject);
+                updateText(projectileObject);
             }).AddTo(this);
             configSelection.Select(0);
 

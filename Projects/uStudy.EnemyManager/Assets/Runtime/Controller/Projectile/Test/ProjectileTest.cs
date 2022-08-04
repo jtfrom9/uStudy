@@ -35,7 +35,8 @@ namespace Hedwig.Runtime
 
         [Inject] IEnemyManager? enemyManager;
         [Inject] ILauncher? launcher;
-        [Inject] IProjectileFactory? projectileFactory;
+
+        IProjectileFactory? projectileFactory;
 
         protected override void Configure(IContainerBuilder builder)
         {
@@ -54,10 +55,10 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
             if (launcher == null) return;
             launcher.Initialize();
-            if (projectileFactory == null) return;
             if (textMesh == null) return;
 
-            setupDebug(projectileFactory);
+            foreach(var projectile in projectileObjects)
+                setupDebug(projectile);
             setupUI(textMesh, launcher);
 
             var enemySelection = new ReactiveSelection<IEnemy>(enemyManager.Enemies);
@@ -71,18 +72,19 @@ namespace Hedwig.Runtime
             }).AddTo(this);
             enemySelection.Select(0);
 
-            var configSelection = new Selection<ProjectileObject>(projectileObjects);
-            configSelection.OnCurrentChanged.Subscribe(config =>
+            var projectileSelection = new Selection<ProjectileObject>(projectileObjects);
+            projectileSelection.OnCurrentChanged.Subscribe(projectile =>
             {
-                launcher.SetProjectile(config);
+                projectileFactory = projectile;
+                launcher.SetProjectile(projectile);
             }).AddTo(this);
-            configSelection.Select(0);
+            projectileSelection.Select(0);
 
             this.UpdateAsObservable().Subscribe(_ =>
             {
                 var enemy = enemySelection.Current as IEnemy;
                 if (enemy == null) return;
-                _update(launcher, enemy, enemySelection, configSelection);
+                _update(launcher, enemy, enemySelection, projectileSelection);
             }).AddTo(this);
 
             launcher.CanFire.Subscribe(can =>

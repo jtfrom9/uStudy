@@ -12,17 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: Grenade1
   m_EditorClassIdentifier: 
-  endType: 0
-  endEffectPrefab: {fileID: 0}
+  prefab: {fileID: 4106847665687305404, guid: 215387d69cb3a48e49a3b02c3b5e8659, type: 3}
   type: 2
   chargable: 0
   successionCount: 1
   successionInterval: 0
   recastTime: 2300
   shake: 0
-  speed: 5
+  baseSpeed: 10
   range: 10
-  adjust: 1
-  period: 0.05
-  maxAngle: 0
   trajectory: {fileID: 11400000, guid: f31bd33cd5ec74fc19e33ce1a4123e00, type: 2}
+  weaponData: {fileID: 0}

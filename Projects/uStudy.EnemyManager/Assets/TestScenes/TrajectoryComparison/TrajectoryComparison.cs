@@ -69,9 +69,8 @@ namespace Hedwig.Runtime
                 {
                     var go = Instantiate(launcherPrefab, x.pos, Quaternion.identity, root.transform);
                     var launcherController = go.GetComponent<ILauncherController>();
-                    var projectileFactory = resolver.Resolve<IProjectileFactory>();
                     addConfigInfo(go, x.config);
-                    return new LauncherImpl(projectileFactory, launcherController);
+                    return new LauncherImpl(launcherController);
                 };
             }, Lifetime.Transient);
         }

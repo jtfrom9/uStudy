@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbfcafe0a7f054d6cb2ebf3792d6bff7, type: 3}
   m_Name: Grenade1Cubic
   m_EditorClassIdentifier: 
-  endEffectPrefab: {fileID: 0}
+  prefab: {fileID: 4106847665687305404, guid: 4029c9c45ae1740a395e7e89b1e98f7a, type: 3}
   type: 2
   chargable: 0
   successionCount: 1
@@ -22,3 +22,4 @@ MonoBehaviour:
   baseSpeed: 10
   range: 10
   trajectory: {fileID: 11400000, guid: 58081dce50b13424087e35aa18643011, type: 2}
+  weaponData: {fileID: 0}

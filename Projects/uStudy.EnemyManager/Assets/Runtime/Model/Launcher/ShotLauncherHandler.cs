@@ -13,7 +13,6 @@ namespace Hedwig.Runtime
     public class ShotLauncherHandler: ILauncherHandler
     {
         ILauncherHandlerEvent handlerEvent;
-        IProjectileFactory projectileFactory;
         ProjectileObject projectileObject;
         ProjectileOption? option;
 
@@ -25,11 +24,9 @@ namespace Hedwig.Runtime
                 for (var i = 0; i < projectileObject.successionCount; i++)
                 {
                     var cts = new CancellationTokenSource();
-                    var projectile = projectileFactory.Create(
-                        start.Position,
-                        projectileObject);
+                    var projectile = projectileObject.Create(start.Position);
                     if(projectile==null) {
-                        Debug.LogError($"fiail to create projectile");
+                        Debug.LogError($"fiail to create {projectileObject.name}");
                         break;
                     }
                     var disposable = projectile.OnDestroy.Subscribe(_ =>
@@ -84,12 +81,10 @@ namespace Hedwig.Runtime
 
         public ShotLauncherHandler(
             ILauncherHandlerEvent  handlerEvent,
-            IProjectileFactory projectileFactory,
             ProjectileObject projectileObject,
             ProjectileOption? option)
         {
             this.handlerEvent = handlerEvent;
-            this.projectileFactory = projectileFactory;
             this.projectileObject = projectileObject;
             this.option = option;
         }

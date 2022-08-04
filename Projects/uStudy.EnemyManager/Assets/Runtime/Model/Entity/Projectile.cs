@@ -94,7 +94,7 @@ namespace Hedwig.Runtime
 
     public interface IProjectileFactory
     {
-        IProjectile? Create(Vector3 start, ProjectileObject projectileObject);
+        IProjectile? Create(Vector3 start);
         IObservable<IProjectile> OnCreated { get; }
     }
 }

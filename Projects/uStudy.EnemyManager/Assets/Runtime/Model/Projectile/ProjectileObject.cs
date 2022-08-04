@@ -1,8 +1,11 @@
 #nullable enable
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Search;
+using UniRx;
 
 namespace Hedwig.Runtime
 {
@@ -14,10 +17,10 @@ namespace Hedwig.Runtime
     };
 
     [CreateAssetMenu(menuName = "Hedwig/Projectile", fileName = "Projectile")]
-    public class ProjectileObject : ScriptableObject
+    public class ProjectileObject : ScriptableObject, IProjectileFactory
     {
-        [SerializeField, InterfaceType(typeof(IProjectileController))]
-        public Component? prefab;
+        [SerializeField, SearchContext("t:prefab Projectile")]
+        GameObject? prefab;
 
         [SerializeField] public ProjectileType type;
         [SerializeField] public bool chargable;
@@ -49,5 +52,33 @@ namespace Hedwig.Runtime
         [SerializeField] public Trajectory? trajectory;
 
         [SerializeField] public WeaponData? weaponData;
+
+        private IProjectileController? createController()
+        {
+            if (prefab != null)
+            {
+                return Instantiate(prefab).GetComponent<IProjectileController>();
+            }
+            return null;
+        }
+
+        Subject<IProjectile> onCreated = new Subject<IProjectile>();
+
+        public IObservable<IProjectile> OnCreated { get => onCreated; }
+
+        public IProjectile? Create(Vector3 start)
+        {
+            if (prefab == null) return null;
+            IProjectile? projectile = null;
+
+            var projectileController = createController();
+            if (projectileController != null)
+            {
+                projectileController.Initialize(start);
+                projectile = new ProjectileImpl(projectileController, this);
+                onCreated.OnNext(projectile);
+            }
+            return projectile;
+        }
     }
 }

@@ -27,7 +27,6 @@ namespace Hedwig.Runtime
         Subject<IProjectile> onFired = new Subject<IProjectile>();
 
         // injected
-        IProjectileFactory projectileFactory;
         ILauncherController launcherController;
 
         // find
@@ -87,13 +86,13 @@ namespace Hedwig.Runtime
                 switch (projectileObject.type)
                 {
                     case ProjectileType.Fire:
-                        this.launcherHandler = new ShotLauncherHandler(this, projectileFactory, projectileObject, option);
+                        this.launcherHandler = new ShotLauncherHandler(this, projectileObject, option);
                         break;
                     case ProjectileType.Burst:
-                        this.launcherHandler = new BurstLauncherHandler(this, projectileFactory, projectileObject);
+                        this.launcherHandler = new BurstLauncherHandler(this, projectileObject);
                         break;
                     case ProjectileType.Grenade:
-                        this.launcherHandler = new GrenadeLauncherHandler(this, projectileFactory, projectileObject);
+                        this.launcherHandler = new GrenadeLauncherHandler(this, projectileObject);
                         break;
                 }
             }
@@ -251,9 +250,8 @@ namespace Hedwig.Runtime
         }
         #endregion
 
-        public LauncherImpl(IProjectileFactory projectileFactory, ILauncherController launcherController)
+        public LauncherImpl(ILauncherController launcherController)
         {
-            this.projectileFactory = projectileFactory;
             this.launcherController = launcherController;
             this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
         }
