@@ -23,7 +23,7 @@ namespace Hedwig.Runtime
         Factory? setting;
 
         [SerializeField]
-        EnemyManagerConfig? enemyManagerConfig;
+        EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
         Button? goButton;
@@ -46,7 +46,7 @@ namespace Hedwig.Runtime
         {
             builder.RegisterInstance<Factory>(setting!)
                 .AsImplementedInterfaces();
-            builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
+            builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         }

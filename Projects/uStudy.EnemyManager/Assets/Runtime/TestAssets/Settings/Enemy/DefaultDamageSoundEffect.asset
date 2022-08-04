@@ -16,3 +16,4 @@ MonoBehaviour:
   damageEffectParameter:
     duration: 1
   audioClip: {fileID: 8300000, guid: e3666c4a90a1a4ffcad52866fb073ade, type: 3}
+  volume: 0.1

@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c0b21f68efe6e4561b635253d5c48886, type: 3}
   m_Name: DefaultEnvironmentEffect
   m_EditorClassIdentifier: 
-  hitEffects: []
+  prefab: {fileID: 1915984276997065319, guid: ebb0d05fc6eb544678517492037bc3fd, type: 3}

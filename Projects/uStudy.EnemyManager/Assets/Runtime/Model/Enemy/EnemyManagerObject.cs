@@ -6,9 +6,9 @@ using UnityEngine;
 namespace Hedwig.Runtime
 {
     [CreateAssetMenu(menuName = "Hedwig/EnemyManager", fileName = "EnemyManager")]
-    public sealed partial class EnemyManagerConfig : ScriptableObject
+    public class EnemyManagerObject : ScriptableObject
     {
-        public EnemyConfig? enemy;
-        public EnemyEffectsConfig? effects;
+        public EnemyObject? enemy;
+        public EnemyEffectsObject? effects;
     }
 }

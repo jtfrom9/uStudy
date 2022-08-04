@@ -14,7 +14,7 @@ namespace Hedwig.Runtime
         ReactiveCollection<IEnemy> _enemies = new ReactiveCollection<IEnemy>();
         CompositeDisposable disposable = new CompositeDisposable();
 
-        EnemyManagerConfig config;
+        EnemyManagerObject enemyManagerObject;
         ICursorFactory cursorFactory;
 
         void equipHitTransformEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
@@ -27,7 +27,7 @@ namespace Hedwig.Runtime
 
         void equipHitVisualEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
-            var effects = config.effects?.CreateEffects(enemy, hitObject, in e) ?? Array.Empty<IEffect>();
+            var effects = enemyManagerObject.effects?.CreateEffects(enemy, hitObject, in e) ?? Array.Empty<IEffect>();
             foreach (var effect in effects)
             {
                 effect?.PlayAndDispose().Forget();
@@ -47,18 +47,18 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        EnemyConfig getDefaultDef()
+        EnemyObject getDefaultDef()
         {
-            var def = ScriptableObject.CreateInstance<EnemyConfig>();
+            var def = ScriptableObject.CreateInstance<EnemyObject>();
             def.MaxHealth = 100;
             def.Deffence = 0;
             def.Attack = 0;
             return def;
         }
 
-        EnemyConfig getDef()
+        EnemyObject getDef()
         {
-            return config.enemy ?? getDefaultDef();
+            return enemyManagerObject.enemy ?? getDefaultDef();
         }
 
         IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
@@ -77,7 +77,7 @@ namespace Hedwig.Runtime
         #region IEnemyManager
         IReadOnlyReactiveCollection<IEnemy> IEnemyManager.Enemies { get => _enemies; }
 
-        IEnemy IEnemyManager.Spawn(EnemyConfig enemyConfig, Vector3 position)
+        IEnemy IEnemyManager.Spawn(EnemyObject enemyConfig, Vector3 position)
         {
             var enemyController = GameObject.Instantiate(enemyConfig.prefab) as IEnemyController;
             if (enemyController == null)
@@ -122,9 +122,9 @@ namespace Hedwig.Runtime
         #endregion
 
         // ctor
-        public EnemyManagerImpl(EnemyManagerConfig config, ICursorFactory cursorFactory)
+        public EnemyManagerImpl(EnemyManagerObject enemyManagerObject, ICursorFactory cursorFactory)
         {
-            this.config = config;
+            this.enemyManagerObject = enemyManagerObject;
             this.cursorFactory = cursorFactory;
         }
     }

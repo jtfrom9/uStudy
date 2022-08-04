@@ -23,7 +23,7 @@ namespace Hedwig.Runtime
         Factory? setting;
 
         [SerializeField]
-        EnemyManagerConfig? enemyManagerConfig;
+        EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
         List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
@@ -41,7 +41,7 @@ namespace Hedwig.Runtime
         {
             builder.RegisterInstance<Factory>(setting!)
                 .AsImplementedInterfaces();
-            builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
+            builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
             builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);

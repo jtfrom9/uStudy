@@ -7,7 +7,7 @@ using UnityEngine;
 namespace Hedwig.Runtime
 {
     [CreateAssetMenu(menuName = "Hedwig/Effects", fileName = "EnemyEffects")]
-    public class EnemyEffectsConfig : ScriptableObject
+    public class EnemyEffectsObject : ScriptableObject
     {
         public List<DamageEffect> damageEffects = new List<DamageEffect>();
         public List<HitEffect> hitEffects = new List<HitEffect>();

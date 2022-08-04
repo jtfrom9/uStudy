@@ -20,7 +20,7 @@ public class EnemyTest : LifetimeScope
     Factory? setting;
 
     [SerializeField]
-    EnemyManagerConfig? enemyManagerConfig;
+    EnemyManagerObject? enemyManagerObject;
 
     [SerializeField]
     Text? text;
@@ -32,7 +32,7 @@ public class EnemyTest : LifetimeScope
     {
         builder.RegisterInstance<Factory>(setting!)
             .AsImplementedInterfaces();
-        builder.RegisterInstance<EnemyManagerConfig>(enemyManagerConfig!)
+        builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
     }

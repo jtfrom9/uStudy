@@ -66,7 +66,7 @@ namespace Hedwig.Runtime
     public interface IEnemyManager : IDisposable
     {
         IReadOnlyReactiveCollection<IEnemy> Enemies { get; }
-        IEnemy Spawn(EnemyConfig enemyDef, Vector3 position);
+        IEnemy Spawn(EnemyObject enemyDef, Vector3 position);
 
         void Initialize();
     }

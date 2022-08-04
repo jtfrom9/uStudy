@@ -10,7 +10,7 @@ namespace Hedwig.Runtime
     public class GameSenario
     {
         IEnemyManager enemyManager;
-        EnemyConfig enemyConfig;
+        EnemyObject enemyConfig;
         Vector3[] spawnPoints;
         Vector3 target;
         int spawnCondition;
@@ -53,7 +53,7 @@ namespace Hedwig.Runtime
             disposable.Dispose();
         }
 
-        public GameSenario(IEnemyManager enemyManager, EnemyConfig enemyConfig, Vector3[] spawnPoints, Vector3 target, int spawnCondition)
+        public GameSenario(IEnemyManager enemyManager, EnemyObject enemyConfig, Vector3[] spawnPoints, Vector3 target, int spawnCondition)
         {
             this.enemyManager = enemyManager;
             this.enemyConfig = enemyConfig;
