@@ -12,7 +12,7 @@ namespace Hedwig.Runtime
     {
         ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
-        ProjectileObject config;
+        ProjectileObject projectileObject;
 
         CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -29,7 +29,7 @@ namespace Hedwig.Runtime
                 {
                     var projectile = projectileFactory.Create(
                         start.Position,
-                        config);
+                        projectileObject);
                     if (projectile == null)
                     {
                         Debug.LogError($"fail to create projectile");
@@ -70,11 +70,11 @@ namespace Hedwig.Runtime
         public BurstLauncherHandler(
             ILauncherHandlerEvent handlerEvent,
             IProjectileFactory projectileFactory,
-            ProjectileObject config)
+            ProjectileObject projectileObject)
         {
             this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;
-            this.config = config;
+            this.projectileObject = projectileObject;
         }
     }
 }

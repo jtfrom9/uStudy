@@ -217,7 +217,7 @@ namespace Hedwig.Runtime
         #region ILauncher
         void ILauncher.Initialize() => initialize();
         ProjectileObject? ILauncher.projectileObject { get => _projectileObject; }
-        void ILauncher.SetProjectile(ProjectileObject? config, ProjectileOption? option) => setProjectile(config, option);
+        void ILauncher.SetProjectile(ProjectileObject? projectileObject, ProjectileOption? option) => setProjectile(projectileObject, option);
         ITransformProvider? ILauncher.target { get => _target; }
         void ILauncher.SetTarget(ITransformProvider? target) => setTarget(target);
 

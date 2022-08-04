@@ -14,7 +14,7 @@ namespace Hedwig.Runtime
     {
         ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
-        ProjectileObject config;
+        ProjectileObject projectileObject;
         ProjectileOption? option;
 
         public void Fire(ITransform start, ITransform target)
@@ -22,12 +22,12 @@ namespace Hedwig.Runtime
             UniTask.Create(async () =>
             {
                 handlerEvent.OnBeforeFire();
-                for (var i = 0; i < config.successionCount; i++)
+                for (var i = 0; i < projectileObject.successionCount; i++)
                 {
                     var cts = new CancellationTokenSource();
                     var projectile = projectileFactory.Create(
                         start.Position,
-                        config);
+                        projectileObject);
                     if(projectile==null) {
                         Debug.LogError($"fiail to create projectile");
                         break;
@@ -39,11 +39,11 @@ namespace Hedwig.Runtime
                     projectile.Start(target, in option);
                     handlerEvent.OnFired(projectile);
 
-                    if (config.successionCount > 1)
+                    if (projectileObject.successionCount > 1)
                     {
                         try
                         {
-                            await UniTask.Delay(config.successionInterval, cancellationToken: cts.Token);
+                            await UniTask.Delay(projectileObject.successionInterval, cancellationToken: cts.Token);
                         }catch(OperationCanceledException) {
                             break;
                         }finally {
@@ -58,8 +58,8 @@ namespace Hedwig.Runtime
 
         public void TriggerOn(ITransform start, ITransform target)
         {
-            Debug.Log($"StartFire: {config.chargable}");
-            if (config.chargable)
+            Debug.Log($"StartFire: {projectileObject.chargable}");
+            if (projectileObject.chargable)
             {
                 handlerEvent.OnShowTrajectory(true);
             }
@@ -68,7 +68,7 @@ namespace Hedwig.Runtime
         public void TriggerOff()
         {
             Debug.Log("EndFire");
-            if (config.chargable)
+            if (projectileObject.chargable)
             {
                 handlerEvent.OnShowTrajectory(false);
             }
@@ -85,12 +85,12 @@ namespace Hedwig.Runtime
         public ShotLauncherHandler(
             ILauncherHandlerEvent  handlerEvent,
             IProjectileFactory projectileFactory,
-            ProjectileObject config,
+            ProjectileObject projectileObject,
             ProjectileOption? option)
         {
             this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;
-            this.config = config;
+            this.projectileObject = projectileObject;
             this.option = option;
         }
     }

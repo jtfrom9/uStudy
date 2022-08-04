@@ -26,16 +26,16 @@ namespace Hedwig.Runtime
             return Instantiate(projectilePrefab) as IProjectileController;
         }
 
-        IProjectile? IProjectileFactory.Create(Vector3 start, ProjectileObject config)
+        IProjectile? IProjectileFactory.Create(Vector3 start, ProjectileObject projectileObject)
         {
             if (projectilePrefab == null) return null;
             IProjectile? projectile = null;
 
-            var projectileController = createController(config);
+            var projectileController = createController(projectileObject);
             if (projectileController != null)
             {
                 projectileController.Initialize(start);
-                projectile = new ProjectileImpl(projectileController, config);
+                projectile = new ProjectileImpl(projectileController, projectileObject);
                 onCreated.OnNext(projectile);
             }
             return projectile;

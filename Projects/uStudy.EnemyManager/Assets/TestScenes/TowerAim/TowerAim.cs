@@ -25,7 +25,7 @@ public class TowerAim : LifetimeScope
     [SerializeField] Factory? setting;
     [SerializeField] EnemyManagerObject? enemyManagerObject;
     [SerializeField] EnvironmentObject? environmentObject;
-    [SerializeField] List<ProjectileObject> configs = new List<ProjectileObject>();
+    [SerializeField] List<ProjectileObject> projectiles = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
     [SerializeField] List<Vector3> spawnPoints = new List<Vector3>();
@@ -82,22 +82,22 @@ public class TowerAim : LifetimeScope
             gameSenario.Run(cts.Token).Forget();
         }
 
-        var configSelection = new Selection<ProjectileObject>(configs);
-        configSelection.OnCurrentChanged.Subscribe(config =>
+        var projectileSelection = new Selection<ProjectileObject>(projectiles);
+        projectileSelection.OnCurrentChanged.Subscribe(p =>
         {
-            launcher.SetProjectile(config);
+            launcher.SetProjectile(p);
         }).AddTo(this);
 
-        setupKey(configSelection, launcher);
+        setupKey(projectileSelection, launcher);
 
-        launcher.OnProjectilehanged.Subscribe(config =>
+        launcher.OnProjectilehanged.Subscribe(p =>
         {
-            showConfigInfo(config);
+            showInfo(p);
         }).AddTo(this);
 
         setupMouse(mouseOperation, launcher, cursorFactory);
 
-        configSelection.Select(configSelection.Index);
+        projectileSelection.Select(projectileSelection.Index);
     }
 
     protected override void OnDestroy()
@@ -106,16 +106,16 @@ public class TowerAim : LifetimeScope
         disposables.Dispose();
     }
 
-    void showConfigInfo(ProjectileObject? config)
+    void showInfo(ProjectileObject? projectile)
     {
         if(textMesh==null) return;
-        if (config != null)
+        if (projectile != null)
         {
             textMesh.text = @$"
-Name: {config.name}
-Type: {config.type}
-Speed: {config.baseSpeed}
-Distance: {config.range}
+Name: {projectile.name}
+Type: {projectile.type}
+Speed: {projectile.baseSpeed}
+Distance: {projectile.range}
 ";
         } else {
             textMesh.text = "";

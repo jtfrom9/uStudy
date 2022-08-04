@@ -15,7 +15,7 @@ namespace Hedwig.Runtime
     public class ProjectileImpl : IProjectile, IHitObject
     {
         IProjectileController projectileController;
-        ProjectileObject config;
+        ProjectileObject projectileObject;
         ProjectileOption option = new ProjectileOption();
         TrajectoryMap? map = null;
 
@@ -89,31 +89,31 @@ namespace Hedwig.Runtime
             return false;
         }
 
-        async UniTask mainLoop(ProjectileObject config, ITransform target)
+        async UniTask mainLoop(ProjectileObject projectileObject, ITransform target)
         {
             var globalFromPoint = projectileController.transform.Position;
-            var globalToPoint = target.Position + target.ShakeRandom(config.shake);
+            var globalToPoint = target.Position + target.ShakeRandom(projectileObject.shake);
 
-            if (config.trajectory == null) {
+            if (projectileObject.trajectory == null) {
                 //
                 // linear Move if no trajectory
                 //
                 await projectileController.Move(
-                    toSpearPoint(globalFromPoint, globalToPoint, config.range),
-                    config.baseSpeed);
+                    toSpearPoint(globalFromPoint, globalToPoint, projectileObject.range),
+                    projectileObject.baseSpeed);
             }
             else
             {
-                map = config.trajectory.ToMap(globalFromPoint, globalToPoint, config.baseSpeed);
+                map = projectileObject.trajectory.ToMap(globalFromPoint, globalToPoint, projectileObject.baseSpeed);
                 var sections = map.Sections.ToList();
 
                 //
                 // linear Move if only one line and Fire style projectile
                 //
-                if(sections.Count==1 && !sections[0].IsCurve && config.type==ProjectileType.Fire) {
+                if(sections.Count==1 && !sections[0].IsCurve && projectileObject.type==ProjectileType.Fire) {
                     var section = sections[0];
                     await projectileController.Move(
-                        toSpearPoint(globalFromPoint, globalToPoint, config.range),
+                        toSpearPoint(globalFromPoint, globalToPoint, projectileObject.range),
                         section.speed);
                 }
                 else
@@ -139,7 +139,7 @@ namespace Hedwig.Runtime
             //
             // last one step move to the object will hit
             //
-            await projectileController.LastMove(config.baseSpeed);
+            await projectileController.LastMove(projectileObject.baseSpeed);
         }
 
         void destroy()
@@ -156,10 +156,10 @@ namespace Hedwig.Runtime
             projectileController.Dispose();
         }
 
-        async UniTaskVoid start(ProjectileObject config, ITransform target)
+        async UniTaskVoid start(ProjectileObject projectileObject, ITransform target)
         {
             onStarted.OnNext(Unit.Default);
-            await mainLoop(config, target);
+            await mainLoop(projectileObject, target);
             if (option.DestroyAtEnd)
             {
                 dispose();
@@ -179,7 +179,7 @@ namespace Hedwig.Runtime
         void IProjectile.Start(ITransform target, in ProjectileOption? option)
         {
             if (option != null) this.option = option.Value;
-            start(config, target).Forget();
+            start(projectileObject, target).Forget();
         }
         #endregion
 
@@ -200,7 +200,7 @@ namespace Hedwig.Runtime
         HitType IHitObject.type {
             get
             {
-                switch (config.type)
+                switch (projectileObject.type)
                 {
                     case ProjectileType.Grenade:
                         return HitType.Range;
@@ -209,8 +209,8 @@ namespace Hedwig.Runtime
                 }
             }
         }
-        int IHitObject.attack { get => config?.weaponData?.attack ?? 0; }
-        float IHitObject.power { get => config?.weaponData?.power ?? 0; }
+        int IHitObject.attack { get => projectileObject?.weaponData?.attack ?? 0; }
+        float IHitObject.power { get => projectileObject?.weaponData?.power ?? 0; }
         float _speed;
         float IHitObject.speed { get => _speed; }
         Vector3 IHitObject.direction { get => projectileController.transform.Forward; }
@@ -242,10 +242,10 @@ namespace Hedwig.Runtime
             }
         }
 
-        public ProjectileImpl(IProjectileController projectileController, ProjectileObject config)
+        public ProjectileImpl(IProjectileController projectileController, ProjectileObject projectileObject)
         {
             this.projectileController = projectileController;
-            this.config = config;
+            this.projectileObject = projectileObject;
 
             projectileController.OnEvent.Subscribe(e =>
             {
