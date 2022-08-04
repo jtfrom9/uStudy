@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
+        List<ProjectileObject> projectileConfigs = new List<ProjectileObject>();
 
         [SerializeField]
         GameObject? launcherPrefab;
@@ -45,7 +45,7 @@ namespace Hedwig.Runtime
         [SerializeField]
         Button? triggerButton;
 
-        [Inject] System.Func<(Vector3 pos, ProjectileConfig config), ILauncher>? launcherFactory;
+        [Inject] System.Func<(Vector3 pos, ProjectileObject config), ILauncher>? launcherFactory;
         [Inject] IEnemyManager? enemyManager;
 
         List<(ILauncher launcher, ITransformProvider target)> pairs = new List<(ILauncher launcher, ITransformProvider target)>();
@@ -63,7 +63,7 @@ namespace Hedwig.Runtime
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
 
             if (launcherPrefab == null) { Debug.LogError("launcherPrefab is null"); return; }
-            builder.RegisterFactory<(Vector3 pos, ProjectileConfig config), ILauncher>((resolver) =>
+            builder.RegisterFactory<(Vector3 pos, ProjectileObject config), ILauncher>((resolver) =>
             {
                 return (x) =>
                 {
@@ -76,7 +76,7 @@ namespace Hedwig.Runtime
             }, Lifetime.Transient);
         }
 
-        void addConfigInfo(GameObject gameObject, ProjectileConfig config) {
+        void addConfigInfo(GameObject gameObject, ProjectileObject config) {
             var textGameObject = new GameObject("text");
             textGameObject.transform.SetParent(gameObject.transform);
             textGameObject.transform.localPosition = Vector3.forward * (-3);
@@ -98,7 +98,7 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
         }
 
-        (ILauncher, ITransformProvider) createInstance(int index, ProjectileConfig config)
+        (ILauncher, ITransformProvider) createInstance(int index, ProjectileObject config)
         {
             var root = GameObject.Find("Root");
             if (root == null) { throw new InvalidConditionException("no root"); }

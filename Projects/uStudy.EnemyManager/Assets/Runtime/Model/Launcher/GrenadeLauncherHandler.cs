@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
     {
         ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
-        ProjectileConfig config;
+        ProjectileObject config;
 
         ITransform? _start = null;
         ITransform? _target = null;
@@ -58,7 +58,7 @@ namespace Hedwig.Runtime
         public GrenadeLauncherHandler(
             ILauncherHandlerEvent handlerEvent,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config)
+            ProjectileObject config)
         {
             this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;

@@ -15,7 +15,7 @@ namespace Hedwig.Runtime
     public class ProjectileImpl : IProjectile, IHitObject
     {
         IProjectileController projectileController;
-        ProjectileConfig config;
+        ProjectileObject config;
         ProjectileOption option = new ProjectileOption();
         TrajectoryMap? map = null;
 
@@ -89,7 +89,7 @@ namespace Hedwig.Runtime
             return false;
         }
 
-        async UniTask mainLoop(ProjectileConfig config, ITransform target)
+        async UniTask mainLoop(ProjectileObject config, ITransform target)
         {
             var globalFromPoint = projectileController.transform.Position;
             var globalToPoint = target.Position + target.ShakeRandom(config.shake);
@@ -156,7 +156,7 @@ namespace Hedwig.Runtime
             projectileController.Dispose();
         }
 
-        async UniTaskVoid start(ProjectileConfig config, ITransform target)
+        async UniTaskVoid start(ProjectileObject config, ITransform target)
         {
             onStarted.OnNext(Unit.Default);
             await mainLoop(config, target);
@@ -242,7 +242,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        public ProjectileImpl(IProjectileController projectileController, ProjectileConfig config)
+        public ProjectileImpl(IProjectileController projectileController, ProjectileObject config)
         {
             this.projectileController = projectileController;
             this.config = config;

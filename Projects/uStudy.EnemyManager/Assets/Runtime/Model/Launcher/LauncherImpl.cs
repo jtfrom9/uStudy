@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
 {
     public class LauncherImpl : ILauncher, ILauncherHandlerEvent
     {
-        ProjectileConfig? _config;
+        ProjectileObject? _config;
         ITransformProvider? _target;
         CompositeDisposable disposable = new CompositeDisposable();
 
@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
         bool triggered = false;
 
         ReactiveProperty<bool> canFire = new ReactiveProperty<bool>();
-        Subject<ProjectileConfig?> onConfigChanged = new Subject<ProjectileConfig?>();
+        Subject<ProjectileObject?> onConfigChanged = new Subject<ProjectileObject?>();
         Subject<ITransformProvider?> onTargetChanged = new Subject<ITransformProvider?>();
         Subject<float> onRecastTimeUpdated = new Subject<float>();
         Subject<IProjectile> onFired = new Subject<IProjectile>();
@@ -66,7 +66,7 @@ namespace Hedwig.Runtime
             onRecastTimeUpdated.OnNext((float)elapsed / (float)recast);
         }
 
-        void setConfig(ProjectileConfig? config, ProjectileOption? option)
+        void setConfig(ProjectileObject? config, ProjectileOption? option)
         {
             if (!initialized)
             {
@@ -216,8 +216,8 @@ namespace Hedwig.Runtime
 
         #region ILauncher
         void ILauncher.Initialize() => initialize();
-        ProjectileConfig? ILauncher.config { get => _config; }
-        void ILauncher.SetProjectileConfig(ProjectileConfig? config, ProjectileOption? option) => setConfig(config, option);
+        ProjectileObject? ILauncher.config { get => _config; }
+        void ILauncher.SetProjectileConfig(ProjectileObject? config, ProjectileOption? option) => setConfig(config, option);
         ITransformProvider? ILauncher.target { get => _target; }
         void ILauncher.SetTarget(ITransformProvider? target) => setTarget(target);
 
@@ -226,7 +226,7 @@ namespace Hedwig.Runtime
         void ILauncher.TriggerOn() => triggerOn();
         void ILauncher.TriggerOff() => triggerOff();
 
-        IObservable<ProjectileConfig?> ILauncher.OnConfigChanged { get => onConfigChanged; }
+        IObservable<ProjectileObject?> ILauncher.OnConfigChanged { get => onConfigChanged; }
         IObservable<ITransformProvider?> ILauncher.OnTargetChanged { get => onTargetChanged; }
         IObservable<float> ILauncher.OnRecastTimeUpdated { get => onRecastTimeUpdated; }
         IObservable<IProjectile> ILauncher.OnFired { get => onFired; }

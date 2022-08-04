@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
     {
         LineRenderer? lineRenderer;
         bool _visible;
-        ProjectileConfig? _config;
+        ProjectileObject? _config;
 
         ITransform? _start;
         ITransform? _end;
@@ -115,7 +115,7 @@ namespace Hedwig.Runtime
             this.setupHandler();
             this.redraw();
         }
-        void ITrajectoryVisualizer.SetConfig(ProjectileConfig? config)
+        void ITrajectoryVisualizer.SetConfig(ProjectileObject? config)
         {
             this._config = config;
             redraw();

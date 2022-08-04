@@ -25,7 +25,7 @@ public class TowerAim : LifetimeScope
     [SerializeField] Factory? setting;
     [SerializeField] EnemyManagerObject? enemyManagerObject;
     [SerializeField] EnvironmentObject? environmentObject;
-    [SerializeField] List<ProjectileConfig> configs = new List<ProjectileConfig>();
+    [SerializeField] List<ProjectileObject> configs = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
     [SerializeField] List<Vector3> spawnPoints = new List<Vector3>();
@@ -82,7 +82,7 @@ public class TowerAim : LifetimeScope
             gameSenario.Run(cts.Token).Forget();
         }
 
-        var configSelection = new Selection<ProjectileConfig>(configs);
+        var configSelection = new Selection<ProjectileObject>(configs);
         configSelection.OnCurrentChanged.Subscribe(config =>
         {
             launcher.SetProjectileConfig(config);
@@ -106,7 +106,7 @@ public class TowerAim : LifetimeScope
         disposables.Dispose();
     }
 
-    void showConfigInfo(ProjectileConfig? config)
+    void showConfigInfo(ProjectileObject? config)
     {
         if(textMesh==null) return;
         if (config != null)
@@ -122,7 +122,7 @@ Distance: {config.range}
         }
     }
 
-    void setupKey(Selection<ProjectileConfig> configSelection, ILauncher launcher)
+    void setupKey(Selection<ProjectileObject> configSelection, ILauncher launcher)
     {
         this.UpdateAsObservable().Subscribe(_ =>
         {

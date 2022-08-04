@@ -14,7 +14,7 @@ namespace Hedwig.Runtime
     {
         ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
-        ProjectileConfig config;
+        ProjectileObject config;
         ProjectileOption? option;
 
         public void Fire(ITransform start, ITransform target)
@@ -85,7 +85,7 @@ namespace Hedwig.Runtime
         public ShotLauncherHandler(
             ILauncherHandlerEvent  handlerEvent,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config,
+            ProjectileObject config,
             ProjectileOption? option)
         {
             this.handlerEvent = handlerEvent;

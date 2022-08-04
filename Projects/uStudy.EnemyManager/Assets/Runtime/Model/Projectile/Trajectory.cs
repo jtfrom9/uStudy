@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
         bool visible { get; }
         void SetStartTarget(ITransform? target);
         void SetEndTarget(ITransform? target);
-        void SetConfig(ProjectileConfig? config);
+        void SetConfig(ProjectileObject? config);
         void Show(bool v);
     }
 

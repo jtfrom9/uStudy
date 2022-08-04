@@ -12,7 +12,7 @@ namespace Hedwig.Runtime
     {
         ILauncherHandlerEvent handlerEvent;
         IProjectileFactory projectileFactory;
-        ProjectileConfig config;
+        ProjectileObject config;
 
         CancellationTokenSource cts = new CancellationTokenSource();
 
@@ -70,7 +70,7 @@ namespace Hedwig.Runtime
         public BurstLauncherHandler(
             ILauncherHandlerEvent handlerEvent,
             IProjectileFactory projectileFactory,
-            ProjectileConfig config)
+            ProjectileObject config)
         {
             this.handlerEvent = handlerEvent;
             this.projectileFactory = projectileFactory;

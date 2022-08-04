@@ -22,7 +22,7 @@ namespace Hedwig.Runtime
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        List<ProjectileConfig> projectileConfigs = new List<ProjectileConfig>();
+        List<ProjectileObject> projectileConfigs = new List<ProjectileObject>();
 
         [SerializeField]
         TextMeshProUGUI? textMesh;
@@ -56,7 +56,7 @@ namespace Hedwig.Runtime
             enemyManager.Initialize();
             launcher.Initialize();
 
-            var configSelection = new Selection<ProjectileConfig>(projectileConfigs);
+            var configSelection = new Selection<ProjectileObject>(projectileConfigs);
             configSelection.OnCurrentChanged.Subscribe(config =>
             {
                 launcher.SetProjectileConfig(config);
@@ -71,7 +71,7 @@ namespace Hedwig.Runtime
             setupKey(configSelection, launcher, enemy);
         }
 
-        void setupKey(Selection<ProjectileConfig> configSelection, ILauncher launcher, IEnemy enemy)
+        void setupKey(Selection<ProjectileObject> configSelection, ILauncher launcher, IEnemy enemy)
         {
             this.UpdateAsObservable().Subscribe(_ =>
             {
@@ -95,7 +95,7 @@ namespace Hedwig.Runtime
             }).AddTo(this);
         }
 
-        void updateText(ProjectileConfig config)
+        void updateText(ProjectileObject config)
         {
             if (textMesh != null)
             {

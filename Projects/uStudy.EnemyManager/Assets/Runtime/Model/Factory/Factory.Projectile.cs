@@ -17,7 +17,7 @@ namespace Hedwig.Runtime
 
         IObservable<IProjectile> IProjectileFactory.OnCreated { get => onCreated; }
 
-        private IProjectileController? createController(ProjectileConfig config)
+        private IProjectileController? createController(ProjectileObject config)
         {
             if (config.prefab != null)
             {
@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
             return Instantiate(projectilePrefab) as IProjectileController;
         }
 
-        IProjectile? IProjectileFactory.Create(Vector3 start, ProjectileConfig config)
+        IProjectile? IProjectileFactory.Create(Vector3 start, ProjectileObject config)
         {
             if (projectilePrefab == null) return null;
             IProjectile? projectile = null;
