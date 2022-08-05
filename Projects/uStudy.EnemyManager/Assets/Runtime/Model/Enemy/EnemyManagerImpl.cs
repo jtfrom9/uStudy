@@ -49,7 +49,7 @@ namespace Hedwig.Runtime
 
         void addEnemy(IEnemy enemy)
         {
-            var visualizers = targetVisualizersFactory.CreateVisualizers(enemy.controller);
+            var visualizers = targetVisualizersFactory.CreateVisualizers(enemy);
             foreach(var visualizer in visualizers) {
                 enemy.AddVisualizer(visualizer);
             }

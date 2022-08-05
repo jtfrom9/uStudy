@@ -13,7 +13,7 @@ namespace Hedwig.Runtime
         [SerializeField, InspectInline]
         List<TargetVisualizerObject> visualizerObjects = new List<TargetVisualizerObject>();
 
-        IEnumerable<ITargetVisualizer?> createVisualizers(ITransformProvider target)
+        IEnumerable<ITargetVisualizer?> createVisualizers(IVisualizerTarget target)
         {
             foreach (var vobj in visualizerObjects)
             {
@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        IEnumerable<ITargetVisualizer> ITargetVisualizerFactory.CreateVisualizers(ITransformProvider target)
+        IEnumerable<ITargetVisualizer> ITargetVisualizerFactory.CreateVisualizers(IVisualizerTarget target)
             => createVisualizers(target).WhereNotNull();
     }
 }

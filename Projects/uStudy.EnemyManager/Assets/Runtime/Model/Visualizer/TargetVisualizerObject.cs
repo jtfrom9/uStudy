@@ -11,7 +11,7 @@ namespace Hedwig.Runtime
         [SerializeField, SearchContext("t:prefab visualizer")]
         GameObject? prefab;
 
-        public ITargetVisualizer? Create(ITransformProvider target)
+        public ITargetVisualizer? Create(IVisualizerTarget target)
         {
             if (prefab == null) return null;
             var visualizer = Instantiate(prefab).GetComponent<ITargetVisualizer>();

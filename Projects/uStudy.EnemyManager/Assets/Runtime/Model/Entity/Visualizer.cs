@@ -18,13 +18,22 @@ namespace Hedwig.Runtime
         IFreeCursorVisualizer CreateFreeCursor();
     }
 
+    public interface IVisualizerTarget
+    {
+        void AddVisualizer(ITargetVisualizer targetVisualizer);
+
+        ITransform? transform { get; }
+        ISelectable? selectable { get; }
+        IVisualProperty? property { get; }
+    }
+
     public interface ITargetVisualizer: IDisposable
     {
-        void Initialize(ITransformProvider target);
+        void Initialize(IVisualizerTarget target);
     }
 
     public interface ITargetVisualizerFactory
     {
-        IEnumerable<ITargetVisualizer> CreateVisualizers(ITransformProvider target);
+        IEnumerable<ITargetVisualizer> CreateVisualizers(IVisualizerTarget target);
     }
 }

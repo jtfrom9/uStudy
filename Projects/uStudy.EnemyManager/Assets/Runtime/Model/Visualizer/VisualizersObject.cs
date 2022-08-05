@@ -25,7 +25,7 @@ namespace Hedwig.Runtime
             return globalFactory.CreateFreeCursor();
         }
 
-        IEnumerable<ITargetVisualizer> ITargetVisualizerFactory.CreateVisualizers(ITransformProvider target)
+        IEnumerable<ITargetVisualizer> ITargetVisualizerFactory.CreateVisualizers(IVisualizerTarget target)
         {
             var targetsFactory = (_targets as ITargetVisualizerFactory);
             if (targetsFactory == null)

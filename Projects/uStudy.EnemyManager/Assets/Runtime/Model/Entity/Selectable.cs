@@ -10,7 +10,7 @@ namespace Hedwig.Runtime
 {
     public interface ISelectable
     {
+        IReadOnlyReactiveProperty<bool> selected { get; }
         void Select(bool v);
-        bool selected { get; }
     }
 }

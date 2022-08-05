@@ -13,6 +13,7 @@ namespace Hedwig.Runtime
         IEnemyController enemyController;
         IEnemyEvent enemyEvent;
         List<ITargetVisualizer> visualizers = new List<ITargetVisualizer>();
+        ReactiveProperty<bool> _selected = new ReactiveProperty<bool>();
 
         ReactiveProperty<int> health;
 
@@ -70,10 +71,8 @@ namespace Hedwig.Runtime
         #endregion
 
         #region ISelectable
-        void ISelectable.Select(bool v)
-        {
-        }
-        bool ISelectable.selected { get => false; }
+        void ISelectable.Select(bool v) { _selected.Value = v; }
+        IReadOnlyReactiveProperty<bool> ISelectable.selected { get => _selected; }
         #endregion
 
         #region IDisposable
@@ -96,10 +95,16 @@ namespace Hedwig.Runtime
         public void Stop() => enemyController.Stop();
 
         public IEnemyController controller { get => enemyController; }
-        public void AddVisualizer(ITargetVisualizer targetVisualizer) => visualizers.Add(targetVisualizer);
 
         void IEnemy.Damaged(int damage) => damaged(damage);
         void IEnemy.ResetPos() => enemyController.ResetPos();
+        #endregion
+
+        #region IVisualizerTarget
+        void IVisualizerTarget.AddVisualizer(ITargetVisualizer targetVisualizer) => visualizers.Add(targetVisualizer);
+        ITransform? IVisualizerTarget.transform { get => controller.transform; }
+        ISelectable? IVisualizerTarget.selectable { get => this; }
+        IVisualProperty? IVisualizerTarget.property { get => controller.GetProperty(); }
         #endregion
 
         public override string ToString()

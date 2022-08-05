@@ -40,13 +40,12 @@ namespace Hedwig.Runtime
         void OnHit(IHitObject hitObject);
     }
 
-    public interface IEnemy : IDisposable, ICharactor
+    public interface IEnemy : IDisposable, ICharactor, IVisualizerTarget
     {
         void SetDestination(Vector3 pos);
         void Stop();
 
         IEnemyController controller { get; }
-        void AddVisualizer(ITargetVisualizer targetVisualizer);
 
         void Damaged(int damange);
         void ResetPos();
