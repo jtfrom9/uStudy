@@ -47,29 +47,18 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        EnemyObject getDefaultDef()
-        {
-            var def = ScriptableObject.CreateInstance<EnemyObject>();
-            def.MaxHealth = 100;
-            def.Deffence = 0;
-            def.Attack = 0;
-            return def;
-        }
-
-        EnemyObject getDef()
-        {
-            return enemyManagerObject.enemy ?? getDefaultDef();
-        }
-
         IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
         {
-            var def = getDef();
-            var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetProperty());
+            var cursor = cursorFactory.CreateTargetCusor( enemyController, enemyController.GetProperty());
             if (cursor == null)
             {
                 return null;
             }
-            var enemy = new EnemyImpl(def, enemyController, this, cursor, position);
+            if(enemyManagerObject?.defaultEnemyObject==null) {
+                return null;
+            }
+            var enemy = new EnemyImpl(enemyManagerObject.defaultEnemyObject, enemyController, this, cursor);
+            enemyController.Initialize(enemy, position);
             _enemies.Add(enemy);
             return enemy;
         }
@@ -79,16 +68,12 @@ namespace Hedwig.Runtime
 
         IEnemy IEnemyManager.Spawn(EnemyObject enemyObject, Vector3 position)
         {
-            var enemyController = GameObject.Instantiate(enemyObject.prefab) as IEnemyController;
-            if (enemyController == null)
-            {
-                throw new InvalidConditionException("Invalid prefab");
-            }
-            var enemy = addEnemy(enemyController, position);
+            var enemy = enemyObject.Create(this, cursorFactory, position);
             if (enemy == null)
             {
                 throw new InvalidCastException("fail to spwawn");
             }
+            _enemies.Add(enemy);
             return enemy;
         }
 

@@ -1,6 +1,7 @@
 #nullable enable
 
 using UnityEngine;
+using UnityEngine.Search;
 
 namespace Hedwig.Runtime
 {
@@ -8,11 +9,11 @@ namespace Hedwig.Runtime
     {
         [Header("Cursor Settings")]
 
-        [SerializeField, InterfaceType(typeof(ITargetCursor))]
-        Component? targetCursorPrefab;
+        [SerializeField, SearchContext("t:prefab Cursor")]
+        GameObject? targetCursorPrefab;
 
-        [SerializeField, InterfaceType(typeof(IFreeCursor))]
-        Component? freeCursorPrefab;
+        [SerializeField, SearchContext("t:prefab Cursor")]
+        GameObject? freeCursorPrefab;
 
         ITargetCursor? ICursorFactory.CreateTargetCusor(ITransformProvider target, IVisualProperty vproperty)
         {
@@ -20,7 +21,7 @@ namespace Hedwig.Runtime
             {
                 return null;
             }
-            var cursor = Instantiate(targetCursorPrefab) as ITargetCursor;
+            var cursor = Instantiate(targetCursorPrefab).GetComponent<ITargetCursor>();
             cursor?.Initialize(target, vproperty.distanceToGround);
             return cursor;
         }
@@ -31,7 +32,7 @@ namespace Hedwig.Runtime
             {
                 return null;
             }
-            var cursor = Instantiate(freeCursorPrefab) as IFreeCursor;
+            var cursor = Instantiate(freeCursorPrefab).GetComponent<IFreeCursor>();
             cursor?.Initialize();
             return cursor;
         }

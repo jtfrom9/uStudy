@@ -16,7 +16,6 @@
     "com.unity.ugui": "1.0.0",
     "com.unity.visualscripting": "1.7.8",
     "jp.hadashikick.vcontainer": "1.11.0",
-    "net.wraithavengames.unityinterfacesupport": "1.0.0",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -58,8 +57,7 @@
         "com.jtfrom9.input-observable",
         "com.neuecc.unirx",
         "com.openupm",
-        "jp.hadashikick.vcontainer",
-        "net.wraithavengames.unityinterfacesupport"
+        "jp.hadashikick.vcontainer"
       ]
     }
   ]

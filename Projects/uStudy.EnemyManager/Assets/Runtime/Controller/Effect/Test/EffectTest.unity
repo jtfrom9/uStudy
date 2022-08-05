@@ -785,7 +785,6 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 766484626}
-  setting: {fileID: 11400000, guid: a85f8b3622e844dbb9cb4c254c428061, type: 2}
   targets:
   - {fileID: 75417329}
   - {fileID: 744343502}
@@ -793,8 +792,8 @@ MonoBehaviour:
   - {fileID: 1629816687}
   hitButton: {fileID: 291204843}
   continuousToggle: {fileID: 1924821592}
-  damageEffectPrefab: {fileID: 4371376129200516973, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
-  hitEffectPrefab: {fileID: 8575580264491783538, guid: 9c9eafce25a50459bb5b257b4c75a12b, type: 3}
+  damageEffectPrefab: {fileID: 4371376129200516975, guid: 4d4c2821ed11140319ffe9e274181ea2, type: 3}
+  hitEffectPrefab: {fileID: 8575580264491783551, guid: 9c9eafce25a50459bb5b257b4c75a12b, type: 3}
 --- !u!1 &966534224
 GameObject:
   m_ObjectHideFlags: 0

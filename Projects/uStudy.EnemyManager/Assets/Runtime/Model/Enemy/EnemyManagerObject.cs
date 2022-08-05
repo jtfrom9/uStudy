@@ -8,7 +8,7 @@ namespace Hedwig.Runtime
     [CreateAssetMenu(menuName = "Hedwig/EnemyManager", fileName = "EnemyManager")]
     public class EnemyManagerObject : ScriptableObject
     {
-        public EnemyObject? enemy;
+        public EnemyObject? defaultEnemyObject;
         public EnemyEffectsObject? effects;
     }
 }

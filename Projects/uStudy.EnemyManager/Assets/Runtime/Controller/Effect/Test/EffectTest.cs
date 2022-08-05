@@ -2,8 +2,8 @@ using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.Search;
+using UnityEngine.UI;
 
 using Cysharp.Threading.Tasks;
 using UniRx;
@@ -22,11 +22,11 @@ public class EffectTest : LifetimeScope
     [SerializeField]
     Toggle continuousToggle;
 
-    [SerializeField, InterfaceType(typeof(IDamageEffect))]
-    Component damageEffectPrefab;
+    [SerializeField, SearchContext("t:prefab effect")]
+    GameObject damageEffectPrefab;
 
-    [SerializeField, InterfaceType(typeof(IHitEffect))]
-    Component hitEffectPrefab;
+    [SerializeField, SearchContext("t:prefab effect")]
+    GameObject hitEffectPrefab;
 
     protected override void Configure(IContainerBuilder builder)
     {
@@ -39,14 +39,14 @@ public class EffectTest : LifetimeScope
 
     IEffect createDamageEffect(ITransformProvider parent, DamageEffectParameter duration, int damage)
     {
-        var effect = Instantiate(damageEffectPrefab) as IDamageEffect;
+        var effect = Instantiate(damageEffectPrefab).GetComponent<IDamageEffect>();
         effect.Initialize(parent, duration, damage);
         return effect;
     }
 
     IEffect createHitEffect(ITransformProvider parent, Vector3 position, Vector3 direction)
     {
-        var effect = Instantiate(hitEffectPrefab) as IHitEffect;
+        var effect = Instantiate(hitEffectPrefab).GetComponent<IHitEffect>();
         effect.Initialize(parent, position, direction);
         return effect;
     }

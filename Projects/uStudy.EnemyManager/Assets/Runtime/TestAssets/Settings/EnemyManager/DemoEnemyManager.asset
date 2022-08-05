@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c78668d1cc3554915a18fc409bedf980, type: 3}
   m_Name: DemoEnemyManager
   m_EditorClassIdentifier: 
-  enemy: {fileID: 11400000, guid: 8b952aea4c64e452385ec297012fc2e0, type: 2}
+  defaultEnemyObject: {fileID: 11400000, guid: 8b952aea4c64e452385ec297012fc2e0, type: 2}
   effects: {fileID: 11400000, guid: 3e30682e156974cfd96c2dbb5158bae7, type: 2}

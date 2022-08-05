@@ -7,7 +7,7 @@ using UnityEngine.Search;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/Effect/Environment", fileName = "EnvironmentEffect")]
+    [CreateAssetMenu(menuName = "Hedwig/Effect/Environment", fileName = "Environment")]
     public sealed partial class EnvironmentObject : ScriptableObject
     {
         [SerializeField, SearchContext("t:prefab effect")]

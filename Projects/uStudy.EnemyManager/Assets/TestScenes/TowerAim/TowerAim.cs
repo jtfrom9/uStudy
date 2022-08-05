@@ -74,7 +74,7 @@ public class TowerAim : LifetimeScope
         }else
         {
             var gameSenario = new GameSenario(enemyManager,
-                enemyManagerObject?.enemy!,
+                enemyManagerObject?.defaultEnemyObject!,
                 spawnPoints.ToArray(),
                 Vector3.zero,
                 spawnCondition);

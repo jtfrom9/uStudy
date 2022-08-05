@@ -8,7 +8,7 @@ namespace Hedwig.Runtime
 {
     public class EnemyImpl : IEnemy, IEnemyControllerEvent, ISelectable
     {
-        EnemyObject _def;
+        EnemyObject enemyObject;
         IEnemyController enemyController;
         IEnemyEvent enemyEvent;
         ICursor cursor;
@@ -21,7 +21,7 @@ namespace Hedwig.Runtime
 
         int calcActualDamage(int damage)
         {
-            return Math.Max(damage - _def.Deffence, 0);
+            return Math.Max(damage - enemyObject.Deffence, 0);
         }
 
         void applyDamage(int actualDamage)
@@ -99,18 +99,16 @@ namespace Hedwig.Runtime
 
         public override string ToString()
         {
-            return $"{controller.name}.Impl";
+            return $"{controller.name}.Impl({enemyObject.name})";
         }
 
-        public EnemyImpl(EnemyObject def, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor, Vector3? position)
+        public EnemyImpl(EnemyObject enemyObject, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor)
         {
-            this._def = def;
+            this.enemyObject = enemyObject;
             this.enemyController = enemyController;
             this.enemyEvent = enemyEvent;
             this.cursor = cursor;
-            this.health = new ReactiveProperty<int>(def.MaxHealth);
-
-            enemyController.Initialize(this, position);
+            this.health = new ReactiveProperty<int>(enemyObject.MaxHealth);
         }
     }
 }
