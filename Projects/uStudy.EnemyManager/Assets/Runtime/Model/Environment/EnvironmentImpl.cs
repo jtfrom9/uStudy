@@ -37,8 +37,6 @@ namespace Hedwig.Runtime
         {
             this.environmentObject = environmentObject;
             this.environmentController = environmentController;
-
-            environmentController.Initialize(this);
         }
     }
 }

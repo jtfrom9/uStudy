@@ -22,7 +22,9 @@ namespace Hedwig.Runtime
             if (prefab == null) return null;
             var environmentController = Instantiate(prefab).GetComponent<IEnvironmentController>();
             if (environmentController == null) return null;
-            return new EnvironmentImpl(this, environmentController);
+            var environment = new EnvironmentImpl(this, environmentController);
+            environmentController.Initialize(environment);
+            return environment;
         }
     }
 }
