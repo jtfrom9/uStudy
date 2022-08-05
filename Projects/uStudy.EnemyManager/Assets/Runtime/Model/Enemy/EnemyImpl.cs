@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
@@ -11,7 +12,7 @@ namespace Hedwig.Runtime
         EnemyObject enemyObject;
         IEnemyController enemyController;
         IEnemyEvent enemyEvent;
-        ICursor cursor;
+        List<ITargetVisualizer> visualizers = new List<ITargetVisualizer>();
 
         ReactiveProperty<int> health;
 
@@ -71,15 +72,18 @@ namespace Hedwig.Runtime
         #region ISelectable
         void ISelectable.Select(bool v)
         {
-            cursor.Show(v);
         }
-        bool ISelectable.selected { get => cursor.visible; }
+        bool ISelectable.selected { get => false; }
         #endregion
 
         #region IDisposable
         void IDisposable.Dispose()
         {
             enemyController.Dispose();
+            foreach (var visualizer in visualizers)
+            {
+                visualizer.Dispose();
+            }
         }
         #endregion
 
@@ -92,6 +96,7 @@ namespace Hedwig.Runtime
         public void Stop() => enemyController.Stop();
 
         public IEnemyController controller { get => enemyController; }
+        public void AddVisualizer(ITargetVisualizer targetVisualizer) => visualizers.Add(targetVisualizer);
 
         void IEnemy.Damaged(int damage) => damaged(damage);
         void IEnemy.ResetPos() => enemyController.ResetPos();
@@ -102,12 +107,11 @@ namespace Hedwig.Runtime
             return $"{controller.name}.Impl({enemyObject.name})";
         }
 
-        public EnemyImpl(EnemyObject enemyObject, IEnemyController enemyController, IEnemyEvent enemyEvent, ICursor cursor)
+        public EnemyImpl(EnemyObject enemyObject, IEnemyController enemyController, IEnemyEvent enemyEvent)
         {
             this.enemyObject = enemyObject;
             this.enemyController = enemyController;
             this.enemyEvent = enemyEvent;
-            this.cursor = cursor;
             this.health = new ReactiveProperty<int>(enemyObject.MaxHealth);
         }
     }

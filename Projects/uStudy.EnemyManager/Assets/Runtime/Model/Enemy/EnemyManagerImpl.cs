@@ -15,7 +15,7 @@ namespace Hedwig.Runtime
         CompositeDisposable disposable = new CompositeDisposable();
 
         EnemyManagerObject enemyManagerObject;
-        ICursorFactory cursorFactory;
+        ITargetVisualizerFactory targetVisualizersFactory;
 
         void equipHitTransformEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
@@ -47,16 +47,20 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
+        void addEnemy(IEnemy enemy)
+        {
+            var visualizers = targetVisualizersFactory.CreateVisualizers(enemy.controller);
+            foreach(var visualizer in visualizers) {
+                enemy.AddVisualizer(visualizer);
+            }
+            _enemies.Add(enemy);
+        }
+
         IEnemy? addEnemyWithDefaultObject(IEnemyController enemyController, EnemyObject enemyObject)
         {
-            var cursor = cursorFactory.CreateTargetCusor( enemyController, enemyController.GetProperty());
-            if (cursor == null)
-            {
-                return null;
-            }
-            var enemy = new EnemyImpl(enemyObject, enemyController, this, cursor);
+            var enemy = new EnemyImpl(enemyObject, enemyController, this);
             enemyController.Initialize("", enemy, null);
-            _enemies.Add(enemy);
+            addEnemy(enemy);
             return enemy;
         }
 
@@ -65,12 +69,12 @@ namespace Hedwig.Runtime
 
         IEnemy IEnemyManager.Spawn(EnemyObject enemyObject, Vector3 position)
         {
-            var enemy = enemyObject.Create(this, cursorFactory, position);
+            var enemy = enemyObject.Create(this, position);
             if (enemy == null)
             {
                 throw new InvalidCastException("fail to spwawn");
             }
-            _enemies.Add(enemy);
+            addEnemy(enemy);
             return enemy;
         }
 
@@ -104,10 +108,10 @@ namespace Hedwig.Runtime
         #endregion
 
         // ctor
-        public EnemyManagerImpl(EnemyManagerObject enemyManagerObject, ICursorFactory cursorFactory)
+        public EnemyManagerImpl(EnemyManagerObject enemyManagerObject, ITargetVisualizerFactory targetVisualizersFactory)
         {
             this.enemyManagerObject = enemyManagerObject;
-            this.cursorFactory = cursorFactory;
+            this.targetVisualizersFactory = targetVisualizersFactory;
         }
     }
 }

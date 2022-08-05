@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
         public int Attack { get => _Attack; }
         public int Deffence { get => _Deffence; }
 
-        public IEnemy? Create(IEnemyEvent enemyEvent, ICursorFactory cursorFactory, Vector3? position)
+        public IEnemy? Create(IEnemyEvent enemyEvent, Vector3? position)
         {
             if (prefab == null) return null;
             var go = Instantiate(prefab);
@@ -36,13 +36,7 @@ namespace Hedwig.Runtime
                 Destroy(go);
                 return null;
             }
-            var cursor = cursorFactory.CreateTargetCusor(enemyController, enemyController.GetProperty());
-            if (cursor == null)
-            {
-                Destroy(go);
-                return null;
-            }
-            var enemy = new EnemyImpl(this, enemyController, enemyEvent, cursor);
+            var enemy = new EnemyImpl(this, enemyController, enemyEvent);
             enemyController.Initialize(this.name, enemy, position);
             return enemy;
         }

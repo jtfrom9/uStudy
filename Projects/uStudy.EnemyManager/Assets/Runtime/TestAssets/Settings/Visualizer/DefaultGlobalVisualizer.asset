@@ -9,8 +9,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 61cdd8109bd714cecbf88e7da430007b, type: 3}
-  m_Name: DefaultVisualizers
+  m_Script: {fileID: 11500000, guid: 9f483c84857cb4756b0a0e572cea2df7, type: 3}
+  m_Name: DefaultGlobalVisualizer
   m_EditorClassIdentifier: 
-  _global: {fileID: 11400000, guid: 726823c6a48144c5ba35c46af50a08b4, type: 2}
-  _targets: {fileID: 11400000, guid: 7baa15afcf5b847e196b4991a889f81a, type: 2}
+  freeCursorPrefab: {fileID: 4045479415056493936, guid: 4051ce55239e84c06bf74ebc585c4065, type: 3}

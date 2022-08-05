@@ -23,7 +23,7 @@ public class EnemyTest : LifetimeScope
     EnemyManagerObject? enemyManagerObject;
 
     [SerializeField]
-    VisualizerObject? visualizerObject;
+    VisualizersObject? visualizersObject;
 
     [SerializeField]
     Text? text;
@@ -34,7 +34,7 @@ public class EnemyTest : LifetimeScope
     protected override void Configure(IContainerBuilder builder)
     {
         builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
-        builder.RegisterInstance<VisualizerObject>(visualizerObject!)
+        builder.RegisterInstance<VisualizersObject>(visualizersObject!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
     }

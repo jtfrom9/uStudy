@@ -46,6 +46,7 @@ namespace Hedwig.Runtime
         void Stop();
 
         IEnemyController controller { get; }
+        void AddVisualizer(ITargetVisualizer targetVisualizer);
 
         void Damaged(int damange);
         void ResetPos();

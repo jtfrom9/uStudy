@@ -26,7 +26,7 @@ public class TowerAim : LifetimeScope
     [SerializeField, InspectInline] EnemyManagerObject? enemyManagerObject;
     [SerializeField, InspectInline] EnemyObject? defaultEnemyObject;
     [SerializeField, InspectInline] EnvironmentObject? environmentObject;
-    [SerializeField, InspectInline] VisualizerObject? visualizerObject;
+    [SerializeField, InspectInline] VisualizersObject? visualizersObject;
     [SerializeField, InspectInline] List<ProjectileObject> projectiles = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
@@ -36,7 +36,8 @@ public class TowerAim : LifetimeScope
 
     [Inject] IEnemyManager? enemyManager;
     [Inject] IMouseOperation? mouseOperation;
-    [Inject] ICursorFactory? cursorFactory;
+    [Inject] IGlobalVisualizerFactory? globalVisualizerFactory;
+    [Inject] ITargetVisualizerFactory? targetVisualizerFactory;
     [Inject] ILauncher? launcher;
     [Inject] IEnvironment? environment;
 
@@ -48,7 +49,7 @@ public class TowerAim : LifetimeScope
         builder.RegisterInstance<EnvironmentObject>(environmentObject!);
         builder.RegisterInstance<IEnvironmentController>(Controller.Find<IEnvironmentController>());
         builder.Register<EnvironmentImpl>(Lifetime.Singleton).AsImplementedInterfaces();
-        builder.RegisterInstance<VisualizerObject>(visualizerObject!).AsImplementedInterfaces();
+        builder.RegisterInstance<VisualizersObject>(visualizersObject!).AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();
@@ -64,7 +65,8 @@ public class TowerAim : LifetimeScope
         if(launcher==null) return;
         launcher.Initialize();
 
-        if(cursorFactory==null) return;
+        if(globalVisualizerFactory==null) return;
+        if(globalVisualizerFactory==null) return;
         if(mouseOperation==null) return;
         if(cameraTarget==null) return;
 
@@ -98,7 +100,7 @@ public class TowerAim : LifetimeScope
             showInfo(p);
         }).AddTo(this);
 
-        setupMouse(mouseOperation, launcher, cursorFactory);
+        setupMouse(mouseOperation, launcher, globalVisualizerFactory);
 
         projectileSelection.Select(projectileSelection.Index);
     }
@@ -140,19 +142,17 @@ Distance: {projectile.range}
         }).AddTo(this);
     }
 
-    void setupMouse(IMouseOperation mouseOperation, ILauncher launcher, ICursorFactory cursorFactory)
+    void setupMouse(IMouseOperation mouseOperation, ILauncher launcher, IGlobalVisualizerFactory globalVisualizerFactory)
     {
-        IFreeCursor? cursor = null;
+        IFreeCursorVisualizer? cursor = null;
         mouseOperation.OnMove.Subscribe(e =>
         {
             switch (e.type)
             {
                 case MouseMoveEventType.Enter:
-                    if(cursor==null) {
-                        cursor = cursorFactory.CreateFreeCusor();
-                        if(cursor==null) {
-                            throw new InvalidConditionException("fail to create cursor");
-                        }
+                    if (cursor == null)
+                    {
+                        cursor = globalVisualizerFactory.CreateFreeCursor();
                         cursor.Move(e.position);
                         launcher.SetTarget(cursor);
                     }

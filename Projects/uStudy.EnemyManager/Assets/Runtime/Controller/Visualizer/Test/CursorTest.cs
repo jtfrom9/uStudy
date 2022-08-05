@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        VisualizerObject? visualizerObject;
+        VisualizersObject? visualizersObject;
 
         [SerializeField]
         Button? goButton;
@@ -48,7 +48,7 @@ namespace Hedwig.Runtime
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
-            builder.RegisterInstance<VisualizerObject>(visualizerObject!)
+            builder.RegisterInstance<VisualizersObject>(visualizersObject!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         }
