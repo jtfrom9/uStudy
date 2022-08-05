@@ -17,7 +17,7 @@ namespace Hedwig.Runtime
         void Show(bool v);
     }
 
-    [CreateAssetMenu(menuName = "Hedwig/Trajectory", fileName = "Trajectory")]
+    [CreateAssetMenu(menuName = "Hedwig/Projectile/Trajectory", fileName = "Trajectory")]
     public class Trajectory : ScriptableObject
     {
         public List<Section> sections = new List<Section>();

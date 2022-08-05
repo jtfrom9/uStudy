@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/EnemyManager", fileName = "EnemyManager")]
+    [CreateAssetMenu(menuName = "Hedwig/Enemy/Manager", fileName = "EnemyManager")]
     public class EnemyManagerObject : ScriptableObject
     {
         [SerializeField]

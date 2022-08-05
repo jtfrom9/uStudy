@@ -7,7 +7,7 @@ using UnityEngine.Search;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/EnvironmentEffects", fileName = "EnvironmentEffects")]
+    [CreateAssetMenu(menuName = "Hedwig/Environment/Effects", fileName = "EnvironmentEffects")]
     public class EnvironmentEffectsObject : ScriptableObject
     {
         [SerializeField]

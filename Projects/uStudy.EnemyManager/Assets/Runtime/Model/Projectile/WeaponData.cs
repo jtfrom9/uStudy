@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/WeaponData", fileName = "WeaponData")]
+    [CreateAssetMenu(menuName = "Hedwig/Projectile/WeaponData", fileName = "WeaponData")]
     public class WeaponData : ScriptableObject
     {
         [SerializeField]

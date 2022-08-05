@@ -17,7 +17,7 @@ namespace Hedwig.Runtime
         Grenade
     };
 
-    [CreateAssetMenu(menuName = "Hedwig/Projectile", fileName = "Projectile")]
+    [CreateAssetMenu(menuName = "Hedwig/Projectile/Projectile", fileName = "Projectile")]
     public class ProjectileObject : ScriptableObject, IProjectileFactory
     {
         [SerializeField, SearchContext("t:prefab Projectile")]

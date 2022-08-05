@@ -7,7 +7,7 @@ using UnityEngine.Search;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/Enemy", fileName = "Enemy")]
+    [CreateAssetMenu(menuName = "Hedwig/Enemy/Enemy", fileName = "Enemy")]
     public class EnemyObject : ScriptableObject
     {
         [SerializeField, SearchContext("t:prefab Enemy")]

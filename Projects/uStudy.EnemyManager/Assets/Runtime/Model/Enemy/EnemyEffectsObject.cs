@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/EnemyEffects", fileName = "EnemyEffects")]
+    [CreateAssetMenu(menuName = "Hedwig/Enemy/Effects", fileName = "EnemyEffects")]
     public class EnemyEffectsObject : ScriptableObject, IEnemyAttackedEffectFactory
     {
         [SerializeField]

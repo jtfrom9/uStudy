@@ -8,7 +8,7 @@ using UnityExtensions;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/Environment", fileName = "Environment")]
+    [CreateAssetMenu(menuName = "Hedwig/Environment/Envronment", fileName = "Environment")]
     public class EnvironmentObject : ScriptableObject
     {
         [SerializeField, SearchContext("t:prefab environment")]
