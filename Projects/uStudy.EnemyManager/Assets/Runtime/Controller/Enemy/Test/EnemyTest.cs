@@ -17,6 +17,9 @@ using Hedwig.Runtime;
 public class EnemyTest : LifetimeScope
 {
     [SerializeField]
+    EnemyObject? defaultEnemyObject;
+
+    [SerializeField]
     EnemyManagerObject? enemyManagerObject;
 
     [SerializeField]
@@ -38,10 +41,10 @@ public class EnemyTest : LifetimeScope
 
     void Start()
     {
-        if(enemyManager==null) return;
+        if(enemyManager==null || defaultEnemyObject==null) return;
         if(text==null) return;
 
-        enemyManager.Initialize();
+        enemyManager.Initialize(defaultEnemyObject);
 
         RnadomMoveEnemy(enemyManager).Forget();
         RandomAttach(enemyManager).Forget();

@@ -23,6 +23,7 @@ public class TowerAim : LifetimeScope
 
     // Inject
     [SerializeField] EnemyManagerObject? enemyManagerObject;
+    [SerializeField] EnemyObject? defaultEnemyObject;
     [SerializeField] EnvironmentObject? environmentObject;
     [SerializeField] VisualizerObject? visualizerObject;
     [SerializeField] List<ProjectileObject> projectiles = new List<ProjectileObject>();
@@ -56,8 +57,8 @@ public class TowerAim : LifetimeScope
 
     void Start()
     {
-        if (enemyManager == null) return;
-        enemyManager.Initialize();
+        if (enemyManager == null || defaultEnemyObject==null) return;
+        enemyManager.Initialize(defaultEnemyObject);
 
         if(launcher==null) return;
         launcher.Initialize();
@@ -73,7 +74,7 @@ public class TowerAim : LifetimeScope
         }else
         {
             var gameSenario = new GameSenario(enemyManager,
-                enemyManagerObject?.defaultEnemyObject!,
+                defaultEnemyObject,
                 spawnPoints.ToArray(),
                 Vector3.zero,
                 spawnCondition);

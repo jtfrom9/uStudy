@@ -16,6 +16,9 @@ namespace Hedwig.Runtime
     public class KnockbackTest : LifetimeScope
     {
         [SerializeField]
+        EnemyObject? defaultEnemyObject;
+
+        [SerializeField]
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
@@ -43,14 +46,15 @@ namespace Hedwig.Runtime
         void Start()
         {
             Assert.IsNotNull(enemyManager);
+            Assert.IsNotNull(defaultEnemyObject);
             Assert.IsNotNull(launcher);
             Assert.IsNotNull(textMesh);
-            _start(enemyManager!, launcher!);
+            _start(enemyManager!, launcher!, defaultEnemyObject!);
         }
 
-        void _start(IEnemyManager enemyManager, ILauncher launcher)
+        void _start(IEnemyManager enemyManager, ILauncher launcher, EnemyObject defaultEnemyObject)
         {
-            enemyManager.Initialize();
+            enemyManager.Initialize(defaultEnemyObject);
             launcher.Initialize();
 
             var configSelection = new Selection<ProjectileObject>(projectileObjects);

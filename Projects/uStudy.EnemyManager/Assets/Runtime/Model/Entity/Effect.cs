@@ -49,4 +49,9 @@ namespace Hedwig.Runtime
     {
         void Initialize(ITransformProvider parent, Vector3 position, Vector3 direction);
     }
+
+    public interface IEnemyAttackedEffectFactory
+    {
+        IEffect[] CreateAttackedEffects(IEnemy enemy, IHitObject? hitObject, in DamageEvent e);
+    }
 }

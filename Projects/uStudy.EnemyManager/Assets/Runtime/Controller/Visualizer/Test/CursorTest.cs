@@ -20,6 +20,9 @@ namespace Hedwig.Runtime
     public class CursorTest : LifetimeScope
     {
         [SerializeField]
+        EnemyObject? defaultEnemyObject;
+
+        [SerializeField]
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
@@ -52,12 +55,12 @@ namespace Hedwig.Runtime
 
         void Start()
         {
-            if (enemyManager == null)
+            if (enemyManager == null || defaultEnemyObject==null)
             {
                 Debug.LogError($"enemyManager: {enemyManager}");
                 return;
             }
-            enemyManager.Initialize();
+            enemyManager.Initialize(defaultEnemyObject);
 
             var selection = new ReactiveSelection<IEnemy>(enemyManager.Enemies);
             selection.OnPrevChanged.Subscribe(e => { (e as ISelectable)?.Select(false); }).AddTo(this);

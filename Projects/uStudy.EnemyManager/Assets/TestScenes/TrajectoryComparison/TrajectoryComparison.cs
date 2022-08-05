@@ -19,6 +19,9 @@ namespace Hedwig.Runtime
     public class TrajectoryComparison : LifetimeScope
     {
         [SerializeField]
+        EnemyObject? defaultEnemyObject;
+
+        [SerializeField]
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
@@ -92,7 +95,8 @@ namespace Hedwig.Runtime
             setupUI();
 
             if (enemyManager == null) { Debug.LogError("no enemyManager"); return; }
-            enemyManager.Initialize();
+            if(defaultEnemyObject==null){ Debug.LogError("no deafultEnemy"); return; }
+            enemyManager.Initialize(defaultEnemyObject);
         }
 
         (ILauncher, ITransformProvider) createInstance(int index, ProjectileObject config)

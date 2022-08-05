@@ -47,18 +47,15 @@ namespace Hedwig.Runtime
             enemy.Dispose();
         }
 
-        IEnemy? addEnemy(IEnemyController enemyController, Vector3? position = null)
+        IEnemy? addEnemyWithDefaultObject(IEnemyController enemyController, EnemyObject enemyObject)
         {
             var cursor = cursorFactory.CreateTargetCusor( enemyController, enemyController.GetProperty());
             if (cursor == null)
             {
                 return null;
             }
-            if(enemyManagerObject?.defaultEnemyObject==null) {
-                return null;
-            }
-            var enemy = new EnemyImpl(enemyManagerObject.defaultEnemyObject, enemyController, this, cursor);
-            enemyController.Initialize("", enemy, position);
+            var enemy = new EnemyImpl(enemyObject, enemyController, this, cursor);
+            enemyController.Initialize("", enemy, null);
             _enemies.Add(enemy);
             return enemy;
         }
@@ -77,14 +74,14 @@ namespace Hedwig.Runtime
             return enemy;
         }
 
-        void IEnemyManager.Initialize()
+        void IEnemyManager.Initialize(EnemyObject defualtEnemyObject)
         {
             var enemyRepository = Controller.Find<IEnemyControllerRepository>();
             if (enemyRepository != null)
             {
                 foreach (var enemyController in enemyRepository.GetEnemyController())
                 {
-                    addEnemy(enemyController);
+                    addEnemyWithDefaultObject(enemyController, defualtEnemyObject);
                 }
             }
         }

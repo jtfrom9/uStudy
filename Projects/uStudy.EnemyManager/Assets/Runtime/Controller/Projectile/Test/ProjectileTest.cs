@@ -20,6 +20,9 @@ namespace Hedwig.Runtime
     public class ProjectileTest : LifetimeScope
     {
         [SerializeField]
+        EnemyObject? defaultEnemyObject;
+
+        [SerializeField]
         EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
@@ -51,7 +54,9 @@ namespace Hedwig.Runtime
         void Start()
         {
             if (enemyManager == null) return;
-            enemyManager.Initialize();
+            if(defaultEnemyObject==null) return;
+
+            enemyManager.Initialize(defaultEnemyObject);
             if (launcher == null) return;
             launcher.Initialize();
             if (textMesh == null) return;

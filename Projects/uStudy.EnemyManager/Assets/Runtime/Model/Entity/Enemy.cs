@@ -68,7 +68,7 @@ namespace Hedwig.Runtime
         IReadOnlyReactiveCollection<IEnemy> Enemies { get; }
         IEnemy Spawn(EnemyObject enemyObject, Vector3 position);
 
-        void Initialize();
+        void Initialize(EnemyObject defaultEnemyObject);
     }
 
     public static class EnemyManagerExtension
