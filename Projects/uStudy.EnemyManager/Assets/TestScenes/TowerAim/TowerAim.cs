@@ -12,6 +12,7 @@ using VContainer;
 using VContainer.Unity;
 using UniRx;
 using UniRx.Triggers;
+using UnityExtensions;
 
 using Hedwig.Runtime;
 using Hedwig.Runtime.InputObservable;
@@ -22,11 +23,11 @@ public class TowerAim : LifetimeScope
     [SerializeField] TextMeshProUGUI? textMesh;
 
     // Inject
-    [SerializeField] EnemyManagerObject? enemyManagerObject;
-    [SerializeField] EnemyObject? defaultEnemyObject;
-    [SerializeField] EnvironmentObject? environmentObject;
+    [SerializeField, InspectInline] EnemyManagerObject? enemyManagerObject;
+    [SerializeField, InspectInline] EnemyObject? defaultEnemyObject;
+    [SerializeField, InspectInline] EnvironmentObject? environmentObject;
     [SerializeField] VisualizerObject? visualizerObject;
-    [SerializeField] List<ProjectileObject> projectiles = new List<ProjectileObject>();
+    [SerializeField, InspectInline] List<ProjectileObject> projectiles = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
     [SerializeField] List<Vector3> spawnPoints = new List<Vector3>();

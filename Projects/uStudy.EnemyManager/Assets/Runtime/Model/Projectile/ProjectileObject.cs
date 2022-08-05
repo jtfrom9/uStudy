@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Search;
 using UniRx;
+using UnityExtensions;
 
 namespace Hedwig.Runtime
 {
@@ -49,9 +50,9 @@ namespace Hedwig.Runtime
         [Min(1)]
         public float range = 10;
 
-        [SerializeField] public Trajectory? trajectory;
+        [SerializeField, InspectInline] public Trajectory? trajectory;
 
-        [SerializeField] public WeaponData? weaponData;
+        [SerializeField, InspectInline] public WeaponData? weaponData;
 
         private IProjectileController? createController()
         {
