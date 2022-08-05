@@ -16,10 +16,10 @@ namespace Hedwig.Runtime
     public class KnockbackTest : LifetimeScope
     {
         [SerializeField]
-        Factory? setting;
+        EnemyManagerObject? enemyManagerObject;
 
         [SerializeField]
-        EnemyManagerObject? enemyManagerObject;
+        VisualizerObject? visualizerObject;
 
         [SerializeField]
         List<ProjectileObject> projectileObjects = new List<ProjectileObject>();
@@ -32,9 +32,8 @@ namespace Hedwig.Runtime
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.RegisterInstance<Factory>(setting!)
-                .AsImplementedInterfaces();
-            builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!)
+            builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
+            builder.RegisterInstance<VisualizerObject>(visualizerObject!)
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
             builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);

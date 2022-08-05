@@ -22,9 +22,9 @@ public class TowerAim : LifetimeScope
     [SerializeField] TextMeshProUGUI? textMesh;
 
     // Inject
-    [SerializeField] Factory? setting;
     [SerializeField] EnemyManagerObject? enemyManagerObject;
     [SerializeField] EnvironmentObject? environmentObject;
+    [SerializeField] VisualizerObject? visualizerObject;
     [SerializeField] List<ProjectileObject> projectiles = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;
@@ -42,10 +42,9 @@ public class TowerAim : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterInstance<Factory>(setting!)
-            .AsImplementedInterfaces();
         builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
         builder.RegisterInstance<EnvironmentObject>(environmentObject!);
+        builder.RegisterInstance<VisualizerObject>(visualizerObject!).AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();

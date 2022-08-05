@@ -17,10 +17,10 @@ using Hedwig.Runtime;
 public class EnemyTest : LifetimeScope
 {
     [SerializeField]
-    Factory? setting;
+    EnemyManagerObject? enemyManagerObject;
 
     [SerializeField]
-    EnemyManagerObject? enemyManagerObject;
+    VisualizerObject? visualizerObject;
 
     [SerializeField]
     Text? text;
@@ -30,9 +30,8 @@ public class EnemyTest : LifetimeScope
 
     protected override void Configure(IContainerBuilder builder)
     {
-        builder.RegisterInstance<Factory>(setting!)
-            .AsImplementedInterfaces();
-        builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!)
+        builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
+        builder.RegisterInstance<VisualizerObject>(visualizerObject!)
             .AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
     }

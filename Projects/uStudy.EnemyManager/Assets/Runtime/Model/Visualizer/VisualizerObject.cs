@@ -5,7 +5,8 @@ using UnityEngine.Search;
 
 namespace Hedwig.Runtime
 {
-    public sealed partial class Factory : ICursorFactory
+    [CreateAssetMenu(menuName ="Hedwig/Visualizers", fileName ="Visualizers")]
+    public class VisualizerObject : ScriptableObject, ICursorFactory
     {
         [Header("Cursor Settings")]
 
@@ -36,6 +37,5 @@ namespace Hedwig.Runtime
             cursor?.Initialize();
             return cursor;
         }
-
     }
 }

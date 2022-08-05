@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e86ebe1169564baebddf030123435d9, type: 3}
-  m_Name: HedwigRuntimeSetting
+  m_Script: {fileID: 11500000, guid: 1d4915787e8c645e9bd7082a73b1b800, type: 3}
+  m_Name: DefaultVisualizers
   m_EditorClassIdentifier: 
   targetCursorPrefab: {fileID: 7115850250245562104, guid: dcde3c461ddf54484acd7b3b970f17c6, type: 3}
   freeCursorPrefab: {fileID: 7115850250245562104, guid: dcde3c461ddf54484acd7b3b970f17c6, type: 3}
