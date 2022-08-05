@@ -4,26 +4,25 @@ using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Search;
+using UnityExtensions;
 
 namespace Hedwig.Runtime
 {
-    [CreateAssetMenu(menuName = "Hedwig/Effect/Environment", fileName = "Environment")]
-    public sealed partial class EnvironmentObject : ScriptableObject
+    [CreateAssetMenu(menuName = "Hedwig/Environment", fileName = "Environment")]
+    public class EnvironmentObject : ScriptableObject
     {
-        [SerializeField, SearchContext("t:prefab effect")]
+        [SerializeField, SearchContext("t:prefab environment")]
         GameObject? prefab;
 
-        IEnumerable<IEffect?> createEffects(IEnvironment environment, Vector3 position, Vector3 direction)
-        {
-            if(prefab==null) yield break;
-            var effect = Instantiate(prefab).GetComponent<IHitEffect>();
-            effect?.Initialize(environment.controller, position, direction);
-            yield return effect;
-        }
+        [SerializeField, InspectInline]
+        public EnvironmentEffectsObject? environmentEffects;
 
-        public IEffect[] CreateEffects(IEnvironment environment, Vector3 position, Vector3 direction)
-            => createEffects(environment, position, direction)
-                .WhereNotNull()
-                .ToArray();
+        public IEnvironment? Create()
+        {
+            if (prefab == null) return null;
+            var environmentController = Instantiate(prefab).GetComponent<IEnvironmentController>();
+            if (environmentController == null) return null;
+            return new EnvironmentImpl(this, environmentController);
+        }
     }
 }

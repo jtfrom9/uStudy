@@ -17,11 +17,11 @@ namespace Hedwig.Runtime
         void IEnvironmentEvent.OnHit(IHitObject hitObject)
         {
             Debug.Log($"{this}: OnHit");
-            var effects = environmentObject.CreateEffects(this, 
-                hitObject.position, 
-                -hitObject.direction);
-            // effect?.PlayAndDispose().Forget();
-            foreach(var effect in effects) {
+            var effects = environmentObject.environmentEffects?.CreateEffects(this,
+                hitObject.position,
+                -hitObject.direction) ?? Array.Empty<IEffect>();
+            foreach (var effect in effects)
+            {
                 effect.PlayAndDispose().Forget();
             }
         }
@@ -33,10 +33,11 @@ namespace Hedwig.Runtime
             return $"{environmentController.name}.Impl";
         }
 
-        public EnvironmentImpl(EnvironmentObject environmentObject)
+        public EnvironmentImpl(EnvironmentObject environmentObject, IEnvironmentController environmentController)
         {
             this.environmentObject = environmentObject;
-            environmentController = Controller.Find<IEnvironmentController>();
+            this.environmentController = environmentController;
+
             environmentController.Initialize(this);
         }
     }

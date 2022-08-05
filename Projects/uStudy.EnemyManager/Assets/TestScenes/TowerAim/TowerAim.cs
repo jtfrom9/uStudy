@@ -46,14 +46,14 @@ public class TowerAim : LifetimeScope
     {
         builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
         builder.RegisterInstance<EnvironmentObject>(environmentObject!);
+        builder.RegisterInstance<IEnvironmentController>(Controller.Find<IEnvironmentController>());
+        builder.Register<EnvironmentImpl>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<VisualizerObject>(visualizerObject!).AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();
         builder.Register<LauncherImpl>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
-        builder.Register<EnvironmentImpl>(Lifetime.Singleton)
-            .AsImplementedInterfaces();
     }
 
     void Start()
@@ -67,6 +67,8 @@ public class TowerAim : LifetimeScope
         if(cursorFactory==null) return;
         if(mouseOperation==null) return;
         if(cameraTarget==null) return;
+
+        if(environmentObject==null) return;
 
         var token = this.GetCancellationTokenOnDestroy();
         if (randomWalk)
