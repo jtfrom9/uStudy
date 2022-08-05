@@ -26,7 +26,7 @@ public class TowerAim : LifetimeScope
     [SerializeField, InspectInline] EnemyManagerObject? enemyManagerObject;
     [SerializeField, InspectInline] EnemyObject? defaultEnemyObject;
     [SerializeField, InspectInline] EnvironmentObject? environmentObject;
-    [SerializeField] VisualizerObject? visualizerObject;
+    [SerializeField, InspectInline] VisualizerObject? visualizerObject;
     [SerializeField, InspectInline] List<ProjectileObject> projectiles = new List<ProjectileObject>();
     [SerializeField] InputObservableMouseHandler? inputObservableCusrorManager;
     [SerializeField] Transform? cameraTarget;

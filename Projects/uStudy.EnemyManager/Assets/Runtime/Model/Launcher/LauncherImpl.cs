@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Threading;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -65,15 +66,8 @@ namespace Hedwig.Runtime
             onRecastTimeUpdated.OnNext((float)elapsed / (float)recast);
         }
 
-        void setProjectile(ProjectileObject? projectileObject, ProjectileOption? option)
+        void setProjectileCore(ProjectileObject? projectileObject, ProjectileOption? option)
         {
-            if (!initialized)
-            {
-                throw new InvalidConditionException("LauncherManager is not Initalized");
-            }
-            if(recasting) {
-                throw new InvalidConditionException("LauncherManager is Recasting");
-            }
             this._projectileObject = projectileObject;
             this.trajectoryVisualizer?.SetProjectile(projectileObject);
 
@@ -99,6 +93,36 @@ namespace Hedwig.Runtime
             setCanFire();
             handleError();
             onProjectileChanged.OnNext(projectileObject);
+        }
+
+        void setProjectile(ProjectileObject? projectileObject, ProjectileOption? option)
+        {
+            if (!initialized)
+            {
+                throw new InvalidConditionException("LauncherManager is not Initalized");
+            }
+            if(recasting) {
+                throw new InvalidConditionException("LauncherManager is Recasting");
+            }
+            setProjectileCore(projectileObject, option);
+        }
+
+        async UniTask setProjectileAsync(ProjectileObject? projectileObject, ProjectileOption? option, CancellationToken cancellationToken)
+        {
+            if (!initialized)
+            {
+                throw new InvalidConditionException("LauncherManager is not Initalized");
+            }
+            if (recasting)
+            {
+                try
+                {
+                    await canFire.First(v => v).ToUniTask(cancellationToken: cancellationToken);
+                }catch(OperationCanceledException) {
+                    return;
+                }
+            }
+            setProjectileCore(projectileObject, option);
         }
 
         void setTarget(ITransformProvider? target)
@@ -217,6 +241,8 @@ namespace Hedwig.Runtime
         void ILauncher.Initialize() => initialize();
         ProjectileObject? ILauncher.projectileObject { get => _projectileObject; }
         void ILauncher.SetProjectile(ProjectileObject? projectileObject, ProjectileOption? option) => setProjectile(projectileObject, option);
+        UniTask ILauncher.SetProjectileAsync(ProjectileObject? projectileObject, ProjectileOption? option, CancellationToken cancellationToken) 
+            => setProjectileAsync(projectileObject, option, cancellationToken);
         ITransformProvider? ILauncher.target { get => _target; }
         void ILauncher.SetTarget(ITransformProvider? target) => setTarget(target);
 

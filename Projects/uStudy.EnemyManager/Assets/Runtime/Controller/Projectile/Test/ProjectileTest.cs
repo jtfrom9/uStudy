@@ -77,10 +77,16 @@ namespace Hedwig.Runtime
             enemySelection.Select(0);
 
             var projectileSelection = new Selection<ProjectileObject>(projectileObjects);
-            projectileSelection.OnCurrentChanged.Subscribe(projectile =>
+            CancellationTokenSource? cts = null;
+            projectileSelection.OnCurrentChanged
+             .Subscribe(async projectile =>
             {
                 projectileFactory = projectile;
-                launcher.SetProjectile(projectile);
+                cts?.Cancel();
+                cts = new CancellationTokenSource();
+                await launcher.SetProjectileAsync(projectile, cancellationToken: cts.Token);
+                cts.Dispose();
+                cts = null;
             }).AddTo(this);
             projectileSelection.Select(0);
 
@@ -101,7 +107,6 @@ namespace Hedwig.Runtime
                     }
                 }
             }).AddTo(this);
-
         }
 
         void OnApplicationQuit() {

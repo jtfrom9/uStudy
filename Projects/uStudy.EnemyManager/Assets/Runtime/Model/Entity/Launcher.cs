@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Threading;
 using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
@@ -37,6 +38,7 @@ namespace Hedwig.Runtime
 
         ProjectileObject? projectileObject { get; }
         void SetProjectile(ProjectileObject? projectileObject, ProjectileOption? option = null);
+        UniTask SetProjectileAsync(ProjectileObject? projectileObject, ProjectileOption? option = null, CancellationToken cancellationToken=default);
 
         ITransformProvider? target { get; }
         void SetTarget(ITransformProvider? target);
