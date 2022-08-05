@@ -27,7 +27,7 @@ namespace Hedwig.Runtime
 
         void equipHitVisualEffect(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
         {
-            var effects = enemyManagerObject.effects?.CreateEffects(enemy, hitObject, in e) ?? Array.Empty<IEffect>();
+            var effects = enemyManagerObject.effects?.CreateAttackedEffects(enemy, hitObject, in e) ?? Array.Empty<IEffect>();
             foreach (var effect in effects)
             {
                 effect?.PlayAndDispose().Forget();

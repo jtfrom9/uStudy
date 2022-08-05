@@ -11,16 +11,20 @@ namespace Hedwig.Runtime
     public class EnemyObject : ScriptableObject
     {
         [SerializeField, SearchContext("t:prefab Enemy")]
-        public GameObject? prefab;
+        GameObject? prefab;
 
         [SerializeField]
-        public int MaxHealth;
+        int _MaxHealth;
 
         [SerializeField]
-        public int Attack;
+        int _Attack;
 
         [SerializeField]
-        public int Deffence;
+        int _Deffence;
+
+        public int MaxHealth { get => _MaxHealth; }
+        public int Attack { get => _Attack; }
+        public int Deffence { get => _Deffence; }
 
         public IEnemy? Create(IEnemyEvent enemyEvent, ICursorFactory cursorFactory, Vector3? position)
         {

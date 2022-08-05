@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: DefaultEnemy
   m_EditorClassIdentifier: 
   prefab: {fileID: 2489900876656539108, guid: 8e92bdc89cc064600a03877e9a4b006d, type: 3}
-  MaxHealth: 100
-  Attack: 10
-  Deffence: 0
+  _MaxHealth: 100
+  _Attack: 0
+  _Deffence: 0

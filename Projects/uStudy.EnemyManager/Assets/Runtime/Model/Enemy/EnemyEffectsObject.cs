@@ -16,7 +16,7 @@ namespace Hedwig.Runtime
         {
             foreach (var damageEffect in damageEffects)
             {
-                yield return damageEffect.Create(enemy.controller, e.damage);
+                yield return damageEffect.Create(enemy.controller, e.actualDamage);
             }
             foreach (var hitEffect in hitEffects)
             {
@@ -26,7 +26,7 @@ namespace Hedwig.Runtime
             }
         }
 
-        public IEffect[] CreateEffects(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
+        public IEffect[] CreateAttackedEffects(IEnemy enemy, IHitObject? hitObject, in DamageEvent e)
             => createEffects(enemy, hitObject, e)
                 .WhereNotNull()
                 .ToArray();
