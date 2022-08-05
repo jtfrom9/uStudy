@@ -74,7 +74,7 @@ namespace Hedwig.Runtime
             var projectileController = createController();
             if (projectileController != null)
             {
-                projectileController.Initialize(start);
+                projectileController.Initialize(this.name, start);
                 projectile = new ProjectileImpl(projectileController, this);
                 onCreated.OnNext(projectile);
             }

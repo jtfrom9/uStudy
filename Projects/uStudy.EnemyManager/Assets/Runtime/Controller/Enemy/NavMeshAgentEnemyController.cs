@@ -10,7 +10,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.Runtime
 {
-    public class SimpleEnemyController : Controller, IEnemyController, IVisualProperty, IHitHandler
+    public class NavMeshAgentEnemyController : Controller, IEnemyController, IVisualProperty, IHitHandler
     {
         string _name = "";
         IEnemyControllerEvent? controllerEvent;
@@ -152,11 +152,11 @@ namespace Hedwig.Runtime
             count = 0;
         }
 
-        void IEnemyController.Initialize(IEnemyControllerEvent controllerEvent, Vector3? position)
+        void IEnemyController.Initialize(string name, IEnemyControllerEvent controllerEvent, Vector3? position)
         {
             if (gameObject.name == "")
             {
-                gameObject.name = $"SimpleEnemyController({count})";
+                gameObject.name = $"{name}_{count}";
                 count++;
             }
             _name = gameObject.name;

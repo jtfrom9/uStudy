@@ -39,7 +39,7 @@ namespace Hedwig.Runtime
                 return null;
             }
             var enemy = new EnemyImpl(this, enemyController, enemyEvent, cursor);
-            enemyController.Initialize(enemy, position);
+            enemyController.Initialize(this.name, enemy, position);
             return enemy;
         }
     }

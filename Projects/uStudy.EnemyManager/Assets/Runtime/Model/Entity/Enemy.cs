@@ -24,7 +24,7 @@ namespace Hedwig.Runtime
 
     public interface IEnemyController: ITransformProvider
     {
-        void Initialize(IEnemyControllerEvent controllerEvent, Vector3? position);
+        void Initialize(string name, IEnemyControllerEvent controllerEvent, Vector3? position);
 
         string name { get; }
         void SetDestination(Vector3 pos);

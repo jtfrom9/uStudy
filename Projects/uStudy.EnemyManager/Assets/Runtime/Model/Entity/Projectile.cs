@@ -64,7 +64,7 @@ namespace Hedwig.Runtime
 
     public interface IProjectileController : ITransformProvider
     {
-        void Initialize(Vector3 initial);
+        void Initialize(string name, Vector3 initial);
 
         string name { get; }
         UniTask<bool> Move(Vector3 to, float speed);

@@ -224,11 +224,11 @@ namespace Hedwig.Runtime
             count = 0;
         }
 
-        void IProjectileController.Initialize(Vector3 initial)
+        void IProjectileController.Initialize(string name, Vector3 initial)
         {
             if (gameObject.name == "")
             {
-                gameObject.name = $"TweenProjectile({count})";
+                gameObject.name = $"{name}_{count}";
                 count++;
             }
             this._name = gameObject.name;
