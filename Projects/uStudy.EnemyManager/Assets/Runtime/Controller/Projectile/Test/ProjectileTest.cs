@@ -14,21 +14,22 @@ using VContainer;
 using VContainer.Unity;
 using UniRx;
 using UniRx.Triggers;
+using UnityExtensions;
 
 namespace Hedwig.Runtime
 {
     public class ProjectileTest : LifetimeScope
     {
-        [SerializeField]
+        [SerializeField, InspectInline]
         EnemyObject? defaultEnemyObject;
 
-        [SerializeField]
+        [SerializeField, InspectInline]
         EnemyManagerObject? enemyManagerObject;
 
-        [SerializeField]
+        [SerializeField, InspectInline]
         VisualizersObject? visualizersObject;
 
-        [SerializeField]
+        [SerializeField, InspectInline]
         List<ProjectileObject> projectileObjects = new List<ProjectileObject>();
 
         [SerializeField]
@@ -76,7 +77,8 @@ namespace Hedwig.Runtime
             }).AddTo(this);
             enemySelection.Select(0);
 
-            var projectileSelection = new Selection<ProjectileObject>(projectileObjects);
+            var shotProjectiles = projectileObjects.Where(p => p.type == ProjectileType.Fire).ToList();
+            var projectileSelection = new Selection<ProjectileObject>(shotProjectiles);
             CancellationTokenSource? cts = null;
             projectileSelection.OnCurrentChanged
              .Subscribe(async projectile =>
