@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Runtime/Controller/Projectile/Test/ProjectileTest.unity
+    path: Assets/Scenes/ControllerTestScenes/Projectile/ProjectileTest.unity
     guid: a6603ced58924498088c607bc7afe964
   m_configObjects: {}
