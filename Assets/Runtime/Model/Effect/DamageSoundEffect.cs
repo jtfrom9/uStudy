@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Effect/DamageSound", fileName = "DamageSoundEffect")]
     public class DamageSoundEffect : DamageEffect

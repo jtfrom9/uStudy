@@ -16,7 +16,7 @@ using UniRx;
 using UniRx.Triggers;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore.Test
 {
     public class ProjectileTest : LifetimeScope
     {

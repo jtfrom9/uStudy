@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Search;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Visualizer/Visualizers", fileName = "Visualizers")]
     public class VisualizersObject : ScriptableObject, IGlobalVisualizerFactory, ITargetVisualizerFactory

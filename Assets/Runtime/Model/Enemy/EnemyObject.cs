@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Search;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Enemy/Enemy", fileName = "Enemy")]
     public class EnemyObject : ScriptableObject

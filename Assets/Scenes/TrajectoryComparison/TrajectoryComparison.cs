@@ -14,7 +14,7 @@ using VContainer.Unity;
 using UniRx;
 using UniRx.Triggers;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore.Test
 {
     public class TrajectoryComparison : LifetimeScope
     {

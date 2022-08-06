@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.Search;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Visualizer/Global", fileName = "GlobalVisualizer")]
     public class GlobalVisualizersObject : ScriptableObject, IGlobalVisualizerFactory

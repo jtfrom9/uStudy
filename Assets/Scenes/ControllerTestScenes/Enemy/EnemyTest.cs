@@ -12,7 +12,7 @@ using DG.Tweening;
 using VContainer;
 using VContainer.Unity;
 
-using Hedwig.Runtime;
+using Hedwig.RTSCore;
 
 public class EnemyTest : LifetimeScope
 {

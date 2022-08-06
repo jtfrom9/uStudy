@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class ChildEnemiesRepository : Controller, IEnemyControllerRepository
     {

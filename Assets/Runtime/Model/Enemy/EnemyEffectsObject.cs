@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Enemy/Effects", fileName = "EnemyEffects")]
     public class EnemyEffectsObject : ScriptableObject, IEnemyAttackedEffectFactory

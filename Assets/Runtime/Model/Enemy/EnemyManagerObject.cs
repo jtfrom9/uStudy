@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Enemy/Manager", fileName = "EnemyManager")]
     public class EnemyManagerObject : ScriptableObject

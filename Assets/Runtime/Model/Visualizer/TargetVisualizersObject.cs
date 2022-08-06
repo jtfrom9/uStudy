@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Visualizer/TargetVisualizers", fileName = "TargetVisualizers")]
     public class TargetVisualizersObject : ScriptableObject, ITargetVisualizerFactory

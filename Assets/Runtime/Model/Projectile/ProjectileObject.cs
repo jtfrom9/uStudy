@@ -8,7 +8,7 @@ using UnityEngine.Search;
 using UniRx;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public enum ProjectileType
     {

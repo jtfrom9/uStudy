@@ -7,7 +7,7 @@ using UnityEngine;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public static class CameraWorkExtension
     {

@@ -9,7 +9,7 @@ using UnityEngine.TestTools;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-using Hedwig.Runtime;
+using Hedwig.RTSCore;
 
 public class SelectionTest
 {

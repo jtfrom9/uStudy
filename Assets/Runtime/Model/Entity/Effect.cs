@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public static class EffectExtension {
         public static async UniTask PlayAndDispose(this IEffect effect)

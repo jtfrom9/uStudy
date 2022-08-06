@@ -11,7 +11,7 @@ using UniRx.Triggers;
 using VContainer;
 using VContainer.Unity;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore.Test
 {
     public class KnockbackTest : LifetimeScope
     {

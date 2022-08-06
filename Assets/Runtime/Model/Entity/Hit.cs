@@ -7,7 +7,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class HitTag
     {

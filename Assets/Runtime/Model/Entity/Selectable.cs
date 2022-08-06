@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public interface ISelectable
     {

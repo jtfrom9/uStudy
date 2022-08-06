@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Search;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Environment/Effects", fileName = "EnvironmentEffects")]
     public class EnvironmentEffectsObject : ScriptableObject

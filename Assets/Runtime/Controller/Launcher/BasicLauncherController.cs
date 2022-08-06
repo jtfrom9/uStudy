@@ -5,7 +5,7 @@ using UnityEngine;
 using UniRx;
 using UniRx.Triggers;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class BasicLauncherController : Controller, ILauncherController
     {

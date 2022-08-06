@@ -1,6 +1,6 @@
 #nullable enable
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public interface IVisualProperty
     {

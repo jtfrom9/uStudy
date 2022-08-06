@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public static class UtilityExtension
     {

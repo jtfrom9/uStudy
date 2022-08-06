@@ -14,8 +14,8 @@ using UniRx;
 using UniRx.Triggers;
 using UnityExtensions;
 
-using Hedwig.Runtime;
-using Hedwig.Runtime.InputObservable;
+using Hedwig.RTSCore;
+using Hedwig.RTSCore.InputObservable;
 
 public class TowerAim : LifetimeScope
 {

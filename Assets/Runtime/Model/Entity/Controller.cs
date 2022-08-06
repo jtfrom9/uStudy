@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEngine;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class Controller : MonoBehaviour
     {

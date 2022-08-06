@@ -7,7 +7,7 @@ using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class EnvironmentImpl : IEnvironment, IEnvironmentEvent
     {

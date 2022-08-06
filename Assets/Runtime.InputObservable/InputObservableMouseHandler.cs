@@ -6,9 +6,7 @@ using UniRx;
 using UniRx.Triggers;
 using InputObservable;
 
-using Hedwig.Runtime;
-
-namespace Hedwig.Runtime.InputObservable
+namespace Hedwig.RTSCore.InputObservable
 {
     public class InputObservableMouseHandler : MonoBehaviour, IMouseOperation
     {
@@ -79,7 +77,7 @@ namespace Hedwig.Runtime.InputObservable
                 Vector3? result = null;
                 foreach (var hit in hits)
                 {
-                    if (hit.collider.gameObject.CompareTag(Hedwig.Runtime.HitTag.Environment))
+                    if (hit.collider.gameObject.CompareTag(HitTag.Environment))
                     {
                         var y = hit.point.y;
                         if (result == null || y > highestY)

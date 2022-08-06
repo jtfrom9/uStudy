@@ -10,7 +10,7 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
 
-using Hedwig.Runtime;
+using Hedwig.RTSCore;
 
 public class CachedTransformTest
 {

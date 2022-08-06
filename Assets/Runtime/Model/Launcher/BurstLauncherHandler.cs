@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class BurstLauncherHandler : ILauncherHandler
     {

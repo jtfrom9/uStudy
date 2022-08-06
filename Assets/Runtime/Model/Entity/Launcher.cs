@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 using UniRx;
 using UniRx.Triggers;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public interface ILauncherController
     {

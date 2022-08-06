@@ -6,7 +6,7 @@ using UnityEngine;
 using UnityEngine.Search;
 using UnityExtensions;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Environment/Envronment", fileName = "Environment")]
     public class EnvironmentObject : ScriptableObject

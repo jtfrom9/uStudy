@@ -3,7 +3,7 @@
 using System;
 using UnityEngine;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public interface ITransformProvider: IDisposable
     {

@@ -8,7 +8,7 @@ using UnityEngine;
 using UniRx;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public struct DamageEvent
     {

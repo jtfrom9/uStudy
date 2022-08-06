@@ -15,7 +15,7 @@ using VContainer;
 using VContainer.Unity;
 using DG.Tweening;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore.Test
 {
     public class CursorTest : LifetimeScope
     {

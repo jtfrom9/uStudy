@@ -7,7 +7,7 @@ using TMPro;
 using UniRx;
 using UniRx.Triggers;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class PointIndicator : MonoBehaviour
     {

@@ -6,7 +6,7 @@ using UnityEngine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class SphereHitEffectController : MonoBehaviour, IHitEffect
     {

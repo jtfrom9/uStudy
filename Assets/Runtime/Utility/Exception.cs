@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.Serialization;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class InvalidConditionException : Exception
     {

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class EnemyImpl : IEnemy, IEnemyControllerEvent, ISelectable
     {

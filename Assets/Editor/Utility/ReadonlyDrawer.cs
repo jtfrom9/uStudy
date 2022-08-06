@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Hedwig.Runtime;
+using Hedwig.RTSCore;
 
 namespace Hedwig.Editor
 {

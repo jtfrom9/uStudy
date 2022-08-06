@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public enum MouseMoveEventType
     {

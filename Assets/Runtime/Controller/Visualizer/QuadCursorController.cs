@@ -5,7 +5,7 @@ using UnityEngine;
 using DG.Tweening;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class QuadCursorController : MonoBehaviour, ITargetVisualizer
     {

@@ -7,7 +7,7 @@ using UniRx;
 using Cysharp.Threading.Tasks;
 using VContainer.Unity;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class EnemyManagerImpl: IEnemyManager, IEnemyEvent
     {

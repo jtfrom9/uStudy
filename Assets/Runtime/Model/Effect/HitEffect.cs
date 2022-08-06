@@ -3,7 +3,7 @@
 using UnityEngine;
 using UnityEngine.Search;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     [CreateAssetMenu(menuName = "Hedwig/Effect/Hit", fileName = "HitEffect")]
     public class HitEffect : ScriptableObject

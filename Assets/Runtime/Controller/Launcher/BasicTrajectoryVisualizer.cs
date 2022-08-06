@@ -7,7 +7,7 @@ using UniRx;
 using UniRx.Triggers;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     public class BasicTrajectoryVisualizer : Controller, ITrajectoryVisualizer
     {

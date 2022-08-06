@@ -9,7 +9,7 @@ using DG.Tweening;
 using Cysharp.Threading.Tasks;
 using UniRx;
 
-namespace Hedwig.Runtime
+namespace Hedwig.RTSCore
 {
     using Projectile;
 
