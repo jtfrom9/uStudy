@@ -49,7 +49,7 @@ namespace Hedwig.RTSCore.Test
                 .AsImplementedInterfaces();
             builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
             builder.Register<ILauncher, LauncherImpl>(Lifetime.Singleton);
-            builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
+            builder.RegisterInstance<ILauncherController>(ControllerBase.Find<ILauncherController>());
         }
 
         void Start()

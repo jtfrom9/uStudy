@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Hedwig.RTSCore
 {
-    public class EnvironmentController : Controller, IEnvironmentController, IHitHandler
+    public class EnvironmentController : ControllerBase, IEnvironmentController, IHitHandler
     {
         string _name = "";
         IEnvironmentEvent? environmentEvent = null;

@@ -80,7 +80,7 @@ namespace Hedwig.RTSCore
 
         void IEnemyManager.Initialize(EnemyObject defualtEnemyObject)
         {
-            var enemyRepository = Controller.Find<IEnemyControllerRepository>();
+            var enemyRepository = ControllerBase.Find<IEnemyControllerRepository>();
             if (enemyRepository != null)
             {
                 foreach (var enemyController in enemyRepository.GetEnemyController())

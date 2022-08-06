@@ -10,7 +10,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.RTSCore
 {
-    public class NavMeshAgentEnemyController : Controller, IEnemyController, IVisualProperty, IHitHandler
+    public class NavMeshAgentEnemyController : ControllerBase, IEnemyController, IVisualProperty, IHitHandler
     {
         string _name = "";
         IEnemyControllerEvent? controllerEvent;

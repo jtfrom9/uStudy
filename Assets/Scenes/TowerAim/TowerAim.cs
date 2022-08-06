@@ -47,14 +47,14 @@ public class TowerAim : LifetimeScope
     {
         builder.RegisterInstance<EnemyManagerObject>(enemyManagerObject!);
         builder.RegisterInstance<EnvironmentObject>(environmentObject!);
-        builder.RegisterInstance<IEnvironmentController>(Controller.Find<IEnvironmentController>());
+        builder.RegisterInstance<IEnvironmentController>(ControllerBase.Find<IEnvironmentController>());
         builder.Register<EnvironmentImpl>(Lifetime.Singleton).AsImplementedInterfaces();
         builder.RegisterInstance<VisualizersObject>(visualizersObject!).AsImplementedInterfaces();
         builder.Register<IEnemyManager, EnemyManagerImpl>(Lifetime.Singleton);
         builder.RegisterInstance<InputObservableMouseHandler>(inputObservableCusrorManager!)
             .AsImplementedInterfaces();
         builder.Register<LauncherImpl>(Lifetime.Singleton).AsImplementedInterfaces();
-        builder.RegisterInstance<ILauncherController>(Controller.Find<ILauncherController>());
+        builder.RegisterInstance<ILauncherController>(ControllerBase.Find<ILauncherController>());
     }
 
     void Start()

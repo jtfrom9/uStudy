@@ -3,11 +3,11 @@ using UnityEngine;
 
 namespace Hedwig.RTSCore
 {
-    public class Controller : MonoBehaviour
+    public class ControllerBase : MonoBehaviour
     {
         public static T Find<T>() where T : class
         {
-            var objects = UnityEngine.Object.FindObjectsOfType<Controller>();
+            var objects = UnityEngine.Object.FindObjectsOfType<ControllerBase>();
             foreach (var _obj in objects)
             {
                 if (_obj is T)
@@ -21,7 +21,7 @@ namespace Hedwig.RTSCore
     {
         public static T[] GetControllersInChildren<T>(this Transform transform) where T : class
         {
-            return transform.GetComponentsInChildren<Controller>()
+            return transform.GetComponentsInChildren<ControllerBase>()
                 .Select(controller => controller as T)
                 .Where(controller => controller != null)
                 .ToArray();

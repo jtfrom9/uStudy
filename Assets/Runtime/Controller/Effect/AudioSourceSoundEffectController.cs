@@ -8,7 +8,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.RTSCore
 {
-    public class AudioSourceSoundEffectController : Controller, IDamageSoundEffect
+    public class AudioSourceSoundEffectController : ControllerBase, IDamageSoundEffect
     {
         float duration;
         int damage;

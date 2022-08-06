@@ -9,7 +9,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.RTSCore
 {
-    public class BasicTrajectoryVisualizer : Controller, ITrajectoryVisualizer
+    public class BasicTrajectoryVisualizer : ControllerBase, ITrajectoryVisualizer
     {
         LineRenderer? lineRenderer;
         bool _visible;

@@ -14,7 +14,7 @@ public class ParticleEffectTest : MonoBehaviour
 
     void Start()
     {
-        var effect = Controller.Find<IHitEffect>();
+        var effect = ControllerBase.Find<IHitEffect>();
         Debug.Log(effect);
         var transform = gameObject.AsTransformProvider();
         effect.Initialize(transform, Vector3.zero, Vector3.up);

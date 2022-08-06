@@ -7,7 +7,7 @@ using Cysharp.Threading.Tasks;
 
 namespace Hedwig.RTSCore
 {
-    public class ParticleEffectController : Controller, IHitEffect
+    public class ParticleEffectController : ControllerBase, IHitEffect
     {
         bool _disposed = false;
         ParticleSystem? _particleSystem = null;

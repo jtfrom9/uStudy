@@ -7,7 +7,7 @@ using UniRx.Triggers;
 
 namespace Hedwig.RTSCore
 {
-    public class BasicLauncherController : Controller, ILauncherController
+    public class BasicLauncherController : ControllerBase, ILauncherController
     {
         [SerializeField]
         Transform? mazzle;

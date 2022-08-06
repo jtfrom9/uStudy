@@ -279,7 +279,7 @@ namespace Hedwig.RTSCore
         public LauncherImpl(ILauncherController launcherController)
         {
             this.launcherController = launcherController;
-            this.trajectoryVisualizer = Controller.Find<ITrajectoryVisualizer>();
+            this.trajectoryVisualizer = ControllerBase.Find<ITrajectoryVisualizer>();
         }
     }
 }
