@@ -3,16 +3,17 @@
 using System.Linq;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityExtensions;
 
 namespace Hedwig.Runtime
 {
     [CreateAssetMenu(menuName = "Hedwig/Enemy/Effects", fileName = "EnemyEffects")]
     public class EnemyEffectsObject : ScriptableObject, IEnemyAttackedEffectFactory
     {
-        [SerializeField]
+        [SerializeField, InspectInline]
         List<DamageEffect> damageEffects = new List<DamageEffect>();
 
-        [SerializeField]
+        [SerializeField, InspectInline]
         List<HitEffect> hitEffects = new List<HitEffect>();
 
         IEnumerable<IEffect?> createEffects(IEnemy enemy, IHitObject? hitObject, DamageEvent e)
