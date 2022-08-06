@@ -1,6 +1,6 @@
 using UnityEngine;
 
-namespace Hedwig.Editor
+namespace Hedwig.Runtime
 {
     public class ReadonlyAttribute : PropertyAttribute
     {

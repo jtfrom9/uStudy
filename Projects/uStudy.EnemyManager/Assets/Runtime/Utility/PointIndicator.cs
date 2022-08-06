@@ -6,7 +6,6 @@ using UnityEngine;
 using TMPro;
 using UniRx;
 using UniRx.Triggers;
-using Hedwig.Editor;
 
 namespace Hedwig.Runtime
 {
