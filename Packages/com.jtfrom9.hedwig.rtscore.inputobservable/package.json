@@ -1,6 +1,6 @@
 {
   "name": "com.jtfrom9.hedwig.rtscore.inputobservable",
-  "displayName": "A Input Implementation for Hedwig RTS",
+  "displayName": "Hedwig RTS Core Input Implementation",
   "author": {
     "name": "jtfrom9"
   },

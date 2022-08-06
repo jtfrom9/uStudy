@@ -14,6 +14,18 @@
       "dependencies": {},
       "hash": "9f1c3648a838f759c70b08bb66468532951e0ea7"
     },
+    "com.jtfrom9.hedwig.rtscore": {
+      "version": "file:com.jtfrom9.hedwig.rtscore",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
+    "com.jtfrom9.hedwig.rtscore.inputobservable": {
+      "version": "file:com.jtfrom9.hedwig.rtscore.inputobservable",
+      "depth": 0,
+      "source": "embedded",
+      "dependencies": {}
+    },
     "com.jtfrom9.input-observable": {
       "version": "0.1.3",
       "depth": 0,
