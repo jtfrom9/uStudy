@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.Assertions;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.RTSCore
+namespace Hedwig.RTSCore.Controller
 {
     public class ParticleEffectController : ControllerBase, IHitEffect
     {

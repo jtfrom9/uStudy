@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.RTSCore
+namespace Hedwig.RTSCore.Controller
 {
     public class NavMeshAgentEnemyController : ControllerBase, IEnemyController, IVisualProperty, IHitHandler
     {

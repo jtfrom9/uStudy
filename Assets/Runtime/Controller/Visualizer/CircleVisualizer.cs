@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 using DG.Tweening;
 
-namespace Hedwig.RTSCore
+namespace Hedwig.RTSCore.Controller
 {
     public class CircleVisualizer : MonoBehaviour, IFreeCursorVisualizer
     {

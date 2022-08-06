@@ -6,7 +6,7 @@ using TMPro;
 using DG.Tweening;
 using Cysharp.Threading.Tasks;
 
-namespace Hedwig.RTSCore
+namespace Hedwig.RTSCore.Controller
 {
     public class AudioSourceSoundEffectController : ControllerBase, IDamageSoundEffect
     {
